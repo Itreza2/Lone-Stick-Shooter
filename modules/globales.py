@@ -24,3 +24,11 @@ class Var:
         for j in range(len(i)):
             try:i[j]=float(i[j])
             except ValueError:pass
+
+    animE=[[1,4,None,None,'troupierIdle', 100, [], []],[1,6,None,None,'troupierWalk',100, [], []],[1,6,None,None,'troupierWalkR',100, [], []],
+        [1,4,None,None,'gunnerIdle',100, [], []],[1,6,None,None,'gunnerWalk',100, [], []],[1,6,None,None,'gunnerWalkR',100, [], []],
+        [1,4,None,None,'marksmanIdle',100, [], []],[1,6,None,None,'marksmanWalk',100, [], []],[1,6,None,None,'marksmanWalkR',100, [], []],
+        [1,4,None,None,'gunnerIdle',200, [], []],[1,6,None,None,'gunnerWalk',200, [], []],[1,6,None,None,'gunnerWalkR',200, [], []],
+        [1,4,None,None,'marksmanIdle',200, [], []],[1,6,None,None,'marksmanWalk',200, [], []],[1,6,None,None,'marksmanWalkR',200, [], []],
+        [1,4,None,None,'dmgIdle', 100, [], []],[1,6,None,None,'dmgWalk',100, [], []],[1,6,None,None,'dmgWalkR',100, [], []],
+        [1,4,None,None,'dmgIdle', 200, [], []],[1,6,None,None,'dmgWalk',200, [], []],[1,6,None,None,'dmgWalkR',200, [], []]]

@@ -63,6 +63,9 @@ class Ennemi:
                 else:self.sprite=0+self.firstSprite
             else:self.sprite=0+self.firstSprite
 
+    def dmgAnimEnd(self):
+        if self.firstSprite==-3 or self.firstSprite==-6:self.firstSprite=Var.bestiaire[self.type][0]
+
 class Projectile:
     index=[]
 
@@ -84,6 +87,7 @@ class Projectile:
                 if (Ennemi.index[j].posX-Var.bestiaire[Ennemi.index[j].type][5]>=self.posX+2 or Ennemi.index[j].posX+Var.bestiaire[Ennemi.index[j].type][5]<=self.posX-2 or
                     Ennemi.index[j].posY-Var.bestiaire[Ennemi.index[j].type][6]>=self.posY+2 or Ennemi.index[j].posY+Var.bestiaire[Ennemi.index[j].type][6]<=self.posY-2):pass
                 elif i not in Holocaust and Combat.index[Ennemi.index[j].combat][3]:
+                    Ennemi.index[j].firstSprite=(-6 if Var.level%3!=0  else -3)
                     if randint(1, (int(Joueur.wStats[9]/Joueur.mods[4]) if int(Joueur.wStats[9]/Joueur.mods[4])>=1 else 1))==1:
                         if Joueur.wStats[-1]==0:retour[0]=True
                         Ennemi.index[j].pv-=Joueur.wStats[8]*(1.5*Joueur.mods[5])*Joueur.mods[0]
@@ -99,7 +103,7 @@ class Projectile:
             elif i not in Holocaust:
                 if Joueur.powers[0][1] and Joueur.stats[4]>10:
                     Var.lText.append([self.posX, self.posY, 'lightblue', str(-self.dmg), time(),0.2, 16])
-                    self.spawnX, self.spawnY=self.posX, self.posY
+                    self.spawnX, self.spawnY=self.posX, self.posY; self.vit=self.vit*2
                     self.angle+=pi; self.spawnT=time(); self.friendly=True; self.color,self.outline='lightblue','lightgreen'
                 else:
                     boule=True

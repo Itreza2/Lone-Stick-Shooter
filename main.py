@@ -17,21 +17,16 @@ lInput=[False, False, False, False, False, False]; anim=1; Joueur.wStats=[0, 'FA
 Projectile.index=[]; salles=[]; portal=[None, None]; modList=[[], 0, time(), None]
 Combat.index=[]; Ennemi.index=[]; nL=True; angle=pi/100; fps=0
 bonus=[1,1,0]; lXp=[]; Xp=[0,1,1]
-animE=[[1,4,None,None,'troupierIdle',100, [], []],[1,6,None,None,'troupierWalk',100, [], []],[1,6,None,None,'troupierWalkR',100, [], []],
-    [1,4,None,None,'gunnerIdle',100, [], []],[1,6,None,None,'gunnerWalk',100, [], []],[1,6,None,None,'gunnerWalkR',100, [], []],
-    [1,4,None,None,'marksmanIdle',100, [], []],[1,6,None,None,'marksmanWalk',100, [], []],[1,6,None,None,'marksmanWalkR',100, [], []],
-    [1,4,None,None,'gunnerIdle',200, [], []],[1,6,None,None,'gunnerWalk',200, [], []],[1,6,None,None,'gunnerWalkR',200, [], []],
-    [1,4,None,None,'marksmanIdle',200, [], []],[1,6,None,None,'marksmanWalk',200, [], []],[1,6,None,None,'marksmanWalkR',200, [], []]]
 filter=ImageTk.PhotoImage(Image.open('sprites/UI/filter.png').resize((int(tk.winfo_screenwidth()/2), int(tk.winfo_screenheight()))))
 
 perso=[None, 'Idle', 0]; weapon=None; monde=None; map=None
 
-for i in range(len(animE)):#Découpe des Sprite Sheets
-    for j in range(animE[i][1]):
-        animE[i][6].append(ImageTk.PhotoImage(
-Image.open('sprites/ennemies/'+animE[i][4]+'.png').crop((0+24*(j),0,24+24*(j),24)).resize((animE[i][5], animE[i][5]))))
-        animE[i][7].append(ImageTk.PhotoImage(
-Image.open('sprites/ennemies/'+animE[i][4]+'.png').crop((0+24*(j),0,24+24*(j),24)).resize((animE[i][5], animE[i][5])).transpose(Image.FLIP_LEFT_RIGHT)))
+for i in range(len(Var.animE)):#Découpe des Sprite Sheets
+    for j in range(Var.animE[i][1]):
+        Var.animE[i][6].append(ImageTk.PhotoImage(
+Image.open('sprites/ennemies/'+Var.animE[i][4]+'.png').crop((0+24*(j),0,24+24*(j),24)).resize((Var.animE[i][5], Var.animE[i][5]))))
+        Var.animE[i][7].append(ImageTk.PhotoImage(
+Image.open('sprites/ennemies/'+Var.animE[i][4]+'.png').crop((0+24*(j),0,24+24*(j),24)).resize((Var.animE[i][5], Var.animE[i][5])).transpose(Image.FLIP_LEFT_RIGHT)))
 
 modsC=[]; lecteur=reader(open('files/mods.csv', 'r'))
 for line in lecteur:modsC.append(line)
@@ -87,9 +82,9 @@ def affichage():
         for i in range(len(Ennemi.index)):
             if Ennemi.index[i].posY<(j)*40 and i not in CheikPoint:
                 if Ennemi.index[i].posX<Joueur.pos[0]:can.create_image(Ennemi.index[i].posX-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Ennemi.index[i].posY-Joueur.pos[1]+(tk.winfo_screenheight()/2), 
-                                image=animE[Ennemi.index[i].sprite][2], anchor='center'); CheikPoint.append(i)
+                                image=Var.animE[Ennemi.index[i].sprite][2], anchor='center'); CheikPoint.append(i)
                 else:can.create_image(Ennemi.index[i].posX-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Ennemi.index[i].posY-Joueur.pos[1]+(tk.winfo_screenheight()/2), 
-                                image=animE[Ennemi.index[i].sprite][3], anchor='center'); CheikPoint.append(i)
+                                image=Var.animE[Ennemi.index[i].sprite][3], anchor='center'); CheikPoint.append(i)
                 can.create_image(Ennemi.index[i].posX-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Ennemi.index[i].posY-Joueur.pos[1]+(tk.winfo_screenheight()/2)+8, image=Ennemi.index[i].img, anchor='center')
         for i in range(int((Joueur.pos[0]-tk.winfo_screenwidth()/2)/40-40), int((Joueur.pos[0]+tk.winfo_screenwidth()/2)/40+40)):
             if i>3 and i<7000/40-3 and j>3 and j<7000/40-3:
@@ -124,9 +119,9 @@ def affichage():
         for i in range(len(Ennemi.index)):
             if Ennemi.index[i].posY<(j)*40 and i not in CheikPoint:
                 if Ennemi.index[i].posX<Joueur.pos[0]:can.create_image(Ennemi.index[i].posX-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Ennemi.index[i].posY-Joueur.pos[1]+(tk.winfo_screenheight()/2), 
-                                image=animE[Ennemi.index[i].sprite][2], anchor='center'); CheikPoint.append(i)
+                                image=Var.animE[Ennemi.index[i].sprite][2], anchor='center'); CheikPoint.append(i)
                 else:can.create_image(Ennemi.index[i].posX-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Ennemi.index[i].posY-Joueur.pos[1]+(tk.winfo_screenheight()/2), 
-                                image=animE[Ennemi.index[i].sprite][3], anchor='center'); CheikPoint.append(i)
+                                image=Var.animE[Ennemi.index[i].sprite][3], anchor='center'); CheikPoint.append(i)
                 can.create_image(Ennemi.index[i].posX-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Ennemi.index[i].posY-Joueur.pos[1]+(tk.winfo_screenheight()/2)+8, image=Ennemi.index[i].img, anchor='center')
         for i in range(int((Joueur.pos[0]-tk.winfo_screenwidth()/2)/40-40), int((Joueur.pos[0]+tk.winfo_screenwidth()/2)/40+40)):
             if i>3 and i<7000/40-3 and j>3 and j<7000/40-3:
@@ -214,7 +209,7 @@ def affichage():
     can.create_text(10,10,text=str(int(fps))+' fps', fill=('green' if fps>40 else ('orange' if fps>20 else 'red')), anchor='nw')
 
 def main():
-    global tic,  fpsLimiter, animP, perso, weapon, anim, animO, state, animE
+    global tic,  fpsLimiter, animP, perso, weapon, anim, animO, state
     global lDed, bonus, angle, lXp, Xp, modList, fps
 
     #Calcul angle visée libre (hors combat)
@@ -260,9 +255,9 @@ def main():
         for i in range(len(animO)):
             animO[i][0]+=1
             if animO[i][0]>animO[i][1]:animO[i][0]=1
-        for i in range(len(animE)):
-            animE[i][0]+=1
-            if animE[i][0]>animE[i][1]:animE[i][0]=1
+        for i in range(len(Var.animE)):
+            Var.animE[i][0]+=1
+            if Var.animE[i][0]>Var.animE[i][1]:Var.animE[i][0]=1
         for i in range(len(Ennemi.index)):
             if Combat.index[Ennemi.index[i].combat][3]:
                 if Ennemi.index[i].arme[2]>1:Ennemi.index[i].arme[2]-=1
@@ -407,9 +402,9 @@ def main():
                 perso[0]=ImageTk.PhotoImage(Image.open('sprites/perso/'+perso[1]+str(animP[perso[2]][0])+'.png').resize((100, 100), Image.ANTIALIAS).transpose(Image.FLIP_LEFT_RIGHT))
                 weapon=ImageTk.PhotoImage(WeaponsP[int(Joueur.wStats[0])][int(Joueur.wStats[2])-1].rotate(180-angle*180/pi).resize((100, 100), Image.ANTIALIAS))
         animO[0][2]=ImageTk.PhotoImage(animO[0][3][animO[0][0]-1].resize((100, 180)))
-        for i in range(len(animE)):
-            animE[i][2]=animE[i][6][animE[i][0]-1]
-            animE[i][3]=animE[i][7][animE[i][0]-1]
+        for i in range(len(Var.animE)):
+            Var.animE[i][2]=Var.animE[i][6][Var.animE[i][0]-1]
+            Var.animE[i][3]=Var.animE[i][7][Var.animE[i][0]-1]
         for i in range(len(Ennemi.index)):#Sprites Armes Ennemies
             size=(200 if Var.level%3==0 else 100)
             if ((Ennemi.index[i].posX)**2-Joueur.pos[0]**2)!=0 and Combat.index[Ennemi.index[i].combat][3]:
@@ -424,6 +419,8 @@ def main():
                 if Joueur.pos[0]>Ennemi.index[i].posX:Ennemi.index[i].img=ImageTk.PhotoImage(Image.open('sprites/armes/'+Ennemi.index[i].arme[1]+'/'+Ennemi.index[i].arme[1]+str(int(Ennemi.index[i].arme[2]))+'.png').rotate(0*180/pi).resize((size, size), Image.ANTIALIAS).transpose(Image.FLIP_LEFT_RIGHT))
                 else:Ennemi.index[i].img=ImageTk.PhotoImage(WeaponsP[int(Ennemi.index[i].arme[0])][int(Ennemi.index[i].arme[2])-1].rotate(180-0*180/pi).resize((size, size), Image.ANTIALIAS).transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.FLIP_TOP_BOTTOM))
         affichage()
+
+        for i in Ennemi.index:i.dmgAnimEnd()
 
     if state:tk.after(1, main)
     elif nL and Xp[1]>Xp[2]:#Menu selection mod.
