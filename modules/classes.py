@@ -1,7 +1,7 @@
 from PIL import Image, ImageTk
 from time import time
 from random import random, randint
-from math import cos, sin, pi
+from math import cos, sin, atan, pi, sqrt
 
 from modules.globales import Var
 
@@ -10,6 +10,7 @@ class Joueur:
     powers=[]
     wStats=[]; stats=[0, 100, 100, 250, 100, 100, randint(0,2)]
     mods=[]
+    perso=[None, 'Idle', 0]
 
     pos=[-50, -50]
 
@@ -20,8 +21,53 @@ class Combat:
 
     index=[]
 
-    def __init__(self):
-        pass
+    def __init__(self, size, X, Y, actif, Pop):
+        self.size, self.X, self.Y, self.actif, self.Pop = size, X, Y, actif, Pop
+
+    def startnstop(self):
+        if (self.actif==False and self.size==2 and self.Pop>0 and Joueur.pos[0]>self.X-8*40 and Joueur.pos[0]<self.X+8*40
+        and Joueur.pos[1]>self.Y-8*40 and Joueur.pos[1]<self.Y+8*40-20):
+            self.actif=True; Var.tac=0
+            for j in range(5):
+                if Var.grille[int(self.Y/40)-9][int(self.X/40)-2+j]!='0':
+                    Var.grille[int(self.Y/40)-9][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)-9][int(self.X/40)-2+j]='2'
+                if Var.grille[int(self.Y/40)+9][int(self.X/40)-2+j]!='0':
+                    Var.grille[int(self.Y/40)+9][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)+9][int(self.X/40)-2+j]='2'
+                if Var.grille[int(self.Y/40)-2+j][int(self.X/40)-9]!='0':
+                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)-9]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-9]='2'
+                if Var.grille[int(self.Y/40)-2+j][int(self.X/40)+9]!='0':
+                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)+9]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+9]='2'
+        if (self.actif==False and self.size==3 and self.Pop>0 and Joueur.pos[0]>self.X-11*40 and Joueur.pos[0]<self.X+11*40
+        and Joueur.pos[1]>self.Y-11*40 and Joueur.pos[1]<self.Y+11*40-20):
+            self.actif=True; Var.tac=0
+            for j in range(5):
+                if Var.grille[int(self.Y/40)-12][int(self.X/40)-2+j]!='0':
+                    Var.grille[int(self.Y/40)-12][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)-12][int(self.X/40)-2+j]='2'
+                if Var.grille[int(self.Y/40)+12][int(self.X/40)-2+j]!='0':
+                    Var.grille[int(self.Y/40)+12][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)+12][int(self.X/40)-2+j]='2'
+                if Var.grille[int(self.Y/40)-2+j][int(self.X/40)-12]!='0':
+                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)-12]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-12]='2'
+                if Var.grille[int(self.Y/40)-2+j][int(self.X/40)+12]!='0':
+                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)+12]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+12]='2'
+        if self.actif and self.Pop==0:
+            self.actif=False; Projectile.index=[]
+            for j in range(5):
+                if Var.grilleP[int(self.Y/40)-9][int(self.X/40)-2+j]=='2':
+                    Var.grille[int(self.Y/40)-9][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)-9][int(self.X/40)-2+j]='0'
+                if Var.grilleP[int(self.Y/40)+9][int(self.X/40)-2+j]=='2':
+                    Var.grille[int(self.Y/40)+9][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)+9][int(self.X/40)-2+j]='0'
+                if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-9]=='2':
+                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)-9]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-9]='0'
+                if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+9]=='2':
+                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)+9]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+9]='0'
+                if Var.grilleP[int(self.Y/40)-12][int(self.X/40)-2+j]=='2':
+                    Var.grille[int(self.Y/40)-12][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)-12][int(self.X/40)-2+j]='0'
+                if Var.grilleP[int(self.Y/40)+12][int(self.X/40)-2+j]=='2':
+                    Var.grille[int(self.Y/40)+12][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)+12][int(self.X/40)-2+j]='0'
+                if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-12]=='2':
+                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)-12]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-12]='0'
+                if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+12]=='2':
+                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)+12]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+12]='0'
 
 class Ennemi:
 
@@ -34,7 +80,7 @@ class Ennemi:
         self.tic, self.angle, self.dmg, self.r, self.type = tic, angle, dmg, r, type
 
     def comportement(self):
-        if Combat.index[self.combat][3]:
+        if Combat.index[self.combat].actif:
 
             if ((time()-self.tic)>self.arme[6]*2 and ((self.vitX==0 and self.vitY==0) or Var.level%3==0) and Var.debordeur<1 
             and ((time()-Joueur.stats[0])<Joueur.wStats[6]/2 or (time()-Joueur.stats[0])>Joueur.wStats[6]*2)):
@@ -86,7 +132,7 @@ class Projectile:
             for j in range(len(Ennemi.index)):
                 if (Ennemi.index[j].posX-Var.bestiaire[Ennemi.index[j].type][5]>=self.posX+2 or Ennemi.index[j].posX+Var.bestiaire[Ennemi.index[j].type][5]<=self.posX-2 or
                     Ennemi.index[j].posY-Var.bestiaire[Ennemi.index[j].type][6]>=self.posY+2 or Ennemi.index[j].posY+Var.bestiaire[Ennemi.index[j].type][6]<=self.posY-2):pass
-                elif i not in Holocaust and Combat.index[Ennemi.index[j].combat][3]:
+                elif i not in Holocaust and Combat.index[Ennemi.index[j].combat].actif:
                     Ennemi.index[j].firstSprite=(-6 if Var.level%3!=0  else -3)
                     if randint(1, (int(Joueur.wStats[9]/Joueur.mods[4]) if int(Joueur.wStats[9]/Joueur.mods[4])>=1 else 1))==1:
                         if Joueur.wStats[-1]==0:retour[0]=True
@@ -118,5 +164,26 @@ class Projectile:
 
 class Orbe:
 
-    def __init__(self):
-        pass
+    index=[]
+
+    def __init__(self, posX, posY, vitX, vitY):
+        self.posX, self.posY, self.vitX, self.vitY = posX, posY, vitX, vitY
+        self.tic, self.t = time(), time()
+
+    def move(self, i, Adolf):
+        if sqrt((Joueur.pos[0]-self.posX)**2+(Joueur.pos[1]-self.posY)**2)<25:
+            Adolf.append(i); Var.Xp[0]+=1.2
+            if Var.Xp[0]>=200:Var.Xp[0]-=200; Var.Xp[1]+=1
+        elif sqrt((Joueur.pos[0]-self.posX)**2+(Joueur.pos[1]-self.posY)**2)<300:#calcul vitesse en fonction de la distance au joueur
+            #Calcul de l'angle entre le joueur et l'orbe
+            angleO=None
+            if (self.posX>Joueur.pos[0]):angleO=atan((self.posY-Joueur.pos[1])/(self.posX-Joueur.pos[0]))
+            else:angleO=pi+atan((self.posY-Joueur.pos[1])/(self.posX-Joueur.pos[0]))
+            #Attribution de la nouvelle vitesse
+            self.vitX=-(300-sqrt((Joueur.pos[0]-self.posX)**2+(Joueur.pos[1]-self.posY)**2))*1.5*cos(angleO)
+            self.vitY=-(300-sqrt((Joueur.pos[0]-self.posX)**2+(Joueur.pos[1]-self.posY)**2))*1.5*sin(angleO)
+        else:self.vitX, self.vitY=0,0
+        self.posX+=self.vitX*(time()-self.tic); self.posY+=self.vitY*(time()-self.tic)
+        self.tic=time()
+
+        return Adolf
