@@ -26,9 +26,9 @@ weapon=None; map=None
 for i in range(len(Var.animE)):#Découpe des Sprite Sheets
     for j in range(Var.animE[i][1]):
         Var.animE[i][6].append(ImageTk.PhotoImage(
-Image.open('sprites/ennemies/'+Var.animE[i][4]+'.png').crop((0+24*(j),0,24+24*(j),24)).resize((Var.animE[i][5], Var.animE[i][5]))))
+        Image.open('sprites/ennemies/'+Var.animE[i][4]+'.png').crop((0+24*(j),0,24+24*(j),24)).resize((Var.animE[i][5], Var.animE[i][5]))))
         Var.animE[i][7].append(ImageTk.PhotoImage(
-Image.open('sprites/ennemies/'+Var.animE[i][4]+'.png').crop((0+24*(j),0,24+24*(j),24)).resize((Var.animE[i][5], Var.animE[i][5])).transpose(Image.FLIP_LEFT_RIGHT)))
+        Image.open('sprites/ennemies/'+Var.animE[i][4]+'.png').crop((0+24*(j),0,24+24*(j),24)).resize((Var.animE[i][5], Var.animE[i][5])).transpose(Image.FLIP_LEFT_RIGHT)))
 
 modsC=[]; lecteur=reader(open('files/mods.csv', 'r'))
 for line in lecteur:modsC.append(line)
@@ -141,7 +141,8 @@ def main():
                 Joueur.stats[0]=time(); Joueur.wStats[2]=3
                 Projectile.index.append(Projectile(
                         Joueur.pos[0]+(Joueur.wStats[3])*cos(disp), Joueur.pos[1]+8+(Joueur.wStats[3])*sin(disp), Joueur.pos[0]+(Joueur.wStats[3])*cos(disp), 
-                        Joueur.pos[1]+8+(Joueur.wStats[3])*sin(disp),disp, Joueur.wStats[7]*1.5, True, 3*bonus[0]
+                        Joueur.pos[1]+8+(Joueur.wStats[3])*sin(disp),disp, Joueur.wStats[7]*1.5, True, 3*bonus[0],
+                        Joueur.wStats[11], Joueur.wStats[12], Joueur.wStats[13]
                 ))
             while time()-rustine<1/60:0==0
 
@@ -162,7 +163,15 @@ def main():
         retour=Projectile.index[i].collision(i, Holocaust, Shaw)
         if retour[0]:Holocaust.append(i)
         Shaw+=retour[1]
-    for i in range(len(Holocaust)):Projectile.index.pop(Holocaust[i]-Hitlof); Hitlof+=1
+    for i in range(len(Holocaust)):
+        I=Holocaust[i]-Hitlof; obj=Projectile.index[I]
+        for j in range(int(obj.nbrS)):
+            Projectile.index.append(Projectile(
+                obj.spawnX+((time()-obj.spawnT-0.025)*obj.vit)*cos(obj.angle), obj.spawnY+((time()-obj.spawnT-0.025)*obj.vit)*sin(obj.angle), 
+                obj.spawnX+((time()-obj.spawnT-0.025)*obj.vit)*cos(obj.angle), obj.spawnY+((time()-obj.spawnT-0.025)*obj.vit)*sin(obj.angle),  
+                obj.angle+((2*pi)/obj.nbrS)*j, obj.vitS,
+                obj.friendly,  (4 if obj.friendly else obj.dmgS/2), 0, 0, 0, obj.color, obj.outline, obj.dmgS))
+        Projectile.index.pop(I); Hitlof+=1
     for k in range(len(Shaw)):
         for j in range(randint(5,10)*(12 if Var.level%3==0 else 1)):
             Orbe.index.append(Orbe(Ennemi.index[Shaw[k]-Musso].posX+randint(-25*(2 if Var.level%3==0 else 1),25*(2 if Var.level%3==0 else 1)), 
@@ -408,7 +417,7 @@ def clavier(event):
                     Joueur.wStats=Var.arsenal[int(Var.lObj[i][0])]; Var.lObj.pop(i)
             for i in range(len(Var.lCoffre)):
                 if Joueur.pos[0]>Var.lCoffre[i][1]-50 and Joueur.pos[0]<Var.lCoffre[i][1]+50 and Joueur.pos[1]>Var.lCoffre[i][2]-50 and Joueur.pos[1]<Var.lCoffre[i][2]+50 and Var.lCoffre[i][0]:
-                    var=randint(0,5); Var.lObj.append([var, Var.arsenal[var][1], Var.lCoffre[i][1]+randint(-10,10), Var.lCoffre[i][2]+randint(-10,10), 
+                    var=randint(0,6); Var.lObj.append([var, Var.arsenal[var][1], Var.lCoffre[i][1]+randint(-10,10), Var.lCoffre[i][2]+randint(-10,10), 
                     ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[var][1]+'/'+Var.arsenal[var][1]+str(int(Joueur.wStats[2]))+'.png').resize((100, 100), Image.ANTIALIAS))])
                     Var.lCoffre[i][0]=False; Var.lCoffre[i][3]=ImageTk.PhotoImage(Image.open('sprites/props/coffreO.png').resize((75,75)))
 

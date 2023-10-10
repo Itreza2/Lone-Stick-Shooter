@@ -81,12 +81,11 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
                     else:can.create_image(i*40-Joueur.pos[0]+(tk.winfo_screenwidth()/2), j*40-Joueur.pos[1]+(tk.winfo_screenheight()/2)-20, image=door, anchor='nw')
 
     for i in range(len(Projectile.index)):#Affichage Projectiles
-        if Joueur.wStats[-1]==0 or Projectile.index[i][7]==False:
-            can.create_oval(
-                Projectile.index[i].posX-Projectile.index[i].r-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Projectile.index[i].posY-Projectile.index[i].r-Joueur.pos[1]+(tk.winfo_screenheight()/2), 
-                Projectile.index[i].posX+Projectile.index[i].r-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Projectile.index[i].posY+Projectile.index[i].r-Joueur.pos[1]+(tk.winfo_screenheight()/2),
-                fill=Projectile.index[i].color, outline=Projectile.index[i].outline
-            )
+        can.create_oval(
+            Projectile.index[i].posX-Projectile.index[i].r-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Projectile.index[i].posY-Projectile.index[i].r-Joueur.pos[1]+(tk.winfo_screenheight()/2), 
+            Projectile.index[i].posX+Projectile.index[i].r-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Projectile.index[i].posY+Projectile.index[i].r-Joueur.pos[1]+(tk.winfo_screenheight()/2),
+            fill=Projectile.index[i].color, outline=Projectile.index[i].outline
+        )
     Holocost=[]; Hitlof=0
     for i in range(len(Var.lText)):
         can.create_text(Var.lText[i][0]-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Var.lText[i][1]-Joueur.pos[1]+(tk.winfo_screenheight()/2), 

@@ -91,7 +91,7 @@ class Ennemi:
                     Projectile.index.append(Projectile(
                         self.posX+(self.arme[3])*cos(disp), self.posY+8+(self.arme[3])*sin(disp), self.posX+(self.arme[3])*cos(disp), 
                         self.posY+8+(self.arme[3])*sin(disp), disp, self.arme[7]/(3*(0.85**Var.pression if Var.pression>0 else 1)),
-                        False,  self.arme[8]/2, 'red', 'pink', self.dmg))
+                        False,  self.arme[8]/2, self.arme[11], self.arme[12], self.arme[13], 'red', 'pink', self.dmg))
 
             if time()-Var.tac>2:
                 if randint(1,4)!=1:self.vitX,self.vitY=randint(-1,1),randint(-1,1)
@@ -115,10 +115,11 @@ class Ennemi:
 class Projectile:
     index=[]
 
-    def __init__(self, posX, posY, spawnX, spawnY, angle, vit, friendly, r, color='black', outline='black', dmg=0):
+    def __init__(self, posX, posY, spawnX, spawnY, angle, vit, friendly, r, nbrS, dmgS, vitS, color='black', outline='black', dmg=0):
         
         self.posX, self.posY, self.spawnX, self.spawnY, self.angle, self.dmg = posX, posY, spawnX, spawnY, angle, dmg
         self.vit, self.spawnT, self.friendly, self.r, self.color, self.outline = vit, time(), friendly, r, color, outline
+        self.nbrS, self.dmgS, self.vitS = nbrS, dmgS, vitS
     
     def actualisation(self):
         self.posX=self.spawnX+((time()-self.spawnT)*self.vit)*cos(self.angle)
