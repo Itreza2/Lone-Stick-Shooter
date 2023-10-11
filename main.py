@@ -34,7 +34,7 @@ modsC=[]; lecteur=reader(open('files/mods.csv', 'r'))
 for line in lecteur:modsC.append(line)
 for i in range(len(modsC)):
     for j in range(len(modsC[i])):modsC[i][j]=float(modsC[i][j])
-wSprites={}
+wSprites={} 
 Joueur.wStats=Var.arsenal[0]
 
 WeaponsP=[[Image.open('sprites/armes/'+Var.arsenal[i][1]+'/'+Var.arsenal[i][1]+str(j)+'.png')
@@ -165,10 +165,10 @@ def main():
         Shaw+=retour[1]
     for i in range(len(Holocaust)):
         I=Holocaust[i]-Hitlof; obj=Projectile.index[I]
-        for j in range(int(obj.nbrS)):
+        for j in range(int(obj.nbrS)):#Spawn balles à fragmentation
             Projectile.index.append(Projectile(
-                obj.spawnX+((time()-obj.spawnT-0.025)*obj.vit)*cos(obj.angle), obj.spawnY+((time()-obj.spawnT-0.025)*obj.vit)*sin(obj.angle), 
-                obj.spawnX+((time()-obj.spawnT-0.025)*obj.vit)*cos(obj.angle), obj.spawnY+((time()-obj.spawnT-0.025)*obj.vit)*sin(obj.angle),  
+                obj.spawnX+((time()-obj.spawnT)*obj.vit-15)*cos(obj.angle), obj.spawnY+((time()-obj.spawnT)*obj.vit-15)*sin(obj.angle), 
+                obj.spawnX+((time()-obj.spawnT)*obj.vit-15)*cos(obj.angle), obj.spawnY+((time()-obj.spawnT)*obj.vit-15)*sin(obj.angle),  
                 obj.angle+((2*pi)/obj.nbrS)*j, obj.vitS,
                 obj.friendly,  (4 if obj.friendly else obj.dmgS/2), 0, 0, 0, obj.color, obj.outline, obj.dmgS))
         Projectile.index.pop(I); Hitlof+=1
