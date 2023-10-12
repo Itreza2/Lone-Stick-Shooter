@@ -141,7 +141,7 @@ def main():
                 Joueur.stats[0]=time(); Joueur.wStats[2]=3
                 Projectile.index.append(Projectile(
                         Joueur.pos[0]+(Joueur.wStats[3])*cos(disp), Joueur.pos[1]+8+(Joueur.wStats[3])*sin(disp), Joueur.pos[0]+(Joueur.wStats[3])*cos(disp), 
-                        Joueur.pos[1]+8+(Joueur.wStats[3])*sin(disp),disp, Joueur.wStats[7]*1.5, True, 3*bonus[0],
+                        Joueur.pos[1]+8+(Joueur.wStats[3])*sin(disp),disp, Joueur.wStats[7]*1.5, True, (2+Joueur.wStats[8]/10)*bonus[0],
                         Joueur.wStats[11], Joueur.wStats[12], Joueur.wStats[13]
                 ))
             while time()-rustine<1/60:0==0
@@ -164,13 +164,14 @@ def main():
         if retour[0]:Holocaust.append(i)
         Shaw+=retour[1]
     for i in range(len(Holocaust)):
-        I=Holocaust[i]-Hitlof; obj=Projectile.index[I]; nbrFragments=int(obj.nbrS*(Joueur.mods[1] if obj.friendly else 1)+(0 if obj.friendly else Var.pression))
+        I=Holocaust[i]-Hitlof; obj=Projectile.index[I]
+        nbrFragments=int(obj.nbrS*(Joueur.mods[1] if obj.friendly else 1)+(Var.pression if (obj.nbrS>0 and not obj.friendly) else 0))
         for j in range(nbrFragments):#Spawn balles à fragmentation
             Projectile.index.append(Projectile(
                 obj.spawnX+((time()-obj.spawnT)*obj.vit-15)*cos(obj.angle), obj.spawnY+((time()-obj.spawnT)*obj.vit-15)*sin(obj.angle), 
                 obj.spawnX+((time()-obj.spawnT)*obj.vit-15)*cos(obj.angle), obj.spawnY+((time()-obj.spawnT)*obj.vit-15)*sin(obj.angle),  
                 obj.angle+((2*pi)/nbrFragments)*j, obj.vitS,
-                obj.friendly,  (4 if obj.friendly else obj.dmgS/2), 0, 0, 0, obj.color, obj.outline, obj.dmgS))
+                obj.friendly,  (2+obj.dmgS/6 if obj.friendly else obj.dmgS/2), 0, 0, 0, obj.color, obj.outline, obj.dmgS))
         Projectile.index.pop(I); Hitlof+=1
     obj=None
     for k in range(len(Shaw)):
