@@ -136,7 +136,7 @@ def main():
     Var.debordeur-=1; rustine=time()
     if lInput[4] and Joueur.stats[1]>0 and Joueur.powers[0][1]==False:#Tir de l'Arme (JOUEUR)
         if (time()-Joueur.stats[0])>Joueur.wStats[6]:
-            for i in range(int(Joueur.wStats[4]*bonus[1]*Joueur.mods[1])):
+            for i in range(int(Joueur.wStats[4]*bonus[1]*(Joueur.mods[1] if Joueur.wStats[11]==0 else 1))):
                 disp=angle+(-((Joueur.wStats[5]*Joueur.mods[2])/2/180*pi)+random()*((Joueur.wStats[5]*Joueur.mods[2])/180*pi))
                 Joueur.stats[0]=time(); Joueur.wStats[2]=3
                 Projectile.index.append(Projectile(
@@ -164,14 +164,15 @@ def main():
         if retour[0]:Holocaust.append(i)
         Shaw+=retour[1]
     for i in range(len(Holocaust)):
-        I=Holocaust[i]-Hitlof; obj=Projectile.index[I]
-        for j in range(int(obj.nbrS)):#Spawn balles à fragmentation
+        I=Holocaust[i]-Hitlof; obj=Projectile.index[I]; nbrFragments=int(obj.nbrS*(Joueur.mods[1] if obj.friendly else 1)+(0 if obj.friendly else Var.pression))
+        for j in range(nbrFragments):#Spawn balles à fragmentation
             Projectile.index.append(Projectile(
                 obj.spawnX+((time()-obj.spawnT)*obj.vit-15)*cos(obj.angle), obj.spawnY+((time()-obj.spawnT)*obj.vit-15)*sin(obj.angle), 
                 obj.spawnX+((time()-obj.spawnT)*obj.vit-15)*cos(obj.angle), obj.spawnY+((time()-obj.spawnT)*obj.vit-15)*sin(obj.angle),  
-                obj.angle+((2*pi)/obj.nbrS)*j, obj.vitS,
+                obj.angle+((2*pi)/nbrFragments)*j, obj.vitS,
                 obj.friendly,  (4 if obj.friendly else obj.dmgS/2), 0, 0, 0, obj.color, obj.outline, obj.dmgS))
         Projectile.index.pop(I); Hitlof+=1
+    obj=None
     for k in range(len(Shaw)):
         for j in range(randint(5,10)*(12 if Var.level%3==0 else 1)):
             Orbe.index.append(Orbe(Ennemi.index[Shaw[k]-Musso].posX+randint(-25*(2 if Var.level%3==0 else 1),25*(2 if Var.level%3==0 else 1)), 
@@ -220,8 +221,8 @@ def main():
                     angle=pi+atan(((Ennemi.index[i].posY)-Joueur.pos[1])/((Ennemi.index[i].posX)-Joueur.pos[0])); Ennemi.index[i].angle=angle
                     Ennemi.index[i].img=ImageTk.PhotoImage(WeaponsP[int(Ennemi.index[i].arme[0])][int(Ennemi.index[i].arme[2])-1].rotate(180-angle*180/pi).resize((size, size), Image.ANTIALIAS))
             elif (Combat.index[Ennemi.index[i].combat].actif==False and Ennemi.index[i].posX>Joueur.pos[0]-tk.winfo_screenwidth()/2-40 and Ennemi.index[i].posX<Joueur.pos[0]+tk.winfo_screenwidth()/2+40
-            and Ennemi.index[i].posY>Joueur.pos[1]-tk.winfo_screenheight()/2-40 and Ennemi.index[i].posY<Joueur.pos[1]-tk.winfo_screenheight()/2+40):
-                if Joueur.pos[0]>Ennemi.index[i].posX:Ennemi.index[i].img=ImageTk.PhotoImage(Image.open('sprites/armes/'+Ennemi.index[i].arme[1]+'/'+Ennemi.index[i].arme[1]+str(int(Ennemi.index[i].arme[2]))+'.png').rotate(0*180/pi).resize((size, size), Image.ANTIALIAS).transpose(Image.FLIP_LEFT_RIGHT))
+            and Ennemi.index[i].posY>Joueur.pos[1]-tk.winfo_screenheight()/2-40 and Ennemi.index[i].posY<Joueur.pos[1]+tk.winfo_screenheight()/2+40):
+                if Joueur.pos[0]>Ennemi.index[i].posX:Ennemi.index[i].img=ImageTk.PhotoImage(WeaponsP[int(Ennemi.index[i].arme[0])][int(Ennemi.index[i].arme[2])-1].rotate(0*180/pi).resize((size, size), Image.ANTIALIAS).transpose(Image.FLIP_LEFT_RIGHT))
                 else:Ennemi.index[i].img=ImageTk.PhotoImage(WeaponsP[int(Ennemi.index[i].arme[0])][int(Ennemi.index[i].arme[2])-1].rotate(180-0*180/pi).resize((size, size), Image.ANTIALIAS).transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.FLIP_TOP_BOTTOM))
         affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2, murH, mur, doorH, door, nL, map, filter)
 

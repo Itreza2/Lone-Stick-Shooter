@@ -85,7 +85,7 @@ class Ennemi:
             if ((time()-self.tic)>self.arme[6]*2 and ((self.vitX==0 and self.vitY==0) or Var.level%3==0) and Var.debordeur<1 
             and ((time()-Joueur.stats[0])<Joueur.wStats[6]/2 or (time()-Joueur.stats[0])>Joueur.wStats[6]*2)):
                 self.tic=time(); Var.debordeur+=5
-                for i in range(int(self.arme[4])+Var.pression):
+                for i in range(int(self.arme[4])+(Var.pression if self.arme[11]==0 else 0)):
                     disp=self.angle+(2*(0.75**Var.pression if Var.pression>0 else 1))*(-(self.arme[5]/2/180*pi)+random()*(self.arme[5]/180*pi))
                     Joueur.stats[0]=time(); self.arme[2]=3
                     Projectile.index.append(Projectile(
@@ -136,11 +136,11 @@ class Projectile:
                 elif i not in Holocaust and Combat.index[Ennemi.index[j].combat].actif:
                     Ennemi.index[j].firstSprite=(-6 if Var.level%3!=0  else -3)
                     if randint(1, (int(Joueur.wStats[9]/Joueur.mods[4]) if int(Joueur.wStats[9]/Joueur.mods[4])>=1 else 1))==1:
-                        if Joueur.wStats[-1]==0:retour[0]=True
+                        retour[0]=True
                         Ennemi.index[j].pv-=Joueur.wStats[8]*(1.5*Joueur.mods[5])*Joueur.mods[0]
                         Var.lText.append([self.posX, self.posY, 'orange', str(-Joueur.wStats[8]*(1.5*Joueur.mods[5])*Joueur.mods[0])[:5], time(),0.2, 14])
                     else:
-                        if Joueur.wStats[-1]==0:retour[0]=True
+                        retour[0]=True
                         Ennemi.index[j].pv-=Joueur.wStats[8]*Joueur.mods[0]
                         Var.lText.append([self.posX, self.posY, 'yellow', str(-Joueur.wStats[8]*Joueur.mods[0])[:5], time(),0.2, 12])
                     if Ennemi.index[j].pv<=0 and j not in Shaw:retour[1].append(j)
@@ -159,7 +159,7 @@ class Projectile:
                     if Joueur.stats[1]<0:
                         Joueur.stats[1]=0; Joueur.powers[Joueur.stats[6]][1]=False
                         if boule:Var.gStats[0]=time()-Var.gStats[0]
-                    Var.lText.append([self.posX, self.posY, 'red', str(-self.dmg), time(),0.2, 16])
+                    Var.lText.append([self.posX, self.posY, 'red', str(-self.dmg), time(),0.2, 20])
         
         return retour
 
