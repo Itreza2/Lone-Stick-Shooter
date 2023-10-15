@@ -50,6 +50,8 @@ ded2=ImageTk.PhotoImage(Image.open('sprites/ennemies/troupierDed.png').resize((2
 mur=[PhotoImage(file='sprites/level/tiles/1.png'),PhotoImage(file='sprites/level/tiles/2.png'),PhotoImage(file='sprites/level/tiles/3.png')]
 murH=[PhotoImage(file='sprites/level/tiles/mur1H.png'),PhotoImage(file='sprites/level/tiles/mur2H.png'),PhotoImage(file='sprites/level/tiles/mur3H.png')]
 door=PhotoImage(file='sprites/level/tiles/door.png'); doorH=PhotoImage(file='sprites/level/tiles/doorH.png')
+for i in range(3):
+    Var.monolith[1].append(ImageTk.PhotoImage(Image.open('sprites/props/monolith'+str(i)+'.png').resize((40,80))))
 modsText=[PhotoImage(file='sprites/UI/texts/'+str(i)+'.png') for i in range(6)]
 Joueur.mods=[1,1,1,1,1,1,0,0]#Dmg, mul.tir, pré, vit, crit, mult.crit, GLOCK
 
@@ -134,23 +136,23 @@ def main():
         and Var.grille[int((posP[1]+28)/40)][int((posP[0]-16)/40)]!='0' and Var.grille[int((posP[1]+28)/40)][int((posP[0]+16)/40)]!='0'): Joueur.pos=posP[:]
 
     Var.debordeur-=1; rustine=time()
-    if lInput[4] and Joueur.stats[1]>0 and Joueur.powers[0][1]==False:#Tir de l'Arme (JOUEUR)
+    if lInput[4] and Joueur.stats[1]>0 and Joueur.powers[0][1]==False and not Var.monolith[2]:#Tir de l'Arme (JOUEUR)
         if (time()-Joueur.stats[0])>Joueur.wStats[6]:
             for i in range(int(Joueur.wStats[4]*bonus[1]*(Joueur.mods[1] if Joueur.wStats[11]==0 else 1))):
                 disp=angle+(-((Joueur.wStats[5]*Joueur.mods[2])/2/180*pi)+random()*((Joueur.wStats[5]*Joueur.mods[2])/180*pi))
                 Joueur.stats[0]=time(); Joueur.wStats[2]=3
                 Projectile.index.append(Projectile(
                         Joueur.pos[0]+(Joueur.wStats[3])*cos(disp), Joueur.pos[1]+8+(Joueur.wStats[3])*sin(disp), Joueur.pos[0]+(Joueur.wStats[3])*cos(disp), 
-                        Joueur.pos[1]+8+(Joueur.wStats[3])*sin(disp),disp, Joueur.wStats[7]*1.5, True, (2+Joueur.wStats[8]/10)*bonus[0],
+                        Joueur.pos[1]+8+(Joueur.wStats[3])*sin(disp),disp, Joueur.wStats[7]*1.5, True, (2+Joueur.wStats[8]/10+(1.5*Joueur.mods[5])/Joueur.wStats[9])*bonus[0],
                         Joueur.wStats[11], Joueur.wStats[12], Joueur.wStats[13]
                 ))
             while time()-rustine<1/60:0==0
 
-    for i in range(len(Combat.index)):#Déclenchement/Arrêt Combat.index
+    for i in range(len(Combat.index)):#Déclenchement/Arrêt Combat
         Combat.index[i].startnstop()
 
     Adolf=[]; OlowCost=0
-    for i in range(len(Orbe.index)):#Actualisation vitesse et position des orbes d'Var.Xp
+    for i in range(len(Orbe.index)):#Actualisation vitesse et position des orbes d'Xp
         Adolf=Orbe.index[i].move(i, Adolf)
     for i in Adolf:Orbe.index.pop(i-OlowCost); OlowCost+=1
 
@@ -243,6 +245,7 @@ def generationNiveau():
     global salles, map, state, nL
 
     generation=True; Var.lObj=[]; Var.lCoffre=[]; Ennemi.index=[]; Combat.index=[]; Var.lDed=[]; Orbe.index=[]; Var.level+=1
+    Var.monolith[0]=[]
 
     if Joueur.mods[6]==1:Joueur.mods[6]=0; Joueur.wStats=Var.arsenal[5]
     if Joueur.mods[7]==1:Joueur.mods[7]=0; Joueur.stats[1]=100
@@ -324,7 +327,7 @@ def generationNiveau():
     for i in range(5):#Création des Combat.index
         for j in range(5):
             if salles[j][i][0]==2:
-                rand=randint(4,6);Combat.index.append(Combat(2, i*(35*40)+(35*40)/2, j*(35*40)+(35*40)/2, False, rand))
+                rand=randint(4,6);Combat.index.append(Combat(2, i*(35*40)+(35*40)/2, j*(35*40)+(35*40)/2, False, rand, False))
                 with open('files/roomLayers/2/'+str(randint(0,5))+'.txt', 'r') as file:
                     var=0
                     for line in file:
@@ -343,7 +346,7 @@ def generationNiveau():
                     time(),0,Var.arsenal[Var.bestiaire[rand][3]][8], Var.bestiaire[rand][4], rand))
                 n+=1
             if salles[j][i][0]==3 and Var.level%3!=0:#Niveau Classique
-                rand=randint(6,8);Combat.index.append(Combat(3, i*(35*40)+(35*40)/2, j*(35*40)+(35*40)/2, False, rand))
+                rand=randint(6,8);Combat.index.append(Combat(3, i*(35*40)+(35*40)/2, j*(35*40)+(35*40)/2, False, rand, False))
                 with open('files/roomLayers/3/'+str(randint(0,3))+'.txt', 'r') as file:
                     var=0
                     for line in file:
@@ -361,8 +364,27 @@ def generationNiveau():
                     ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[Var.bestiaire[rand][3]][1]+'/'+Var.arsenal[Var.bestiaire[rand][3]][1]+str(int(Var.arsenal[Var.bestiaire[rand][3]][2]))+'.png').resize((100, 100))), 
                     time(),0,Var.arsenal[Var.bestiaire[rand][3]][8], Var.bestiaire[rand][4], rand))
                 n+=1
+
+                if randint(1,2)==1:#Creation d'un monolith
+                    rand=randint(6,8);Combat.index.append(Combat(3, i*(35*40)+(35*40)/2, j*(35*40)+(35*40)/2, False, rand, True, len(Var.monolith[0])))
+                    for o in range(rand):
+                        boule=True
+                        while boule:
+                            posP=[randint(i*(35*40)+(35*40)/2-11*40,i*(35*40)+(35*40)/2+11*40), randint(j*(35*40)+(35*40)/2-11*40,j*(35*40)+(35*40)/2+11*40)]
+                            if (Var.grille[int((posP[1]+16)/40)][int((posP[0]+16)/40)]!='0' and Var.grille[int((posP[1]+16)/40)][int((posP[0]-16)/40)]!='0'
+                                and Var.grille[int((posP[1]-16)/40)][int((posP[0]+16)/40)]!='0' and Var.grille[int((posP[1]-16)/40)][int((posP[0]-16)/40)]!='0'):boule=False
+                        rand=randint(0,2); Ennemi.index.append(Ennemi(n, Var.bestiaire[rand][0], posP[0], posP[1], Var.bestiaire[rand][0], Var.bestiaire[rand][1], 0, 0, Var.bestiaire[rand][2],Var.arsenal[Var.bestiaire[rand][3]][:], 
+                        ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[Var.bestiaire[rand][3]][1]+'/'+Var.arsenal[Var.bestiaire[rand][3]][1]+str(int(Var.arsenal[Var.bestiaire[rand][3]][2]))+'.png').resize((100, 100))), 
+                        time(),0,Var.arsenal[Var.bestiaire[rand][3]][8], Var.bestiaire[rand][4], rand))
+                    boule=True
+                    while boule:
+                        posP=[6+randint(0,23), 6+randint(0,23)]
+                        if Var.grille[j*35+posP[1]][i*35+posP[0]]!='0' and Var.grille[j*35+posP[1]+1][i*35+posP[0]]!='0':boule=False
+                    Var.monolith[0].append([(i*35+posP[0])*40+20, (j*35+posP[1])*40, n-1, n, False, False, time()])
+                    n+=1
+
             elif salles[j][i][0]==3:#Boss
-                Combat.index.append(Combat(3, 2*(35*40)+(35*40)/2, 2*(35*40)+(35*40)/2, False, 1)); rand=randint(3,4)
+                Combat.index.append(Combat(3, 2*(35*40)+(35*40)/2, 2*(35*40)+(35*40)/2, False, 1, False)); rand=randint(3,4)
                 Ennemi.index.append(Ennemi(0, Var.bestiaire[rand][0], 2*(35*40)+(35*40)/2, 2*(35*40)+(35*40)/2, Var.bestiaire[rand][0], Var.bestiaire[rand][1], 0, 0, Var.bestiaire[rand][2],Var.arsenal[Var.bestiaire[rand][3]][:], 
                     ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[Var.bestiaire[rand][3]][1]+'/'+Var.arsenal[Var.bestiaire[rand][3]][1]+str(int(Var.arsenal[Var.bestiaire[rand][3]][2]))+'.png').resize((100, 100))), 
                     time(),0,Var.arsenal[Var.bestiaire[rand][3]][8], Var.bestiaire[rand][4], rand))
@@ -408,6 +430,13 @@ def clavier(event):
             for i in range(6):
                 if modsC[Var.modList[0][Var.modList[1]]][i]!=0:Joueur.mods[i]=Joueur.mods[i]*modsC[Var.modList[0][Var.modList[1]]][i]
             Joueur.mods[6]=modsC[Var.modList[0][Var.modList[1]]][6]; Joueur.mods[7]=modsC[Var.modList[0][Var.modList[1]]][7]
+        Var.modList[0]=[-1,-1,-1]
+        for i in range(3):#Selection de la nouvelle liste de modificateurs à proposer si lvl. up
+            condition=True
+            while condition:
+                n=randint(0,5)
+                if n not in Var.modList[0]:condition=False
+            Var.modList[0][i]=n
 
         if Joueur.stats[1]==0 and state:state=False; nL=False; init()
         if Joueur.pos[0]>Var.portal[0]-50 and Joueur.pos[0]<Var.portal[0]+50 and Joueur.pos[1]>Var.portal[1]-90 and Joueur.pos[1]<Var.portal[1]+90:state=False; Var.modList[3]=time()
@@ -422,6 +451,10 @@ def clavier(event):
                     var=randint(0,6); Var.lObj.append([var, Var.arsenal[var][1], Var.lCoffre[i][1]+randint(-10,10), Var.lCoffre[i][2]+randint(-10,10), 
                     ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[var][1]+'/'+Var.arsenal[var][1]+str(int(Joueur.wStats[2]))+'.png').resize((100, 100), Image.ANTIALIAS))])
                     Var.lCoffre[i][0]=False; Var.lCoffre[i][3]=ImageTk.PhotoImage(Image.open('sprites/props/coffreO.png').resize((75,75)))
+            for i in range(len(Var.monolith[0])):
+                if (Joueur.pos[0]>Var.monolith[0][i][0]-50 and Joueur.pos[0]<Var.monolith[0][i][0]+50 and Joueur.pos[1]>Var.monolith[0][i][1]-50 and Joueur.pos[1]<Var.monolith[0][i][1]+50 
+                    and Combat.index[Var.monolith[0][i][2]].Pop==0 and not Var.monolith[0][i][4]):
+                    Var.monolith[0][i][4]=True
 
 def clavierRelease(event):
     global lInput

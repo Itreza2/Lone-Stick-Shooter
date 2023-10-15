@@ -21,53 +21,89 @@ class Combat:
 
     index=[]
 
-    def __init__(self, size, X, Y, actif, Pop):
-        self.size, self.X, self.Y, self.actif, self.Pop = size, X, Y, actif, Pop
+    def __init__(self, size, X, Y, actif, Pop, gauntlet, monolith=None):
+        self.size, self.X, self.Y, self.actif, self.Pop, self.gauntlet, self.monolith = size, X, Y, actif, Pop, gauntlet, monolith
 
     def startnstop(self):
-        if (self.actif==False and self.size==2 and self.Pop>0 and Joueur.pos[0]>self.X-8*40 and Joueur.pos[0]<self.X+8*40
-        and Joueur.pos[1]>self.Y-8*40 and Joueur.pos[1]<self.Y+8*40-20):
-            self.actif=True; Var.tac=0
-            for j in range(5):
-                if Var.grille[int(self.Y/40)-9][int(self.X/40)-2+j]!='0':
-                    Var.grille[int(self.Y/40)-9][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)-9][int(self.X/40)-2+j]='2'
-                if Var.grille[int(self.Y/40)+9][int(self.X/40)-2+j]!='0':
-                    Var.grille[int(self.Y/40)+9][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)+9][int(self.X/40)-2+j]='2'
-                if Var.grille[int(self.Y/40)-2+j][int(self.X/40)-9]!='0':
-                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)-9]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-9]='2'
-                if Var.grille[int(self.Y/40)-2+j][int(self.X/40)+9]!='0':
-                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)+9]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+9]='2'
-        if (self.actif==False and self.size==3 and self.Pop>0 and Joueur.pos[0]>self.X-11*40 and Joueur.pos[0]<self.X+11*40
-        and Joueur.pos[1]>self.Y-11*40 and Joueur.pos[1]<self.Y+11*40-20):
-            self.actif=True; Var.tac=0
-            for j in range(5):
-                if Var.grille[int(self.Y/40)-12][int(self.X/40)-2+j]!='0':
-                    Var.grille[int(self.Y/40)-12][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)-12][int(self.X/40)-2+j]='2'
-                if Var.grille[int(self.Y/40)+12][int(self.X/40)-2+j]!='0':
-                    Var.grille[int(self.Y/40)+12][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)+12][int(self.X/40)-2+j]='2'
-                if Var.grille[int(self.Y/40)-2+j][int(self.X/40)-12]!='0':
-                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)-12]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-12]='2'
-                if Var.grille[int(self.Y/40)-2+j][int(self.X/40)+12]!='0':
-                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)+12]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+12]='2'
-        if self.actif and self.Pop==0:
-            self.actif=False; Projectile.index=[]
-            for j in range(5):
-                if Var.grilleP[int(self.Y/40)-9][int(self.X/40)-2+j]=='2':
-                    Var.grille[int(self.Y/40)-9][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)-9][int(self.X/40)-2+j]='0'
-                if Var.grilleP[int(self.Y/40)+9][int(self.X/40)-2+j]=='2':
-                    Var.grille[int(self.Y/40)+9][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)+9][int(self.X/40)-2+j]='0'
-                if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-9]=='2':
-                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)-9]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-9]='0'
-                if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+9]=='2':
-                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)+9]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+9]='0'
-                if Var.grilleP[int(self.Y/40)-12][int(self.X/40)-2+j]=='2':
-                    Var.grille[int(self.Y/40)-12][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)-12][int(self.X/40)-2+j]='0'
-                if Var.grilleP[int(self.Y/40)+12][int(self.X/40)-2+j]=='2':
-                    Var.grille[int(self.Y/40)+12][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)+12][int(self.X/40)-2+j]='0'
-                if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-12]=='2':
-                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)-12]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-12]='0'
-                if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+12]=='2':
-                    Var.grille[int(self.Y/40)-2+j][int(self.X/40)+12]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+12]='0'
+        if self.gauntlet:
+            if Var.monolith[0][self.monolith][4] and not self.actif and not Var.monolith[0][self.monolith][5]:
+                self.actif=True; Var.tac=0; Var.monolith[0][self.monolith][5]=True; Var.monolith[0][self.monolith][6]=time()
+                Var.monolith[2]=True
+                for j in range(5):
+                    if Var.grille[int(self.Y/40)-12][int(self.X/40)-2+j]!='0':
+                        Var.grille[int(self.Y/40)-12][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)-12][int(self.X/40)-2+j]='2'
+                    if Var.grille[int(self.Y/40)+12][int(self.X/40)-2+j]!='0':
+                        Var.grille[int(self.Y/40)+12][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)+12][int(self.X/40)-2+j]='2'
+                    if Var.grille[int(self.Y/40)-2+j][int(self.X/40)-12]!='0':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)-12]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-12]='2'
+                    if Var.grille[int(self.Y/40)-2+j][int(self.X/40)+12]!='0':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)+12]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+12]='2'
+            if self.actif and (time()-Var.monolith[0][self.monolith][6])>25:
+                self.actif=False; Projectile.index=[]; Var.monolith[2]=False
+                for j in range(5):
+                    if Var.grilleP[int(self.Y/40)-9][int(self.X/40)-2+j]=='2':
+                        Var.grille[int(self.Y/40)-9][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)-9][int(self.X/40)-2+j]='0'
+                    if Var.grilleP[int(self.Y/40)+9][int(self.X/40)-2+j]=='2':
+                        Var.grille[int(self.Y/40)+9][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)+9][int(self.X/40)-2+j]='0'
+                    if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-9]=='2':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)-9]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-9]='0'
+                    if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+9]=='2':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)+9]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+9]='0'
+                    if Var.grilleP[int(self.Y/40)-12][int(self.X/40)-2+j]=='2':
+                        Var.grille[int(self.Y/40)-12][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)-12][int(self.X/40)-2+j]='0'
+                    if Var.grilleP[int(self.Y/40)+12][int(self.X/40)-2+j]=='2':
+                        Var.grille[int(self.Y/40)+12][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)+12][int(self.X/40)-2+j]='0'
+                    if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-12]=='2':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)-12]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-12]='0'
+                    if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+12]=='2':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)+12]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+12]='0'
+                for j in range(randint(5,10)*(12)):
+                    Orbe.index.append(Orbe(Var.monolith[0][self.monolith][0]+randint(-25*(2),25*(2)), 
+                                Var.monolith[0][self.monolith][1]+randint(-25*(2),25*(2)),0,0))
+        else:
+            if (self.actif==False and self.size==2 and self.Pop>0 and Joueur.pos[0]>self.X-8*40 and Joueur.pos[0]<self.X+8*40
+            and Joueur.pos[1]>self.Y-8*40 and Joueur.pos[1]<self.Y+8*40-20):
+                self.actif=True; Var.tac=0
+                for j in range(5):
+                    if Var.grille[int(self.Y/40)-9][int(self.X/40)-2+j]!='0':
+                        Var.grille[int(self.Y/40)-9][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)-9][int(self.X/40)-2+j]='2'
+                    if Var.grille[int(self.Y/40)+9][int(self.X/40)-2+j]!='0':
+                        Var.grille[int(self.Y/40)+9][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)+9][int(self.X/40)-2+j]='2'
+                    if Var.grille[int(self.Y/40)-2+j][int(self.X/40)-9]!='0':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)-9]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-9]='2'
+                    if Var.grille[int(self.Y/40)-2+j][int(self.X/40)+9]!='0':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)+9]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+9]='2'
+            if (self.actif==False and self.size==3 and self.Pop>0 and Joueur.pos[0]>self.X-11*40 and Joueur.pos[0]<self.X+11*40
+            and Joueur.pos[1]>self.Y-11*40 and Joueur.pos[1]<self.Y+11*40-20):
+                self.actif=True; Var.tac=0
+                for j in range(5):
+                    if Var.grille[int(self.Y/40)-12][int(self.X/40)-2+j]!='0':
+                        Var.grille[int(self.Y/40)-12][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)-12][int(self.X/40)-2+j]='2'
+                    if Var.grille[int(self.Y/40)+12][int(self.X/40)-2+j]!='0':
+                        Var.grille[int(self.Y/40)+12][int(self.X/40)-2+j]='0';Var.grilleP[int(self.Y/40)+12][int(self.X/40)-2+j]='2'
+                    if Var.grille[int(self.Y/40)-2+j][int(self.X/40)-12]!='0':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)-12]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-12]='2'
+                    if Var.grille[int(self.Y/40)-2+j][int(self.X/40)+12]!='0':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)+12]='0';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+12]='2'
+            if self.actif and self.Pop==0:
+                self.actif=False; Projectile.index=[]
+                for j in range(5):
+                    if Var.grilleP[int(self.Y/40)-9][int(self.X/40)-2+j]=='2':
+                        Var.grille[int(self.Y/40)-9][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)-9][int(self.X/40)-2+j]='0'
+                    if Var.grilleP[int(self.Y/40)+9][int(self.X/40)-2+j]=='2':
+                        Var.grille[int(self.Y/40)+9][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)+9][int(self.X/40)-2+j]='0'
+                    if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-9]=='2':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)-9]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-9]='0'
+                    if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+9]=='2':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)+9]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+9]='0'
+                    if Var.grilleP[int(self.Y/40)-12][int(self.X/40)-2+j]=='2':
+                        Var.grille[int(self.Y/40)-12][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)-12][int(self.X/40)-2+j]='0'
+                    if Var.grilleP[int(self.Y/40)+12][int(self.X/40)-2+j]=='2':
+                        Var.grille[int(self.Y/40)+12][int(self.X/40)-2+j]='1';Var.grilleP[int(self.Y/40)+12][int(self.X/40)-2+j]='0'
+                    if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-12]=='2':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)-12]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)-12]='0'
+                    if Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+12]=='2':
+                        Var.grille[int(self.Y/40)-2+j][int(self.X/40)+12]='1';Var.grilleP[int(self.Y/40)-2+j][int(self.X/40)+12]='0'
 
 class Ennemi:
 
@@ -152,6 +188,7 @@ class Projectile:
                     Var.lText.append([self.posX, self.posY, 'lightblue', str(-self.dmg), time(),0.2, 16])
                     self.spawnX, self.spawnY=self.posX, self.posY; self.vit=self.vit*2
                     self.angle+=pi; self.spawnT=time(); self.friendly=True; self.color,self.outline='lightblue','lightgreen'
+                    if Var.monolith[2]:self.dmg=0
                 else:
                     boule=True
                     if Joueur.stats[1]<=0:boule=False

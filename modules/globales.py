@@ -38,3 +38,5 @@ class Var:
         [1,4,None,None,'dmgIdle', 200, [], []],[1,6,None,None,'dmgWalk',200, [], []],[1,6,None,None,'dmgWalkR',200, [], []]]
     
     animO=[[1,4,None, [Image.open('sprites/portal/'+str(i)+'.png') for i in range(1,5)]]]
+
+    monolith=[[],[],False]
