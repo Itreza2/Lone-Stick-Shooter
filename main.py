@@ -47,9 +47,14 @@ Joueur.powers=[[False, False, ImageTk.PhotoImage(Image.open('sprites/perso/shiel
 ded1=ImageTk.PhotoImage(Image.open('sprites/ennemies/troupierDed.png').resize((100,100)))
 ded2=ImageTk.PhotoImage(Image.open('sprites/ennemies/troupierDed.png').resize((200,200)))
 
+props=[]
+for i in range(3):
+    props.append(ImageTk.PhotoImage(Image.open('sprites/props/'+chr(97+i)+'.png').resize((80,200))))
+
 mur=[PhotoImage(file='sprites/level/tiles/1.png'),PhotoImage(file='sprites/level/tiles/2.png'),PhotoImage(file='sprites/level/tiles/3.png')]
 murH=[PhotoImage(file='sprites/level/tiles/mur1H.png'),PhotoImage(file='sprites/level/tiles/mur2H.png'),PhotoImage(file='sprites/level/tiles/mur3H.png')]
 door=PhotoImage(file='sprites/level/tiles/door.png'); doorH=PhotoImage(file='sprites/level/tiles/doorH.png')
+box=[ImageTk.PhotoImage(Image.open('sprites/level/tiles/box.png').resize((40,60))), ImageTk.PhotoImage(Image.open('sprites/level/tiles/boxH.png').resize((40,40)))]
 for i in range(3):
     Var.monolith[1].append(ImageTk.PhotoImage(Image.open('sprites/props/monolith'+str(i)+'.png').resize((40,80))))
 modsText=[PhotoImage(file='sprites/UI/texts/'+str(i)+'.png') for i in range(6)]
@@ -59,7 +64,7 @@ def init():
     global bonus
     can.delete('all')
 
-    Joueur.wStats=Var.arsenal[0]; Joueur.stats=[0, 100, 100, 250, 100, 100, randint(0,2)]; bonus=[1,1,0]; Var.Xp=[0,1,1]
+    Joueur.wStats=Var.arsenal[0]; Joueur.stats=[0, 100, 100, 250, 100, 100, randint(0,2)]; bonus=[1,1,0]; Var.Xp=[0,1,1]; Var.monolith[0]=[]; Var.monolith[2]=False
     Var.level=0; Ennemi.index=[]; Projectile.index=[]; Combat.index=[]; Var.gStats=[time(), 0]; Var.pression=0; Joueur.mods=[1,1,1,1,1,1,0,0]
     chargement()
 
@@ -143,7 +148,7 @@ def main():
                 Joueur.stats[0]=time(); Joueur.wStats[2]=3
                 Projectile.index.append(Projectile(
                         Joueur.pos[0]+(Joueur.wStats[3])*cos(disp), Joueur.pos[1]+8+(Joueur.wStats[3])*sin(disp), Joueur.pos[0]+(Joueur.wStats[3])*cos(disp), 
-                        Joueur.pos[1]+8+(Joueur.wStats[3])*sin(disp),disp, Joueur.wStats[7]*1.5, True, (2+Joueur.wStats[8]/10+(1.5*Joueur.mods[5])/Joueur.wStats[9])*bonus[0],
+                        Joueur.pos[1]+8+(Joueur.wStats[3])*sin(disp),disp, Joueur.wStats[7]*1.5, True, (2+(Joueur.wStats[8]*(1+((1.5-1)*Joueur.mods[5])/Joueur.wStats[9]))/10)*bonus[0],
                         Joueur.wStats[11], Joueur.wStats[12], Joueur.wStats[13]
                 ))
             while time()-rustine<1/60:0==0
@@ -227,7 +232,7 @@ def main():
             and Ennemi.index[i].posY>Joueur.pos[1]-tk.winfo_screenheight()/2-40 and Ennemi.index[i].posY<Joueur.pos[1]+tk.winfo_screenheight()/2+40):
                 if Joueur.pos[0]>Ennemi.index[i].posX:Ennemi.index[i].img=ImageTk.PhotoImage(WeaponsP[int(Ennemi.index[i].arme[0])][int(Ennemi.index[i].arme[2])-1].rotate(0*180/pi).resize((size, size), Image.ANTIALIAS).transpose(Image.FLIP_LEFT_RIGHT))
                 else:Ennemi.index[i].img=ImageTk.PhotoImage(WeaponsP[int(Ennemi.index[i].arme[0])][int(Ennemi.index[i].arme[2])-1].rotate(180-0*180/pi).resize((size, size), Image.ANTIALIAS).transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.FLIP_TOP_BOTTOM))
-        affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2, murH, mur, doorH, door, nL, map, filter)
+        affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2, murH, mur, doorH, door, nL, map, filter, box)
 
         for i in Ennemi.index:i.dmgAnimEnd()
 
@@ -328,12 +333,12 @@ def generationNiveau():
         for j in range(5):
             if salles[j][i][0]==2:
                 rand=randint(4,6);Combat.index.append(Combat(2, i*(35*40)+(35*40)/2, j*(35*40)+(35*40)/2, False, rand, False))
-                with open('files/roomLayers/2/'+str(randint(0,5))+'.txt', 'r') as file:
+                with open('files/roomLayers/2/'+str(randint(0,7))+'.txt', 'r') as file:
                     var=0
                     for line in file:
                         for o in range(17):
-                            if line[o]=='1':
-                                Var.grille[j*(35)+9+o][i*(35)+9+var]='0'
+                            if line[o]=='1':Var.grille[j*(35)+9+o][i*(35)+9+var]='0'
+                            if line[o]=='2':Var.grilleP[j*(35)+9+o][i*(35)+9+var]='9'; Var.grille[j*(35)+9+o][i*(35)+9+var]='0'
                         var+=1
                 for o in range(rand):
                     boule=True
@@ -347,12 +352,12 @@ def generationNiveau():
                 n+=1
             if salles[j][i][0]==3 and Var.level%3!=0:#Niveau Classique
                 rand=randint(6,8);Combat.index.append(Combat(3, i*(35*40)+(35*40)/2, j*(35*40)+(35*40)/2, False, rand, False))
-                with open('files/roomLayers/3/'+str(randint(0,3))+'.txt', 'r') as file:
+                with open('files/roomLayers/3/'+str(randint(0,5))+'.txt', 'r') as file:
                     var=0
                     for line in file:
                         for o in range(23):
-                            if line[o]=='1':
-                                Var.grille[j*(35)+6+o][i*(35)+6+var]='0'
+                            if line[o]=='1':Var.grille[j*(35)+6+o][i*(35)+6+var]='0'
+                            if line[o]=='2':Var.grilleP[j*(35)+6+o][i*(35)+6+var]='9'; Var.grille[j*(35)+6+o][i*(35)+6+var]='0'
                         var+=1
                 for o in range(rand):
                     boule=True
@@ -392,16 +397,24 @@ def generationNiveau():
     Var.monde=Image.open("sprites/level/blank.png")
     for i in range(35*5):
         for j in range(35*5):
-            if Var.grille[j][i]!='0':Image.Image.paste(Var.monde, Image.open("sprites/level/tiles/"+Var.grille[j][i]+".png"), (i*40, j*40))
+            if Var.grilleP[j][i]=='9':Var.grille[j][i]=chr(randint(97, 105))#...
+            if Var.grille[j][i]!='0':
+                Image.Image.paste(Var.monde, Image.open("sprites/level/tiles/"+Var.grille[j][i]+".png"), (i*40, j*40))
             elif i>1 and i<35*5-2 and j>1 and j<35*5-2:
-                if Var.grille[j+1][i]!='0' or Var.grille[j][i-1]!='0' or Var.grille[j][i+1]!='0' or Var.grille[j+1][i+1]!='0' or Var.grille[j+1][i-1]!='0':
-                    Image.Image.paste(Var.monde, Image.open("sprites/level/tiles/"+str(randint(1,3))+".png"), (i*40, j*40-20)); Var.grilleP[j][i]='a'
-                if Var.grille[j-1][i]!='0':Var.grilleP[j][i]=str(randint(3,5))
+                if Var.grilleP[j][i]!='9':
+                    if (Var.grille[j+1][i]!='0' or Var.grille[j][i-1]!='0' or Var.grille[j][i+1]!='0' or Var.grille[j+1][i+1]!='0' 
+                        or Var.grille[j+1][i-1]!='0'or Var.grilleP[j][i-1]=='9' or Var.grilleP[j][i+1]=='9'):
+                        Image.Image.paste(Var.monde, Image.open("sprites/level/tiles/"+str(randint(1,3))+".png"), (i*40, j*40-20)); Var.grilleP[j][i]='a'
+                    if Var.grille[j-1][i]!='0':Var.grilleP[j][i]=str(randint(3,5))
     
     for i in range(35*5):#BLOC PROVISOIRE !!!!!
         for j in range(35*5):
             if i>1 and i<35*5-2 and j>1 and j<35*5-2:
                 if Var.grilleP[j-1][i]=='a' and Var.grilleP[j][i]=='0' and Var.grille[j][i]=='0':Var.grilleP[j][i]=str(randint(3,5))
+            if Var.grilleP[j][i]=='9':Var.grille[j][i]='0'#... ui c'est stupide
+
+    for i in range(len(Var.monolith[0])):#Provisoire aussi, jusqu'à ce que j'ai plus la flemme...
+        Var.grille[int((Var.monolith[0][i][1])/40)][int((Var.monolith[0][i][0]-20)/40)]='0'
 
     map=ImageTk.PhotoImage(Var.monde.resize((200, 200), Image.ANTIALIAS)); Var.monde=ImageTk.PhotoImage(Var.monde)
 
@@ -429,7 +442,7 @@ def clavier(event):
             Var.Xp[2]+=1
             for i in range(6):
                 if modsC[Var.modList[0][Var.modList[1]]][i]!=0:Joueur.mods[i]=Joueur.mods[i]*modsC[Var.modList[0][Var.modList[1]]][i]
-            Joueur.mods[6]=modsC[Var.modList[0][Var.modList[1]]][6]; Joueur.mods[7]=modsC[Var.modList[0][Var.modList[1]]][7]
+            Joueur.mods[6]=max(Joueur.mods[6],modsC[Var.modList[0][Var.modList[1]]][6]); Joueur.mods[7]=max(modsC[Var.modList[0][Var.modList[1]]][7],Joueur.mods[7])
         Var.modList[0]=[-1,-1,-1]
         for i in range(3):#Selection de la nouvelle liste de modificateurs à proposer si lvl. up
             condition=True

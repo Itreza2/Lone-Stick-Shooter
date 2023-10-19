@@ -5,7 +5,7 @@ from modules.globales import Var
 from modules.classes import *
 
 def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2,
-              murH, mur, doorH, door, nL, map, filter):
+              murH, mur, doorH, door, nL, map, filter, box):
     can.delete('all')
 
     can.create_image(
@@ -38,7 +38,7 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
                                  image=Var.monolith[1][img], anchor='center')
                 if Combat.index[Var.monolith[0][i][3]].actif:
                     can.create_text(Var.monolith[0][i][0]-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Var.monolith[0][i][1]-50-Joueur.pos[1]+(tk.winfo_screenheight()/2),
-                                    text=str(int(25-(time()-Var.monolith[0][i][6]))), fill='red', font=('Arial', 18), anchor='center')
+                                    text=str(int(26-(time()-Var.monolith[0][i][6]))), fill='red', font=('Arial', 18), anchor='center')
         for i in range(int((Joueur.pos[0]-tk.winfo_screenwidth()/2)/40-40), int((Joueur.pos[0]+tk.winfo_screenwidth()/2)/40+40)):
             if i>3 and i<7000/40-3 and j>3 and j<7000/40-3:
                 if ord(Var.grilleP[j][i])<97:
@@ -50,6 +50,10 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
                     if Var.grille[j+1][i]=='0' or Var.grilleP[j+1][i]=='2':
                         can.create_image(i*40-Joueur.pos[0]+(tk.winfo_screenwidth()/2), j*40-Joueur.pos[1]+(tk.winfo_screenheight()/2)-20, image=doorH, anchor='nw')
                     else:can.create_image(i*40-Joueur.pos[0]+(tk.winfo_screenwidth()/2), j*40-Joueur.pos[1]+(tk.winfo_screenheight()/2)-20, image=door, anchor='nw')
+                if Var.grilleP[j][i]=='9':
+                    if Var.grille[j+1][i]=='0' or Var.grilleP[j+1][i]==('2' or '9'):
+                        can.create_image(i*40-Joueur.pos[0]+(tk.winfo_screenwidth()/2), j*40-Joueur.pos[1]+(tk.winfo_screenheight()/2)-20, image=box[1], anchor='nw')
+                    else:can.create_image(i*40-Joueur.pos[0]+(tk.winfo_screenwidth()/2), j*40-Joueur.pos[1]+(tk.winfo_screenheight()/2)-20, image=box[0], anchor='nw')
 
     for i in range(len(Var.lCoffre)):
         can.create_image(Var.lCoffre[i][1]-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Var.lCoffre[i][2]-Joueur.pos[1]+(tk.winfo_screenheight()/2), image=Var.lCoffre[i][3], anchor='center')
@@ -89,7 +93,7 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
                                  image=Var.monolith[1][img], anchor='center')
                 if Combat.index[Var.monolith[0][i][3]].actif:
                     can.create_text(Var.monolith[0][i][0]-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Var.monolith[0][i][1]-50-Joueur.pos[1]+(tk.winfo_screenheight()/2),
-                                    text=str(int(25-(time()-Var.monolith[0][i][6]))), fill='red', font=('Arial', 18), anchor='center')
+                                    text=str(int(26-(time()-Var.monolith[0][i][6]))), fill='red', font=('Arial', 18), anchor='center')
         for i in range(int((Joueur.pos[0]-tk.winfo_screenwidth()/2)/40-40), int((Joueur.pos[0]+tk.winfo_screenwidth()/2)/40+40)):
             if i>3 and i<7000/40-3 and j>3 and j<7000/40-3:
                 if ord(Var.grilleP[j][i])<97:
@@ -101,6 +105,10 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
                     if Var.grille[j+1][i]=='0' or Var.grilleP[j+1][i]=='2':
                         can.create_image(i*40-Joueur.pos[0]+(tk.winfo_screenwidth()/2), j*40-Joueur.pos[1]+(tk.winfo_screenheight()/2)-20, image=doorH, anchor='nw')
                     else:can.create_image(i*40-Joueur.pos[0]+(tk.winfo_screenwidth()/2), j*40-Joueur.pos[1]+(tk.winfo_screenheight()/2)-20, image=door, anchor='nw')
+                if Var.grilleP[j][i]=='9':
+                    if Var.grille[j+1][i]=='0' or Var.grilleP[j+1][i]==('2' or '9'):
+                        can.create_image(i*40-Joueur.pos[0]+(tk.winfo_screenwidth()/2), j*40-Joueur.pos[1]+(tk.winfo_screenheight()/2)-20, image=box[1], anchor='nw')
+                    else:can.create_image(i*40-Joueur.pos[0]+(tk.winfo_screenwidth()/2), j*40-Joueur.pos[1]+(tk.winfo_screenheight()/2)-20, image=box[0], anchor='nw')
 
     for i in range(len(Projectile.index)):#Affichage Projectiles
         can.create_oval(

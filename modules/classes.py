@@ -154,8 +154,10 @@ class Projectile:
     def __init__(self, posX, posY, spawnX, spawnY, angle, vit, friendly, r, nbrS, dmgS, vitS, color='black', outline='black', dmg=0):
         
         self.posX, self.posY, self.spawnX, self.spawnY, self.angle, self.dmg = posX, posY, spawnX, spawnY, angle, dmg
-        self.vit, self.spawnT, self.friendly, self.r, self.color, self.outline = vit, time(), friendly, r, color, outline
+        self.spawnT, self.friendly, self.r, self.color, self.outline = time(), friendly, r, color, outline
         self.nbrS, self.dmgS, self.vitS = nbrS, dmgS, vitS
+        if Var.grille[int((self.posY+20)/40)][int((self.posX)/40)]=='0':self.vit=0
+        else:self.vit=vit
     
     def actualisation(self):
         self.posX=self.spawnX+((time()-self.spawnT)*self.vit)*cos(self.angle)
@@ -164,7 +166,10 @@ class Projectile:
     def collision(self, i, Holocaust, Shaw):
         retour=[False, []]
 
-        if Var.grille[int((self.posY+20)/40)][int((self.posX)/40)]=='0':retour[0]=True
+        if Var.grille[int((self.posY+20)/40)][int((self.posX)/40)]=='0':
+            if Var.grilleP[int((self.posY+20)/40)][int((self.posX)/40)]=='9':
+                Var.grilleP[int((self.posY+20)/40)][int((self.posX)/40)]='0'; Var.grille[int((self.posY+20)/40)][int((self.posX)/40)]='1'
+            retour[0]=True
         elif self.friendly:
             for j in range(len(Ennemi.index)):
                 if (Ennemi.index[j].posX-Var.bestiaire[Ennemi.index[j].type][5]>=self.posX+2 or Ennemi.index[j].posX+Var.bestiaire[Ennemi.index[j].type][5]<=self.posX-2 or
@@ -198,6 +203,7 @@ class Projectile:
                         if boule:Var.gStats[0]=time()-Var.gStats[0]
                     Var.lText.append([self.posX, self.posY, 'red', str(-self.dmg), time(),0.2, 20])
         
+        if self.vit==0:retour[0]=True
         return retour
 
 class Orbe:
