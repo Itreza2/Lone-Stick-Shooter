@@ -47,10 +47,6 @@ Joueur.powers=[[False, False, ImageTk.PhotoImage(Image.open('sprites/perso/shiel
 ded1=ImageTk.PhotoImage(Image.open('sprites/ennemies/troupierDed.png').resize((100,100)))
 ded2=ImageTk.PhotoImage(Image.open('sprites/ennemies/troupierDed.png').resize((200,200)))
 
-props=[]
-for i in range(3):
-    props.append(ImageTk.PhotoImage(Image.open('sprites/props/'+chr(97+i)+'.png').resize((80,200))))
-
 mur=[PhotoImage(file='sprites/level/tiles/1.png'),PhotoImage(file='sprites/level/tiles/2.png'),PhotoImage(file='sprites/level/tiles/3.png')]
 murH=[PhotoImage(file='sprites/level/tiles/mur1H.png'),PhotoImage(file='sprites/level/tiles/mur2H.png'),PhotoImage(file='sprites/level/tiles/mur3H.png')]
 door=PhotoImage(file='sprites/level/tiles/door.png'); doorH=PhotoImage(file='sprites/level/tiles/doorH.png')
