@@ -264,17 +264,18 @@ def generationNiveau():
         generation=False; salles=[[[0,0] for i in range(5)] for j in range(5)]
 
         if Var.level%3!=0:#Niveau classique
-            Joueur.pos=[randint(0,4), randint(0,4)]; salles[Joueur.pos[1]][Joueur.pos[0]]=[1,1]
+            pos=[randint(0,4), randint(0,4)]; salles[pos[1]][pos[0]]=[1,1]
             for i in range(4):
                 condition=True; var=0
                 while condition:
-                    posP=[Joueur.pos[0], Joueur.pos[1]]; var+=1
-                    if randint(0,1)==0:posP[0]+=randrange(-1,1,2)
-                    else:posP[1]+=randrange(-1,1,2)
-                    if posP[0]>=0 and Joueur.pos[0]<5 and posP[1]>=0 and Joueur.pos[1]<5:
-                        if salles[posP[1]][posP[0]][0]!=1:condition=False
+                    posP=[pos[0], pos[1]]; var+=1
+                    if randint(0,1)==0:posP[0]+=randrange(-1,2,2)#mouai, faudra m'expliquer comment marche randrange XD
+                    else:posP[1]+=randrange(-1,2,2)
+                    if posP[0]>=0 and posP[0]<5 and posP[1]>=0 and posP[1]<5:
+                        if salles[posP[1]][posP[0]][0]==0 or salles[posP[1]][posP[0]][1]>2:
+                            condition=False
                     if var>10:condition=False; generation=True
-                Joueur.pos[0]=posP[0]; Joueur.pos[1]=posP[1]
+                pos[0]=posP[0]; pos[1]=posP[1]
                 if i==3:salles[posP[1]][posP[0]]=[1,2]
                 else:
                     salles[posP[1]][posP[0]][0]=randint(2,3)
@@ -283,7 +284,9 @@ def generationNiveau():
                     if posP[0]>=0 and posP[0]<5 and posP[1]>=0 and posP[1]<5:
                         if salles[posP[1]][posP[0]][0]==0:salles[posP[1]][posP[0]]=[1,3]
         else:#Boss
-            salles[3][2]=[1,1]; salles[2][2]=[3,0]; salles[1][2]=[1,2]
+            rand=(randrange(-1,2,2), randint(0,1))
+            salles[2+rand[0] if rand[1]==0 else 2][2+rand[0] if rand[1]==1 else 2]=[1,1]; salles[2][2]=[3,0]; 
+            salles[2-rand[0] if rand[1]==0 else 2][2-rand[0] if rand[1]==1 else 2]=[1,2]
 
     Var.grille=[['0' for i in range(35*5)] for j in range(35*5)]; Var.grilleP=[['0' for i in range(35*5)] for j in range(35*5)]
     for i in range(5):#Création de la matrice
