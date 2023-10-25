@@ -177,13 +177,13 @@ class Projectile:
                 elif i not in Holocaust and Combat.index[Ennemi.index[j].combat].actif:
                     Ennemi.index[j].firstSprite=(-6 if Var.level%3!=0  else -3)
                     if randint(1, (int(Joueur.wStats[9]/Joueur.mods[4]) if int(Joueur.wStats[9]/Joueur.mods[4])>=1 else 1))==1:
-                        retour[0]=True
-                        Ennemi.index[j].pv-=Joueur.wStats[8]*(1.5*Joueur.mods[5])*Joueur.mods[0]
-                        Var.lText.append([self.posX, self.posY, 'orange', str(-Joueur.wStats[8]*(1.5*Joueur.mods[5])*Joueur.mods[0])[:5], time(),0.2, 14])
+                        retour[0]=True; dmg=(Joueur.wStats[8]*(1.5*Joueur.mods[5])*Joueur.mods[0] if self.dmg==0 else self.dmg)
+                        Ennemi.index[j].pv-=dmg
+                        Var.lText.append([self.posX, self.posY, 'orange', str(-dmg)[:5], time(),0.2, 14])
                     else:
-                        retour[0]=True
-                        Ennemi.index[j].pv-=Joueur.wStats[8]*Joueur.mods[0]
-                        Var.lText.append([self.posX, self.posY, 'yellow', str(-Joueur.wStats[8]*Joueur.mods[0])[:5], time(),0.2, 12])
+                        retour[0]=True; dmg=(Joueur.wStats[8]*Joueur.mods[0] if self.dmg==0 else self.dmg)
+                        Ennemi.index[j].pv-=dmg
+                        Var.lText.append([self.posX, self.posY, 'yellow', str(-dmg)[:5], time(),0.2, 12])
                     if Ennemi.index[j].pv<=0 and j not in Shaw:retour[1].append(j)
         elif not self.friendly:
             if (Joueur.pos[0]-18>=self.posX+2 or Joueur.pos[0]+18<=self.posX-2 or

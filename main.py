@@ -272,10 +272,11 @@ def generationNiveau():
                     if randint(0,1)==0:posP[0]+=randrange(-1,2,2)#mouai, faudra m'expliquer comment marche randrange XD
                     else:posP[1]+=randrange(-1,2,2)
                     if posP[0]>=0 and posP[0]<5 and posP[1]>=0 and posP[1]<5:
-                        if salles[posP[1]][posP[0]][0]==0 or salles[posP[1]][posP[0]][1]>2:
+                        if salles[posP[1]][posP[0]][0]==0 or (salles[posP[1]][posP[0]][0]==1 and salles[posP[1]][posP[0]][1]>2):
                             condition=False
                     if var>10:condition=False; generation=True
                 pos[0]=posP[0]; pos[1]=posP[1]
+                if i==0:first=posP[:]
                 if i==3:salles[posP[1]][posP[0]]=[1,2]
                 else:
                     salles[posP[1]][posP[0]][0]=randint(2,3)
@@ -284,7 +285,7 @@ def generationNiveau():
                     if posP[0]>=0 and posP[0]<5 and posP[1]>=0 and posP[1]<5:
                         if salles[posP[1]][posP[0]][0]==0:salles[posP[1]][posP[0]]=[1,3]
         else:#Boss
-            rand=(randrange(-1,2,2), randint(0,1))
+            rand=(randrange(-1,2,2), randint(0,1)); first=None
             salles[2+rand[0] if rand[1]==0 else 2][2+rand[0] if rand[1]==1 else 2]=[1,1]; salles[2][2]=[3,0]; 
             salles[2-rand[0] if rand[1]==0 else 2][2-rand[0] if rand[1]==1 else 2]=[1,2]
 
@@ -307,26 +308,27 @@ def generationNiveau():
                         for o in range(i*35+6, i*35+29):
                             for p in range(j*35+6, j*35+29):Var.grille[p][o]=chr(randint(97, 105))
                 
-                if j>0:
-                    if salles[j-1][i][0]!=0:
-                        for o in range(i*35+15, i*35+20):
-                            for p in range(j*35-20, j*35+20):
-                                if Var.grille[p][o]=='0':Var.grille[p][o]=chr(randint(97, 105))
-                if j<4:
-                    if salles[j+1][i][0]!=0:
-                        for o in range(i*35+15, i*35+20):
-                            for p in range(j*35+20, j*35+50):
-                                if Var.grille[p][o]=='0':Var.grille[p][o]=chr(randint(97, 105))
-                if i>0:
-                    if salles[j][i-1][0]!=0:
-                        for o in range(i*35-20, i*35+20):
-                            for p in range(j*35+15, j*35+20):
-                                if Var.grille[p][o]=='0':Var.grille[p][o]=chr(randint(97, 105))
-                if i<4:
-                    if salles[j][i+1][0]!=0:
-                        for o in range(i*35+20, i*35+50):
-                            for p in range(j*35+15, j*35+20):
-                                if Var.grille[p][o]=='0':Var.grille[p][o]=chr(randint(97, 105))
+                if salles[j][i][0]>1 or salles[j][i][1]>2:
+                    if j>0:
+                        if salles[j-1][i][0]!=0 and (salles[j-1][i]!=[1,2] or [i,j]!=first) and (salles[j-1][i]!=[1,1] or [i,j]==first or Var.level%3==0):
+                            for o in range(i*35+15, i*35+20):
+                                for p in range(j*35-20, j*35+20):
+                                    if Var.grille[p][o]=='0':Var.grille[p][o]=chr(randint(97, 105))
+                    if j<4:
+                        if salles[j+1][i][0]!=0 and (salles[j+1][i]!=[1,2] or [i,j]!=first) and (salles[j+1][i]!=[1,1] or [i,j]==first or Var.level%3==0):
+                            for o in range(i*35+15, i*35+20):
+                                for p in range(j*35+20, j*35+50):
+                                    if Var.grille[p][o]=='0':Var.grille[p][o]=chr(randint(97, 105))
+                    if i>0:
+                        if salles[j][i-1][0]!=0 and (salles[j][i-1]!=[1,2] or [i,j]!=first) and (salles[j][i-1]!=[1,1] or [i,j]==first or Var.level%3==0):
+                            for o in range(i*35-20, i*35+20):
+                                for p in range(j*35+15, j*35+20):
+                                    if Var.grille[p][o]=='0':Var.grille[p][o]=chr(randint(97, 105))
+                    if i<4:
+                        if salles[j][i+1][0]!=0 and (salles[j][i+1]!=[1,2] or [i,j]!=first) and (salles[j][i+1]!=[1,1] or [i,j]==first or Var.level%3==0):
+                            for o in range(i*35+20, i*35+50):
+                                for p in range(j*35+15, j*35+20):
+                                    if Var.grille[p][o]=='0':Var.grille[p][o]=chr(randint(97, 105))
     n=0; Combat.index=[]
     for i in range(5):#Création des Combat.index
         for j in range(5):
@@ -460,7 +462,7 @@ def clavier(event):
                     Joueur.wStats=Var.arsenal[int(Var.lObj[i][0])]; Var.lObj.pop(i)
             for i in range(len(Var.lCoffre)):
                 if Joueur.pos[0]>Var.lCoffre[i][1]-50 and Joueur.pos[0]<Var.lCoffre[i][1]+50 and Joueur.pos[1]>Var.lCoffre[i][2]-50 and Joueur.pos[1]<Var.lCoffre[i][2]+50 and Var.lCoffre[i][0]:
-                    var=randint(0,6); Var.lObj.append([var, Var.arsenal[var][1], Var.lCoffre[i][1]+randint(-10,10), Var.lCoffre[i][2]+randint(-10,10), 
+                    var=randint(0,7); Var.lObj.append([var, Var.arsenal[var][1], Var.lCoffre[i][1]+randint(-10,10), Var.lCoffre[i][2]+randint(-10,10), 
                     ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[var][1]+'/'+Var.arsenal[var][1]+str(int(Joueur.wStats[2]))+'.png').resize((100, 100), Image.ANTIALIAS))])
                     Var.lCoffre[i][0]=False; Var.lCoffre[i][3]=ImageTk.PhotoImage(Image.open('sprites/props/coffreO.png').resize((75,75)))
             for i in range(len(Var.monolith[0])):
