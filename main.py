@@ -3,16 +3,18 @@ from PIL import Image, ImageTk
 from math import cos, sin, atan, pi, sqrt
 from random import randint, randrange, random
 from time import time
-from csv import reader
+from csv import reader, writer
 
 from modules.classes import Joueur, Combat, Ennemi, Projectile, Orbe
 from modules.globales import Var
-from modules.affichage import affichage
+from modules.affichage import affichage, affichageMenus
 
 tk=Tk()
 tk.attributes('-fullscreen', True)
 tk.config(cursor='none')
 tk.iconbitmap('sprites/UI/icone.ico')
+
+#-------------------------------------------------------------------------------------------------------------------|>
 
 tic=time(); fpsLimiter=time(); animP=[[1,5],[1,6]]; state=False
 lInput=[False, False, False, False, False, False]; anim=1; Joueur.wStats=[0, 'FAMAS', 1]
@@ -29,6 +31,10 @@ for i in range(len(Var.animE)):#Découpe des Sprite Sheets
         Image.open('sprites/ennemies/'+Var.animE[i][4]+'.png').crop((0+24*(j),0,24+24*(j),24)).resize((Var.animE[i][5], Var.animE[i][5]))))
         Var.animE[i][7].append(ImageTk.PhotoImage(
         Image.open('sprites/ennemies/'+Var.animE[i][4]+'.png').crop((0+24*(j),0,24+24*(j),24)).resize((Var.animE[i][5], Var.animE[i][5])).transpose(Image.FLIP_LEFT_RIGHT)))
+
+lecteur=reader(open('files/config/binds.csv', 'r'))
+for line in lecteur:Var.binds.append(line)
+menuState=['Main',0,True,time()]; config=False
 
 modsC=[]; lecteur=reader(open('files/mods.csv', 'r'))
 for line in lecteur:modsC.append(line)
@@ -55,6 +61,8 @@ for i in range(3):
     Var.monolith[1].append(ImageTk.PhotoImage(Image.open('sprites/props/monolith'+str(i)+'.png').resize((40,80))))
 modsText=[PhotoImage(file='sprites/UI/texts/'+str(i)+'.png') for i in range(6)]
 Joueur.mods=[1,1,1,1,1,1,0,0]#Dmg, mul.tir, pré, vit, crit, mult.crit, GLOCK
+
+#-------------------------------------------------------------------------------------------------------------------|>
 
 def init():
     global bonus
@@ -232,15 +240,31 @@ def main():
 
         for i in Ennemi.index:i.dmgAnimEnd()
 
-    if state:tk.after(1, main)
-    elif nL and Var.Xp[1]>Var.Xp[2]:#Menu selection mod.
-        if time()-Var.modList[2]>0.33:
-            if lInput[0]:Var.modList[1]+=1; Var.modList[2]=time()
-            if Var.modList[1]>2:Var.modList[1]=0
-            if lInput[1]:Var.modList[1]-=1; Var.modList[2]=time()
-            if Var.modList[1]<0:Var.modList[1]=2
-        tk.after(1, main)
-    elif nL:chargement()
+    if menuState[2]!=True:
+        if state:tk.after(1, main)
+        elif nL and Var.Xp[1]>Var.Xp[2]:#Menu selection mod.
+            if time()-Var.modList[2]>0.33:
+                if lInput[0]:Var.modList[1]+=1; Var.modList[2]=time()
+                if Var.modList[1]>2:Var.modList[1]=0
+                if lInput[1]:Var.modList[1]-=1; Var.modList[2]=time()
+                if Var.modList[1]<0:Var.modList[1]=2
+            tk.after(1, main)
+        elif nL:chargement()
+    else:tk.after(1, menus)
+
+def menus():
+    global menuState
+
+    var=(2 if menuState[0]=='Main' else 6)
+
+    if lInput[2] and not config and (time()-menuState[3])>0.33:menuState[3]=time(); menuState[1]-=1
+    if lInput[3] and not config and (time()-menuState[3])>0.33:menuState[3]=time(); menuState[1]+=1
+    if menuState[1]>var:menuState[1]=0
+    if menuState[1]<0:menuState[1]=var
+
+    if menuState[2]==True:
+        if (time()-fpsLimiter)>1/60:affichageMenus(tk, can, menuState, config)
+        tk.after(1, menus)
 
 def generationNiveau():
     global salles, map, state, nL
@@ -423,69 +447,94 @@ def generationNiveau():
     main()
 
 def clavier(event):
-    global lInput, state, state, nL, angle
+    global lInput, state, state, nL, angle, menuState, config
     var=event.keysym
 
-    if var=='Right':lInput[0]=True
-    if var=='Left':lInput[1]=True
-    if var=='Up':lInput[2]=True
-    if var=='Down':lInput[3]=True
-    if var=='r':lInput[4]=True
+    if not config or not menuState[2] or menuState[0]!='Binds':
+        if var==Var.binds[0][2]:lInput[0]=True #Droite
+        if var==Var.binds[1][2]:lInput[1]=True #Gauche
+        if var==Var.binds[2][2]:lInput[2]=True #Haut
+        if var==Var.binds[3][2]:lInput[3]=True #Bas
+        if var==Var.binds[4][2]:lInput[4]=True #Tirer
 
-    if var=='t':
-        if Joueur.stats[4]>0:Joueur.powers[Joueur.stats[6]][1]=True; lInput[-1]=True
-        else:Joueur.powers[Joueur.stats[6]][1]=False; lInput[-1]=False
+        if var==Var.binds[5][2]: #Compétence
+            if Joueur.stats[4]>0:Joueur.powers[Joueur.stats[6]][1]=True; lInput[-1]=True
+            else:Joueur.powers[Joueur.stats[6]][1]=False; lInput[-1]=False
 
-    if var=='Escape':tk.destroy()
+        if var=='Escape':
+            if menuState[2]==True and menuState[0]=='Binds':saveConfig()
+            elif menuState[2]!=True:menuState[2]=True; print(menuState)
 
-    if var=='y':
-        if not state and nL and Var.Xp[1]>Var.Xp[2] and time()-Var.modList[3]>0.5:
-            Var.Xp[2]+=1
-            for i in range(6):
-                if modsC[Var.modList[0][Var.modList[1]]][i]!=0:Joueur.mods[i]=Joueur.mods[i]*modsC[Var.modList[0][Var.modList[1]]][i]
-            Joueur.mods[6]=max(Joueur.mods[6],modsC[Var.modList[0][Var.modList[1]]][6]); Joueur.mods[7]=max(modsC[Var.modList[0][Var.modList[1]]][7],Joueur.mods[7])
-        Var.modList[0]=[-1,-1,-1]
-        for i in range(3):#Selection de la nouvelle liste de modificateurs à proposer si lvl. up
-            condition=True
-            while condition:
-                n=randint(0,5)
-                if n not in Var.modList[0]:condition=False
-            Var.modList[0][i]=n
+        if var==Var.binds[6][2]: #Interaction
 
-        if Joueur.stats[1]==0 and state:state=False; nL=False; init()
-        if Joueur.pos[0]>Var.portal[0]-50 and Joueur.pos[0]<Var.portal[0]+50 and Joueur.pos[1]>Var.portal[1]-90 and Joueur.pos[1]<Var.portal[1]+90:state=False; Var.modList[3]=time()
-        else:
-            for i in range(len(Var.lObj)):
-                if Joueur.pos[0]>Var.lObj[i][2]-50 and Joueur.pos[0]<Var.lObj[i][2]+50 and Joueur.pos[1]>Var.lObj[i][3]-50 and Joueur.pos[1]<Var.lObj[i][3]+50:
-                    Var.lObj.append([Joueur.wStats[0], Joueur.wStats[1], Joueur.pos[0], Joueur.pos[1], 
-    ImageTk.PhotoImage(Image.open('sprites/armes/'+Joueur.wStats[1]+'/'+Joueur.wStats[1]+str(int(Joueur.wStats[2]))+'.png').resize((100, 100), Image.ANTIALIAS))])
-                    Joueur.wStats=Var.arsenal[int(Var.lObj[i][0])]; Var.lObj.pop(i)
-            for i in range(len(Var.lCoffre)):
-                if Joueur.pos[0]>Var.lCoffre[i][1]-50 and Joueur.pos[0]<Var.lCoffre[i][1]+50 and Joueur.pos[1]>Var.lCoffre[i][2]-50 and Joueur.pos[1]<Var.lCoffre[i][2]+50 and Var.lCoffre[i][0]:
-                    var=randint(0,7); Var.lObj.append([var, Var.arsenal[var][1], Var.lCoffre[i][1]+randint(-10,10), Var.lCoffre[i][2]+randint(-10,10), 
-                    ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[var][1]+'/'+Var.arsenal[var][1]+str(int(Joueur.wStats[2]))+'.png').resize((100, 100), Image.ANTIALIAS))])
-                    Var.lCoffre[i][0]=False; Var.lCoffre[i][3]=ImageTk.PhotoImage(Image.open('sprites/props/coffreO.png').resize((75,75)))
-            for i in range(len(Var.monolith[0])):
-                if (Joueur.pos[0]>Var.monolith[0][i][0]-50 and Joueur.pos[0]<Var.monolith[0][i][0]+50 and Joueur.pos[1]>Var.monolith[0][i][1]-50 and Joueur.pos[1]<Var.monolith[0][i][1]+50 
-                    and Combat.index[Var.monolith[0][i][2]].Pop==0 and not Var.monolith[0][i][4]):
-                    Var.monolith[0][i][4]=True
+            if menuState[2]==True:
+                if menuState[0]=='Main':
+                    if menuState[1]==0:
+                        menuState[2]=False, tk.after(5, init)
+                    if menuState[1]==1:menuState[0]='Binds'; menuState[1]=0; menuState[3]=time()
+                    if menuState[1]==2:tk.destroy()
+                if menuState[0]=='Binds':
+                    if not config and (time()-menuState[3])>0.33:config=True
+
+            else:
+                if not state and nL and Var.Xp[1]>Var.Xp[2] and time()-Var.modList[3]>0.5:
+                    Var.Xp[2]+=1
+                    for i in range(6):
+                        if modsC[Var.modList[0][Var.modList[1]]][i]!=0:Joueur.mods[i]=Joueur.mods[i]*modsC[Var.modList[0][Var.modList[1]]][i]
+                    Joueur.mods[6]=max(Joueur.mods[6],modsC[Var.modList[0][Var.modList[1]]][6]); Joueur.mods[7]=max(modsC[Var.modList[0][Var.modList[1]]][7],Joueur.mods[7])
+                Var.modList[0]=[-1,-1,-1]
+                for i in range(3):#Selection de la nouvelle liste de modificateurs à proposer si lvl. up
+                    condition=True
+                    while condition:
+                        n=randint(0,5)
+                        if n not in Var.modList[0]:condition=False
+                    Var.modList[0][i]=n
+
+                if Joueur.stats[1]==0 and state:state=False; nL=False; init()
+                if Joueur.pos[0]>Var.portal[0]-50 and Joueur.pos[0]<Var.portal[0]+50 and Joueur.pos[1]>Var.portal[1]-90 and Joueur.pos[1]<Var.portal[1]+90:state=False; Var.modList[3]=time()
+                else:
+                    for i in range(len(Var.lObj)):
+                        if Joueur.pos[0]>Var.lObj[i][2]-50 and Joueur.pos[0]<Var.lObj[i][2]+50 and Joueur.pos[1]>Var.lObj[i][3]-50 and Joueur.pos[1]<Var.lObj[i][3]+50:
+                            Var.lObj.append([Joueur.wStats[0], Joueur.wStats[1], Joueur.pos[0], Joueur.pos[1], 
+            ImageTk.PhotoImage(Image.open('sprites/armes/'+Joueur.wStats[1]+'/'+Joueur.wStats[1]+str(int(Joueur.wStats[2]))+'.png').resize((100, 100), Image.ANTIALIAS))])
+                            Joueur.wStats=Var.arsenal[int(Var.lObj[i][0])]; Var.lObj.pop(i)
+                    for i in range(len(Var.lCoffre)):
+                        if Joueur.pos[0]>Var.lCoffre[i][1]-50 and Joueur.pos[0]<Var.lCoffre[i][1]+50 and Joueur.pos[1]>Var.lCoffre[i][2]-50 and Joueur.pos[1]<Var.lCoffre[i][2]+50 and Var.lCoffre[i][0]:
+                            var=randint(0,7); Var.lObj.append([var, Var.arsenal[var][1], Var.lCoffre[i][1]+randint(-10,10), Var.lCoffre[i][2]+randint(-10,10), 
+                            ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[var][1]+'/'+Var.arsenal[var][1]+str(int(Joueur.wStats[2]))+'.png').resize((100, 100), Image.ANTIALIAS))])
+                            Var.lCoffre[i][0]=False; Var.lCoffre[i][3]=ImageTk.PhotoImage(Image.open('sprites/props/coffreO.png').resize((75,75)))
+                    for i in range(len(Var.monolith[0])):
+                        if (Joueur.pos[0]>Var.monolith[0][i][0]-50 and Joueur.pos[0]<Var.monolith[0][i][0]+50 and Joueur.pos[1]>Var.monolith[0][i][1]-50 and Joueur.pos[1]<Var.monolith[0][i][1]+50 
+                            and Combat.index[Var.monolith[0][i][2]].Pop==0 and not Var.monolith[0][i][4]):
+                            Var.monolith[0][i][4]=True
+    
+    else:
+        config=False
+        if var!='Escape':Var.binds[menuState[1]][2]=var
 
 def clavierRelease(event):
     global lInput
     var=event.keysym
 
-    if var=='Right':lInput[0]=False
-    if var=='Left':lInput[1]=False
-    if var=='Up':lInput[2]=False
-    if var=='Down':lInput[3]=False
-    if var=='r':lInput[4]=False
+    if var==Var.binds[0][2]:lInput[0]=False
+    if var==Var.binds[1][2]:lInput[1]=False
+    if var==Var.binds[2][2]:lInput[2]=False
+    if var==Var.binds[3][2]:lInput[3]=False
+    if var==Var.binds[4][2]:lInput[4]=False
 
-    if var=='t':Joueur.powers[Joueur.stats[6]][1]=False; lInput[-1]=False
+    if var==Var.binds[5][2]:Joueur.powers[Joueur.stats[6]][1]=False; lInput[-1]=False
 
 def twin(event):
     global curseur
 
     if Joueur.stats[1]>0:curseur=[event.x, event.y]
+
+def saveConfig():
+    with open('files/config/binds.csv', 'w') as file:
+        save=writer(file)
+        for i in Var.binds:save.writerow(i)
+
+    menuState[0]='Main'; menuState[1]=1
 
 def chargement():
     can.delete('all')
@@ -497,7 +546,7 @@ def chargement():
 can=Canvas(height=tk.winfo_screenheight(), width=tk.winfo_screenwidth(), bg='black')
 can.focus_set()
 can.bind("<Key>", clavier); can.bind("<KeyRelease>", clavierRelease)
-chargement()
+menus()
 can.pack()
 
 tk.mainloop()

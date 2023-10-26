@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 from modules.globales import Var
 from modules.classes import *
 
+#Fonction de refresh de la fenêtre Tk lors du jeu
 def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2,
               murH, mur, doorH, door, nL, map, filter, box):
     can.delete('all')
@@ -181,3 +182,28 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
                         fill='white', font=('Ubuntu', 22))
 
     can.create_text(10,10,text=str(int(fps))+' fps', fill=('green' if fps>40 else ('orange' if fps>20 else 'red')), anchor='nw')
+
+#Même chose mais pour les menus séparés, histoire de rendre le tout plus lisible...
+def affichageMenus(tk, can, menuState, config):
+    if menuState[2]==True:
+        can.delete('all')
+
+        if menuState[0]=='Main':
+            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-350,
+                            text='Lone Stick Shooter', font=('Ubuntu', 44), fill='gainsboro' ,anchor='w')
+            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-300,
+                            text='(menu prototype provisoire)', font=('Ubuntu', 17), fill='gainsboro' , anchor='w')
+            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-70, text='Jouer', 
+                            font=('Ubuntu', 35 if menuState[1]==0 else 25), fill=('yellow' if menuState[1]==0 else 'white') , anchor='w')
+            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2, text='Commandes', 
+                            font=('Ubuntu', 35 if menuState[1]==1 else 25), fill=('yellow' if menuState[1]==1 else 'white') , anchor='w')
+            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2+70, text='Quitter', 
+                            font=('Ubuntu', 35 if menuState[1]==2 else 25), fill=('yellow' if menuState[1]==2 else 'white') , anchor='w')
+        
+        if menuState[0]=='Binds':
+            for i in range(len(Var.binds)):
+                can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2+70*(i-menuState[1]), text=Var.binds[i][1], 
+                                font=('Ubuntu', 25), fill=('lightblue' if menuState[1]==i else 'white') , anchor='w') 
+                can.create_text(tk.winfo_screenwidth()/8+300, tk.winfo_screenheight()/2+70*(i-menuState[1]), text=Var.binds[i][2], 
+                                font=('Ubuntu', 35 if menuState[1]==i else 25), fill=(
+                                    ('orange' if config else 'yellow') if menuState[1]==i else 'white') , anchor='w')     

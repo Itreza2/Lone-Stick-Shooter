@@ -13,6 +13,8 @@ class Var:
     frame=time(); tac=time(); debordeur=0
     gStats=[time(), 0]
 
+    binds=[]
+
     bestiaire=[]; lecteur=reader(open('files/ennemies.csv','r'))
     for line in lecteur:bestiaire.append(line)
     for i in bestiaire:
