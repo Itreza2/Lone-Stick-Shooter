@@ -33,7 +33,8 @@ for i in range(len(Var.animE)):#Découpe des Sprite Sheets
         Image.open('sprites/ennemies/'+Var.animE[i][4]+'.png').crop((0+24*(j),0,24+24*(j),24)).resize((Var.animE[i][5], Var.animE[i][5])).transpose(Image.FLIP_LEFT_RIGHT)))
 
 lecteur=reader(open('files/config/binds.csv', 'r'))
-for line in lecteur:Var.binds.append(line)
+for line in lecteur:
+    if line!=[]:Var.binds.append(line)
 menuState=['Main',0,True,time()]; config=False
 
 modsC=[]; lecteur=reader(open('files/mods.csv', 'r'))
@@ -532,7 +533,7 @@ def twin(event):
 def saveConfig():
     with open('files/config/binds.csv', 'w') as file:
         save=writer(file)
-        for i in Var.binds:save.writerow(i)
+        save.writerows(Var.binds)
 
     menuState[0]='Main'; menuState[1]=1
 
