@@ -36,6 +36,7 @@ lecteur=reader(open('files/config/binds.csv', 'r'))
 for line in lecteur:
     if line!=[]:Var.binds.append(line)
 menuState=['Main',0,True,time()]; config=False
+bg=[PhotoImage(file='sprites/UI/bg.png'),None,None,0,0,time(),0]
 
 modsC=[]; lecteur=reader(open('files/mods.csv', 'r'))
 for line in lecteur:modsC.append(line)
@@ -254,17 +255,33 @@ def main():
     else:tk.after(1, menus)
 
 def menus():
-    global menuState
+    global menuState, bg
+
+    if bg[1]==None or (time()-bg[5])>2:
+        bg[1]=randint(int(tk.winfo_screenwidth()/2),7000-int(tk.winfo_screenwidth()/2))
+        bg[2]=randint(int(tk.winfo_screenheight()/2),7000-int(tk.winfo_screenheight()/2))
+        bg[5]=time()
+
+    posP=[bg[1],bg[2]]; condition=True
+    posP[0]+=bg[3]*(time()-bg[5]); posP[1]+=bg[4]*(time()-bg[5])
+    if (posP[0]<7000-tk.winfo_screenwidth()/2 and posP[0]>tk.winfo_screenwidth()/2 and
+        posP[1]<7000-tk.winfo_screenheight()/2 and posP[1]>tk.winfo_screenheight()/2):
+        bg[1]=posP[0]; bg[2]=posP[1]; condition=False
+    bg[5]=time()
+
+    if (time()-bg[6])>10 or condition:
+        bg[3]=0; bg[4]=0
+        while bg[3]==0 and bg[4]==0:bg[3]=25*randint(-1,1); bg[4]=25*randint(-1,1)
+        bg[6]=time()
 
     var=(2 if menuState[0]=='Main' else 6)
-
-    if lInput[2] and not config and (time()-menuState[3])>0.33:menuState[3]=time(); menuState[1]-=1
-    if lInput[3] and not config and (time()-menuState[3])>0.33:menuState[3]=time(); menuState[1]+=1
+    if lInput[2] and not config and (time()-menuState[3])>0.2:menuState[3]=time(); menuState[1]-=1
+    if lInput[3] and not config and (time()-menuState[3])>0.2:menuState[3]=time(); menuState[1]+=1
     if menuState[1]>var:menuState[1]=0
     if menuState[1]<0:menuState[1]=var
 
     if menuState[2]==True:
-        if (time()-fpsLimiter)>1/60:affichageMenus(tk, can, menuState, config)
+        if (time()-fpsLimiter)>1/60:affichageMenus(tk, can, menuState, config, bg)
         tk.after(1, menus)
 
 def generationNiveau():

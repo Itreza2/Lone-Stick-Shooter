@@ -184,15 +184,18 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
     can.create_text(10,10,text=str(int(fps))+' fps', fill=('green' if fps>40 else ('orange' if fps>20 else 'red')), anchor='nw')
 
 #Même chose mais pour les menus séparés, histoire de rendre le tout plus lisible...
-def affichageMenus(tk, can, menuState, config):
+def affichageMenus(tk, can, menuState, config, bg):
     if menuState[2]==True:
         can.delete('all')
 
+        #Ouai je me suis emmelé les pinceaux, donc système D ! 
+        can.create_image(-bg[1]+tk.winfo_screenwidth()/2,-bg[2]+tk.winfo_screenheight()/2,image=bg[0], anchor='nw')
+
         if menuState[0]=='Main':
-            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-350,
+            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-200,
                             text='Lone Stick Shooter', font=('Ubuntu', 44), fill='gainsboro' ,anchor='w')
-            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-300,
-                            text='(menu prototype provisoire)', font=('Ubuntu', 17), fill='gainsboro' , anchor='w')
+            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-150,
+                            text='(menu prototype provisoire)', font=('Ubuntu', 17), fill='lightblue' , anchor='w')
             can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-70, text='Jouer', 
                             font=('Ubuntu', 35 if menuState[1]==0 else 25), fill=('yellow' if menuState[1]==0 else 'white') , anchor='w')
             can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2, text='Commandes', 
