@@ -195,7 +195,7 @@ def affichageMenus(tk, can, menuState, config, bg):
             can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-200,
                             text='Lone Stick Shooter', font=('Ubuntu', 44), fill='gainsboro' ,anchor='w')
             can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-150,
-                            text='(menu prototype provisoire)', font=('Ubuntu', 17), fill='lightblue' , anchor='w')
+                            text='(Un twin stick shooter, mais avec un seul stick)', font=('Ubuntu', 17), fill='lightblue' , anchor='w')
             can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-70, text='Jouer', 
                             font=('Ubuntu', 35 if menuState[1]==0 else 25), fill=('yellow' if menuState[1]==0 else 'white') , anchor='w')
             can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2, text='Commandes', 

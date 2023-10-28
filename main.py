@@ -4,6 +4,7 @@ from math import cos, sin, atan, pi, sqrt
 from random import randint, randrange, random
 from time import time
 from csv import reader, writer
+from os import path, environ, makedirs
 
 from modules.classes import Joueur, Combat, Ennemi, Projectile, Orbe
 from modules.globales import Var
@@ -32,9 +33,6 @@ for i in range(len(Var.animE)):#Découpe des Sprite Sheets
         Var.animE[i][7].append(ImageTk.PhotoImage(
         Image.open('sprites/ennemies/'+Var.animE[i][4]+'.png').crop((0+24*(j),0,24+24*(j),24)).resize((Var.animE[i][5], Var.animE[i][5])).transpose(Image.FLIP_LEFT_RIGHT)))
 
-lecteur=reader(open('files/config/binds.csv', 'r'))
-for line in lecteur:
-    if line!=[]:Var.binds.append(line)
 menuState=['Main',0,True,time()]; config=False
 bg=[PhotoImage(file='sprites/UI/bg.png'),None,None,0,0,time(),0]
 
@@ -180,9 +178,11 @@ def main():
         I=Holocaust[i]-Hitlof; obj=Projectile.index[I]
         nbrFragments=int(obj.nbrS*(Joueur.mods[1] if obj.friendly else 1)+(Var.pression if (obj.nbrS>0 and not obj.friendly) else 0))
         for j in range(nbrFragments):#Spawn balles à fragmentation
+            predPos=(time()-obj.spawnT)*obj.vit
+            while (Var.grille[int((obj.spawnY+predPos*sin(obj.angle)+20)/40)][int((obj.spawnX+predPos*cos(obj.angle))/40)]=='0'):predPos-=5
             Projectile.index.append(Projectile(
-                obj.spawnX+((time()-obj.spawnT)*obj.vit-15)*cos(obj.angle), obj.spawnY+((time()-obj.spawnT)*obj.vit-15)*sin(obj.angle), 
-                obj.spawnX+((time()-obj.spawnT)*obj.vit-15)*cos(obj.angle), obj.spawnY+((time()-obj.spawnT)*obj.vit-15)*sin(obj.angle),  
+                obj.spawnX+predPos*cos(obj.angle), obj.spawnY+predPos*sin(obj.angle), 
+                obj.spawnX+predPos*cos(obj.angle), obj.spawnY+predPos*sin(obj.angle),  
                 obj.angle+((2*pi)/nbrFragments)*j, obj.vitS,
                 obj.friendly,  (2+obj.dmgS/6 if obj.friendly else obj.dmgS/2), 0, 0, 0, obj.color, obj.outline, obj.dmgS))
         Projectile.index.pop(I); Hitlof+=1
@@ -548,7 +548,7 @@ def twin(event):
     if Joueur.stats[1]>0:curseur=[event.x, event.y]
 
 def saveConfig():
-    with open('files/config/binds.csv', 'w') as file:
+    with open(environ['LOCALAPPDATA']+"\\LoneStickShooter\\binds.csv", 'w') as file:
         save=writer(file)
         save.writerows(Var.binds)
 
@@ -560,6 +560,19 @@ def chargement():
                     font=('Ubuntu', 45), fill='white', anchor='center')
     can.update_idletasks()#beurk
     tk.after(160,generationNiveau)
+
+#Récupération / Création des fichiers de sauvegarde
+if path.exists(environ['LOCALAPPDATA']+"\\LoneStickShooter"):
+    lecteur=reader(open(environ['LOCALAPPDATA']+"\\LoneStickShooter\\binds.csv", 'r'))
+    for line in lecteur:
+        if line!=[]:Var.binds.append(line)
+    print(environ['LOCALAPPDATA']+"\\LoneStickShooter\\binds.csv")
+else:
+    lecteur=reader(open('files/config/binds.csv', 'r'))
+    for line in lecteur:
+        if line!=[]:Var.binds.append(line)
+    makedirs(environ['LOCALAPPDATA']+"\\LoneStickShooter")
+    saveConfig()
 
 can=Canvas(height=tk.winfo_screenheight(), width=tk.winfo_screenwidth(), bg='black')
 can.focus_set()
