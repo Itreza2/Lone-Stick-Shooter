@@ -6,7 +6,7 @@ from modules.classes import *
 
 #Fonction de refresh de la fenêtre Tk lors du jeu
 def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2,
-              murH, mur, doorH, door, nL, map, filter, box):
+              murH, mur, doorH, door, nL, map, filter, box, hud):
     can.delete('all')
 
     can.create_image(
@@ -136,8 +136,8 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
 
     if Joueur.stats[1]>0 and nL:#UI partie en cours
         if state:#Jeu normal
+            can.create_image(tk.winfo_screenwidth()-75, 75, image=hud[0], anchor='ne')
             can.create_image(tk.winfo_screenwidth()-75, 75, image=map, anchor='ne')
-            can.create_rectangle(tk.winfo_screenwidth()-275, 75, tk.winfo_screenwidth()-75, 275, outline='brown', width=4)
             can.create_oval(tk.winfo_screenwidth()-275+(Joueur.pos[0]/7000*200)-3, 75+(Joueur.pos[1]/7000*200)-3,
                             tk.winfo_screenwidth()-275+(Joueur.pos[0]/7000*200)+3, 75+(Joueur.pos[1]/7000*200)+3, fill='pink')
             can.create_oval(tk.winfo_screenwidth()-275+(Var.portal[0]/7000*200)-3, 75+(Var.portal[1]/7000*200)-3,

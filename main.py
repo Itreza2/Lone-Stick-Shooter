@@ -2,9 +2,10 @@ from tkinter import Tk, Canvas, PhotoImage
 from PIL import Image, ImageTk
 from math import cos, sin, atan, pi, sqrt
 from random import randint, randrange, random
-from time import time
+from time import time, sleep
 from csv import reader, writer
 from os import path, environ, makedirs
+from threading import Thread
 
 from modules.classes import Joueur, Combat, Ennemi, Projectile, Orbe
 from modules.globales import Var
@@ -52,6 +53,13 @@ Joueur.powers=[[False, False, ImageTk.PhotoImage(Image.open('sprites/perso/shiel
 
 ded1=ImageTk.PhotoImage(Image.open('sprites/ennemies/troupierDed.png').resize((100,100)))
 ded2=ImageTk.PhotoImage(Image.open('sprites/ennemies/troupierDed.png').resize((200,200)))
+
+hud=[ImageTk.PhotoImage(Image.open('sprites/UI/HUD/map.png').resize((200,200)))]
+varAnimChargement=[0,False, []]
+for i in range(16):
+    varAnimChargement[2].append(
+        ImageTk.PhotoImage(Image.open('sprites/UI/icones/loading.png').crop((0+200*(i),0,200*(i+1),200)).resize((100,100)))
+    )
 
 mur=[PhotoImage(file='sprites/level/tiles/1.png'),PhotoImage(file='sprites/level/tiles/2.png'),PhotoImage(file='sprites/level/tiles/3.png')]
 murH=[PhotoImage(file='sprites/level/tiles/mur1H.png'),PhotoImage(file='sprites/level/tiles/mur2H.png'),PhotoImage(file='sprites/level/tiles/mur3H.png')]
@@ -194,8 +202,9 @@ def main():
         Var.lDed.append([Ennemi.index[Shaw[k]-Musso].posX, Ennemi.index[Shaw[k]-Musso].posY])
         Combat.index[Ennemi.index[Shaw[k]-Musso].combat].Pop-=1; Ennemi.index.pop(Shaw[k]-Musso); Var.gStats[1]+=1; Musso+=1
 
+    threadList=[]
     for i in range(len(Ennemi.index)):#"IA" des Ennemis
-        Ennemi.index[i].comportement()
+        threadList.append(Thread(target=Ennemi.comportement(Ennemi.index[i])))
 
     if lInput[-1] and Joueur.stats[4]>0:Joueur.stats[4]-=40*(time()-Var.frame)
     elif lInput[-1]==False and Joueur.stats[4]<Joueur.stats[5]:Joueur.stats[4]+=10*(time()-Var.frame)
@@ -238,7 +247,7 @@ def main():
             and Ennemi.index[i].posY>Joueur.pos[1]-tk.winfo_screenheight()/2-40 and Ennemi.index[i].posY<Joueur.pos[1]+tk.winfo_screenheight()/2+40):
                 if Joueur.pos[0]>Ennemi.index[i].posX:Ennemi.index[i].img=ImageTk.PhotoImage(WeaponsP[int(Ennemi.index[i].arme[0])][int(Ennemi.index[i].arme[2])-1].rotate(0*180/pi).resize((size, size), Image.ANTIALIAS).transpose(Image.FLIP_LEFT_RIGHT))
                 else:Ennemi.index[i].img=ImageTk.PhotoImage(WeaponsP[int(Ennemi.index[i].arme[0])][int(Ennemi.index[i].arme[2])-1].rotate(180-0*180/pi).resize((size, size), Image.ANTIALIAS).transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.FLIP_TOP_BOTTOM))
-        affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2, murH, mur, doorH, door, nL, map, filter, box)
+        affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2, murH, mur, doorH, door, nL, map, filter, box, hud)
 
         for i in Ennemi.index:i.dmgAnimEnd()
 
@@ -285,7 +294,7 @@ def menus():
         tk.after(1, menus)
 
 def generationNiveau():
-    global salles, map, state, nL
+    global salles, map, state, nL, varAnimChargement
 
     generation=True; Var.lObj=[]; Var.lCoffre=[]; Ennemi.index=[]; Combat.index=[]; Var.lDed=[]; Orbe.index=[]; Var.level+=1
     Var.monolith[0]=[]
@@ -437,7 +446,7 @@ def generationNiveau():
                     ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[Var.bestiaire[rand][3]][1]+'/'+Var.arsenal[Var.bestiaire[rand][3]][1]+str(int(Var.arsenal[Var.bestiaire[rand][3]][2]))+'.png').resize((100, 100))), 
                     time(),0,Var.arsenal[Var.bestiaire[rand][3]][8], Var.bestiaire[rand][4], rand))
 
-    Var.monde=Image.open("sprites/level/blank.png")
+    Var.monde=Image.open("sprites/level/blank.png").resize((7000,7000))
     for i in range(35*5):
         for j in range(35*5):
             if Var.grilleP[j][i]=='9':Var.grille[j][i]=chr(randint(97, 105))#...
@@ -462,6 +471,7 @@ def generationNiveau():
     map=ImageTk.PhotoImage(Var.monde.resize((200, 200), Image.ANTIALIAS)); Var.monde=ImageTk.PhotoImage(Var.monde)
 
     state=True; nL=True
+    varAnimChargement[1]=False
     main()
 
 def clavier(event):
@@ -554,19 +564,34 @@ def saveConfig():
 
     menuState[0]='Main'; menuState[1]=1
 
+def chargementAnim():
+    global varAnimChargement
+
+    while varAnimChargement[1]:
+        can.delete('all')
+
+        varAnimChargement[0]+=1
+        if varAnimChargement[0]>15:varAnimChargement[0]=0
+
+        can.create_text(tk.winfo_screenwidth()-185, tk.winfo_screenheight()-120, text='CHARGEMENT', 
+                        font=('Ubuntu', 40), fill='white', anchor='e')
+        can.create_image(tk.winfo_screenwidth()-75, tk.winfo_screenheight()-75, image=varAnimChargement[2][varAnimChargement[0]], anchor='se')
+        can.update_idletasks()#beurk
+
+        sleep(0.1)
+
 def chargement():
-    can.delete('all')
-    can.create_text(tk.winfo_screenwidth()/2, tk.winfo_screenheight()/2, text='CHARGEMENT...', 
-                    font=('Ubuntu', 45), fill='white', anchor='center')
-    can.update_idletasks()#beurk
-    tk.after(160,generationNiveau)
+    global varAnimChargement
+
+    varAnimChargement[0]=0; varAnimChargement[1]=True
+    threadAnim=Thread(target=chargementAnim).start()
+    threadGen=Thread(target=generationNiveau).start()
 
 #Récupération / Création des fichiers de sauvegarde
 if path.exists(environ['LOCALAPPDATA']+"\\LoneStickShooter"):
     lecteur=reader(open(environ['LOCALAPPDATA']+"\\LoneStickShooter\\binds.csv", 'r'))
     for line in lecteur:
         if line!=[]:Var.binds.append(line)
-    print(environ['LOCALAPPDATA']+"\\LoneStickShooter\\binds.csv")
 else:
     lecteur=reader(open('files/config/binds.csv', 'r'))
     for line in lecteur:
