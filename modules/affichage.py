@@ -26,14 +26,15 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
     CheikPoint=[]
     for j in range(int((Joueur.pos[1]-tk.winfo_screenheight()/2)/40), int((Joueur.pos[1]+20)/40+3)):
         for i in range(len(Ennemi.index)):
-            if Ennemi.index[i].posY<(j)*40 and (not Combat.index[Ennemi.index[i].combat].gauntlet or Combat.index[Ennemi.index[i].combat].actif) and i not in CheikPoint:
+            if Ennemi.index[i].posY<(j)*40+20 and (not Combat.index[Ennemi.index[i].combat].gauntlet or Combat.index[Ennemi.index[i].combat].actif) and i not in CheikPoint:
                 if Ennemi.index[i].posX<Joueur.pos[0]:can.create_image(Ennemi.index[i].posX-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Ennemi.index[i].posY-Joueur.pos[1]+(tk.winfo_screenheight()/2), 
-                                image=Var.animE[Ennemi.index[i].sprite][2], anchor='center'); CheikPoint.append(i)
+                                image=Var.animE[Ennemi.index[i].sprite][2], anchor='center')
                 else:can.create_image(Ennemi.index[i].posX-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Ennemi.index[i].posY-Joueur.pos[1]+(tk.winfo_screenheight()/2), 
-                                image=Var.animE[Ennemi.index[i].sprite][3], anchor='center'); CheikPoint.append(i)
+                                image=Var.animE[Ennemi.index[i].sprite][3], anchor='center')
+                if j!=int((Joueur.pos[1]+20)/40+3)-1:CheikPoint.append(i)
                 can.create_image(Ennemi.index[i].posX-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Ennemi.index[i].posY-Joueur.pos[1]+(tk.winfo_screenheight()/2)+8, image=Ennemi.index[i].img, anchor='center')
         for i in range(len(Var.monolith[0])):
-            if Var.monolith[0][i][1]<(j)*40:
+            if Var.monolith[0][i][1]<(j)*40+20:
                 img=(1 if Combat.index[Var.monolith[0][i][3]].actif else (0 if (Combat.index[Var.monolith[0][i][2]].Pop==0 and not Var.monolith[0][i][5]) else 2))
                 can.create_image(Var.monolith[0][i][0]-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Var.monolith[0][i][1]-Joueur.pos[1]+(tk.winfo_screenheight()/2),
                                  image=Var.monolith[1][img], anchor='center')
@@ -81,14 +82,15 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
 
     for j in range(int((Joueur.pos[1]+20)/40), int((Joueur.pos[1]+tk.winfo_screenheight()/2)/40+3)):
         for i in range(len(Ennemi.index)):
-            if Ennemi.index[i].posY<(j)*40 and (not Combat.index[Ennemi.index[i].combat].gauntlet or Combat.index[Ennemi.index[i].combat].actif) and i not in CheikPoint:
+            if Ennemi.index[i].posY<(j)*40+20 and (not Combat.index[Ennemi.index[i].combat].gauntlet or Combat.index[Ennemi.index[i].combat].actif) and i not in CheikPoint:
                 if Ennemi.index[i].posX<Joueur.pos[0]:can.create_image(Ennemi.index[i].posX-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Ennemi.index[i].posY-Joueur.pos[1]+(tk.winfo_screenheight()/2), 
-                                image=Var.animE[Ennemi.index[i].sprite][2], anchor='center'); CheikPoint.append(i)
+                                image=Var.animE[Ennemi.index[i].sprite][2], anchor='center')
                 else:can.create_image(Ennemi.index[i].posX-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Ennemi.index[i].posY-Joueur.pos[1]+(tk.winfo_screenheight()/2), 
-                                image=Var.animE[Ennemi.index[i].sprite][3], anchor='center'); CheikPoint.append(i)
+                                image=Var.animE[Ennemi.index[i].sprite][3], anchor='center')
+                CheikPoint.append(i)
                 can.create_image(Ennemi.index[i].posX-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Ennemi.index[i].posY-Joueur.pos[1]+(tk.winfo_screenheight()/2)+8, image=Ennemi.index[i].img, anchor='center')
         for i in range(len(Var.monolith[0])):
-            if Var.monolith[0][i][1]>(j)*40:
+            if Var.monolith[0][i][1]>(j)*40+20:
                 img=(1 if Combat.index[Var.monolith[0][i][3]].actif else (0 if (Combat.index[Var.monolith[0][i][2]].Pop==0 and not Var.monolith[0][i][5]) else 2))
                 can.create_image(Var.monolith[0][i][0]-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Var.monolith[0][i][1]-Joueur.pos[1]+(tk.winfo_screenheight()/2),
                                  image=Var.monolith[1][img], anchor='center')
@@ -124,24 +126,18 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
         if time()-Var.lText[i][4]>Var.lText[i][5]:Holocost.append(i)
     for i in range(len(Holocost)):Var.lText.pop(Holocost[i]-Hitlof); Hitlof+=1
 
-    if lInput[4] and Joueur.stats[1]>0 and Joueur.powers[0][1]==False and Joueur.wStats[-1]==1:#Affichage Laser !
-        n=2
-        if ((tk.winfo_screenwidth()/2)-curseur[0])!=0:#Calcul angle
-            if curseur[0]>tk.winfo_screenwidth()/2:angle=atan(((tk.winfo_screenheight()/2)-curseur[1])/((tk.winfo_screenwidth()/2)-curseur[0]))
-            else:angle=pi+atan(((tk.winfo_screenheight()/2)-curseur[1])/((tk.winfo_screenwidth()/2)-curseur[0]))
-        else:angle=0
-        while Var.grille[int((Joueur.pos[1]+(Joueur.wStats[3]+n)*sin(angle))/40)][int((Joueur.pos[0]+(Joueur.wStats[3]+n)*cos(angle))/40)]!='0':n+=2
-        can.create_line(tk.winfo_screenwidth()/2+Joueur.wStats[3]*cos(angle), tk.winfo_screenheight()/2+Joueur.wStats[3]*sin(angle), 
-                        tk.winfo_screenwidth()/2+(Joueur.wStats[3]+n)*cos(angle), tk.winfo_screenheight()/2+(Joueur.wStats[3]+n)*sin(angle),fill='lightblue', width=4)
-
     if Joueur.stats[1]>0 and nL:#UI partie en cours
         if state:#Jeu normal
             can.create_image(tk.winfo_screenwidth()-75, 75, image=hud[0], anchor='ne')
-            can.create_image(tk.winfo_screenwidth()-75, 75, image=map, anchor='ne')
-            can.create_oval(tk.winfo_screenwidth()-275+(Joueur.pos[0]/7000*200)-3, 75+(Joueur.pos[1]/7000*200)-3,
-                            tk.winfo_screenwidth()-275+(Joueur.pos[0]/7000*200)+3, 75+(Joueur.pos[1]/7000*200)+3, fill='pink')
-            can.create_oval(tk.winfo_screenwidth()-275+(Var.portal[0]/7000*200)-3, 75+(Var.portal[1]/7000*200)-3,
-                            tk.winfo_screenwidth()-275+(Var.portal[0]/7000*200)+3, 75+(Var.portal[1]/7000*200)+3, fill='blue')
+            can.create_image(tk.winfo_screenwidth()-75, 75, image=map[0], anchor='ne')
+            ratio=7000-(2800 if (map[1][0] and map[1][1]) else (1400 if (map[1][0] or map[1][1] or map[1][2] or map[1][3]) else 0))
+            correct=[1400 if (map[1][1] or map[1][3]) else 0, 1400 if (map[1][1] or map[1][2]) else 0]
+            pl=[50 if ((map[1][1] or map[1][3]) and not (map[1][0] or map[1][2])) else (-50 if ((map[1][0] or map[1][2]) and not (map[1][1] or map[1][3])) else 0), 
+                50 if ((map[1][1] or map[1][2]) and not (map[1][0] or map[1][3])) else (-50 if ((map[1][0] or map[1][3]) and not (map[1][1] or map[1][2])) else 0)]
+            can.create_oval(tk.winfo_screenwidth()-275+((Joueur.pos[0]-correct[0])/ratio*200)-3+pl[0], 75+((Joueur.pos[1]-correct[1])/ratio*200)-3+pl[1],
+                            tk.winfo_screenwidth()-275+((Joueur.pos[0]-correct[0])/ratio*200)+3+pl[0], 75+((Joueur.pos[1]-correct[1])/ratio*200)+3+pl[1], fill='pink')
+            can.create_oval(tk.winfo_screenwidth()-275+((Var.portal[0]-correct[0])/ratio*200)-3+pl[0], 75+((Var.portal[1]-correct[1])/ratio*200)-3+pl[1],
+                            tk.winfo_screenwidth()-275+((Var.portal[0]-correct[0])/ratio*200)+3+pl[0], 75+((Var.portal[1]-correct[1])/ratio*200)+3+pl[1], fill='blue')
             can.create_text(tk.winfo_screenwidth()-275, 300, text='Zone : '+str(Var.level), anchor='w', fill='gainsboro', font=('Ubuntu', 16))
             can.create_rectangle(75, 75, 102, 177, outline='white', width=3)
             can.create_rectangle(76, 76+(100/200*(200-Var.Xp[0])), 101, 177, fill='lightgreen', width=0)

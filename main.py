@@ -468,7 +468,16 @@ def generationNiveau():
     for i in range(len(Var.monolith[0])):#Provisoire aussi, jusqu'à ce que j'ai plus la flemme...
         Var.grille[int((Var.monolith[0][i][1])/40)][int((Var.monolith[0][i][0]-20)/40)]='0'
 
-    map=ImageTk.PhotoImage(Var.monde.resize((200, 200), Image.ANTIALIAS)); Var.monde=ImageTk.PhotoImage(Var.monde)
+    map=Var.monde.resize((200, 200), Image.ANTIALIAS); Var.monde=ImageTk.PhotoImage(Var.monde)
+    condition=[True, True, True, True]
+    for i in range(5):
+        if salles[0][i]!=[0,0] or salles[i][0]!=[0,0]:condition[0]=False
+        if salles[4][i]!=[0,0] or salles[i][4]!=[0,0]:condition[1]=False
+        if salles[4][i]!=[0,0] or salles[i][0]!=[0,0]:condition[2]=False
+        if salles[0][i]!=[0,0] or salles[i][4]!=[0,0]:condition[3]=False
+    if condition[0] or condition[1]:condition[2], condition[3] = False, False
+    map=[ImageTk.PhotoImage(map.crop((40 if (condition[0] or condition[2]) else 0, 40 if (condition[0] or condition[3]) else 0,
+                                     160 if (condition[1] or condition[3]) else 200 ,160 if (condition[1] or condition[2]) else 200)).resize((200,200))), condition]
 
     state=True; nL=True
     varAnimChargement[1]=False
