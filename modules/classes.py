@@ -108,6 +108,7 @@ class Combat:
 class Ennemi:
 
     index=[]
+    hexDigits=[str(i) for i in range(10)]+[chr(i) for i in range(97,103)]
 
     def __init__(self, combat, firstSprite, posX, posY, sprite, pv, vitX, vitY, vit, arme, img, tic, angle, dmg, r, type):
         self.combat, self.firstSprite, self.posX = combat, firstSprite, posX
@@ -127,7 +128,8 @@ class Ennemi:
                     Projectile.index.append(Projectile(
                         self.posX+(self.arme[3])*cos(disp), self.posY+8+(self.arme[3])*sin(disp), self.posX+(self.arme[3])*cos(disp), 
                         self.posY+8+(self.arme[3])*sin(disp), disp, self.arme[7]/(3*(0.85**Var.pression if Var.pression>0 else 1)),
-                        False,  self.arme[8]/2, self.arme[11], self.arme[12], self.arme[13], 'red', 'pink', self.dmg))
+                        False,  self.arme[8]/2, self.arme[11], self.arme[12], self.arme[13],
+                        Ennemi.hexConv(self.arme[8]), 'pink', self.dmg))
 
             if time()-Var.tac>2:
                 if randint(1,4)!=1:self.vitX,self.vitY=randint(-1,1),randint(-1,1)
@@ -147,6 +149,13 @@ class Ennemi:
 
     def dmgAnimEnd(self):
         if self.firstSprite==-3 or self.firstSprite==-6:self.firstSprite=Var.bestiaire[self.type][0]
+
+    def hexConv(n):
+        n=int(55+n*8)
+        if n>255:
+            return '#ff'+(Ennemi.hexDigits[(n-255)//16]+Ennemi.hexDigits[(n-255)%16])*2
+        else:
+            return '#'+Ennemi.hexDigits[n//16]+Ennemi.hexDigits[n%16]+'0000'
 
 class Projectile:
     index=[]

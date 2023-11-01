@@ -192,7 +192,8 @@ def main():
                 obj.spawnX+predPos*cos(obj.angle), obj.spawnY+predPos*sin(obj.angle), 
                 obj.spawnX+predPos*cos(obj.angle), obj.spawnY+predPos*sin(obj.angle),  
                 obj.angle+((2*pi)/nbrFragments)*j, obj.vitS,
-                obj.friendly,  (2+obj.dmgS/6 if obj.friendly else obj.dmgS/2), 0, 0, 0, obj.color, obj.outline, obj.dmgS))
+                obj.friendly,  (2+obj.dmgS/6 if obj.friendly else obj.dmgS/2), 0, 0, 0, 
+                'black' if obj.friendly else Ennemi.hexConv(obj.dmgS), obj.outline, obj.dmgS))
         Projectile.index.pop(I); Hitlof+=1
     obj=None
     for k in range(len(Shaw)):
