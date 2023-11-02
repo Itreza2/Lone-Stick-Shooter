@@ -18,7 +18,7 @@ tk.iconbitmap('sprites/UI/icone.ico')
 
 #-------------------------------------------------------------------------------------------------------------------|>
 
-tic=time(); fpsLimiter=time(); animP=[[1,5],[1,6]]; state=False
+tic=time(); fpsLimiter=time(); animP=[[1,5],[1,6]]; state=False; tRefresh=None
 lInput=[False, False, False, False, False, False]; anim=1; Joueur.wStats=[0, 'FAMAS', 1]
 Projectile.index=[]; salles=[]; curseur=[0,0]
 Combat.index=[]; Ennemi.index=[]; nL=True; angle=pi/100; fps=0
@@ -81,7 +81,9 @@ def init():
     chargement()
 
 def main():
-    global tic, fpsLimiter, animP, weapon, anim, state, bonus, angle, fps
+    global tic, fpsLimiter, animP, weapon, anim, state, bonus, angle, fps, tRefresh
+
+    threadList=[]
 
     #Calcul angle visée libre (hors combat)
     if lInput[0] and lInput[2]:angle=pi+3*pi/4
@@ -203,7 +205,6 @@ def main():
         Var.lDed.append([Ennemi.index[Shaw[k]-Musso].posX, Ennemi.index[Shaw[k]-Musso].posY])
         Combat.index[Ennemi.index[Shaw[k]-Musso].combat].Pop-=1; Ennemi.index.pop(Shaw[k]-Musso); Var.gStats[1]+=1; Musso+=1
 
-    threadList=[]
     for i in range(len(Ennemi.index)):#"IA" des Ennemis
         threadList.append(Thread(target=Ennemi.comportement(Ennemi.index[i])))
 
@@ -248,7 +249,7 @@ def main():
             and Ennemi.index[i].posY>Joueur.pos[1]-tk.winfo_screenheight()/2-40 and Ennemi.index[i].posY<Joueur.pos[1]+tk.winfo_screenheight()/2+40):
                 if Joueur.pos[0]>Ennemi.index[i].posX:Ennemi.index[i].img=ImageTk.PhotoImage(WeaponsP[int(Ennemi.index[i].arme[0])][int(Ennemi.index[i].arme[2])-1].rotate(0*180/pi).resize((size, size), Image.ANTIALIAS).transpose(Image.FLIP_LEFT_RIGHT))
                 else:Ennemi.index[i].img=ImageTk.PhotoImage(WeaponsP[int(Ennemi.index[i].arme[0])][int(Ennemi.index[i].arme[2])-1].rotate(180-0*180/pi).resize((size, size), Image.ANTIALIAS).transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.FLIP_TOP_BOTTOM))
-        affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2, murH, mur, doorH, door, nL, map, filter, box, hud)
+        tRefresh=Thread(target=affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2, murH, mur, doorH, door, nL, map, filter, box, hud))
 
         for i in Ennemi.index:i.dmgAnimEnd()
 
@@ -336,6 +337,23 @@ def generationNiveau():
                     else:posP[1]+=randint(-1,1)
                     if posP[0]>=0 and posP[0]<5 and posP[1]>=0 and posP[1]<5:
                         if salles[posP[1]][posP[0]][0]==0:salles[posP[1]][posP[0]]=[1,3]
+                        
+            #Recentrage (useless en soi, mais utile pour la minimap...)
+            condition=[True,True,True,True]
+            for i in range(5):
+                if salles[i][0]!=[0,0] or salles[i][1]!=[0,0]:condition[0]=False
+                if salles[i][3]!=[0,0] or salles[i][4]!=[0,0]:condition[1]=False
+                if salles[0][i]!=[0,0] or salles[1][i]!=[0,0]:condition[2]=False
+                if salles[3][i]!=[0,0] or salles[4][i]!=[0,0]:condition[3]=False
+            if condition[2]:salles.pop(0); salles.append([[0,0] for i in range(5)]); first[1]-=1
+            if condition[3]:salles.pop(4); salles.insert(0,[[0,0] for i in range(5)]); first[1]+=1
+            if condition[0]:
+                for i in range(5):salles[i].pop(0); salles[i].append([0,0])
+                first[0]-=1
+            if condition[1]:
+                for i in range(5):salles[i].pop(4); salles[i].insert(0,[0,0])
+                first[0]+=1
+
         else:#Boss
             rand=(randrange(-1,2,2), randint(0,1)); first=None
             salles[2+rand[0] if rand[1]==0 else 2][2+rand[0] if rand[1]==1 else 2]=[1,1]; salles[2][2]=[3,0]; 

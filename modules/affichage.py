@@ -122,7 +122,7 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
     Holocost=[]; Hitlof=0
     for i in range(len(Var.lText)):
         can.create_text(Var.lText[i][0]-Joueur.pos[0]+(tk.winfo_screenwidth()/2), Var.lText[i][1]-Joueur.pos[1]+(tk.winfo_screenheight()/2), 
-                        text=Var.lText[i][3], fill=Var.lText[i][2], font=('Arial', Var.lText[i][6]), anchor='center')
+                        text=Var.lText[i][3], fill=Var.lText[i][2], font=('Arial', Var.lText[i][6], 'bold'), anchor='center')
         if time()-Var.lText[i][4]>Var.lText[i][5]:Holocost.append(i)
     for i in range(len(Holocost)):Var.lText.pop(Holocost[i]-Hitlof); Hitlof+=1
 
