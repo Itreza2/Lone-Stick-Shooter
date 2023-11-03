@@ -42,3 +42,5 @@ class Var:
     animO=[[1,4,None, [Image.open('sprites/portal/'+str(i)+'.png') for i in range(1,5)]]]
 
     monolith=[[],[],False]
+
+    lvlCoeff=2

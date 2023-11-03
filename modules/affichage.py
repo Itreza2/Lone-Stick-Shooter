@@ -79,6 +79,7 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
     can.create_image(tk.winfo_screenwidth()/2, tk.winfo_screenheight()/2+8, image=weapon, anchor='center')
     for i in range(len(Joueur.powers)):
         if Joueur.powers[i][1]:can.create_image(tk.winfo_screenwidth()/2, tk.winfo_screenheight()/2, image=Joueur.powers[i][2], anchor='center')
+    if Var.monolith[2]:can.create_image(tk.winfo_screenwidth()/2, tk.winfo_screenheight()/2-35, image=hud[1], anchor='center')
 
     for j in range(int((Joueur.pos[1]+20)/40), int((Joueur.pos[1]+tk.winfo_screenheight()/2)/40+3)):
         for i in range(len(Ennemi.index)):
@@ -153,7 +154,7 @@ def affichage(tk, can, lInput, curseur, state, weapon, modsText, fps, ded1, ded2
             if Var.level%3==0 and Combat.index[0].actif:#Barre de vie du Boss
                 try:
                     can.create_rectangle(tk.winfo_screenwidth()/2-300, 75, tk.winfo_screenwidth()/2+300, 115, outline='gainsboro')
-                    can.create_rectangle(tk.winfo_screenwidth()/2-299, 76, tk.winfo_screenwidth()/2-299+598*(Ennemi.index[0].pv/Var.bestiaire[Ennemi.index[0].type][1]),
+                    can.create_rectangle(tk.winfo_screenwidth()/2-299, 76, tk.winfo_screenwidth()/2-299+598*(Ennemi.index[0].pv/int(Var.bestiaire[Ennemi.index[0].type][1]/(Var.lvlCoeff/2))),
                                         114, width=0, fill='brown')
                 except IndexError:pass
         else:#Menu Selection mod.
@@ -189,7 +190,7 @@ def affichageMenus(tk, can, menuState, config, bg):
 
         if menuState[0]=='Main':
             can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-200,
-                            text='Lone Stick Shooter', font=('Ubuntu', 44), fill='gainsboro' ,anchor='w')
+                            text='Lone Stick Shooter', font=('Ubuntu', 44, 'bold'), fill='gainsboro' ,anchor='w')
             can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-150,
                             text='(Un twin stick shooter, mais avec un seul stick)', font=('Ubuntu', 17), fill='lightblue' , anchor='w')
             can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-70, text='Jouer', 
@@ -199,6 +200,16 @@ def affichageMenus(tk, can, menuState, config, bg):
             can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2+70, text='Quitter', 
                             font=('Ubuntu', 35 if menuState[1]==2 else 25), fill=('yellow' if menuState[1]==2 else 'white') , anchor='w')
         
+        if menuState[0]=='lvl':
+            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-150,
+                            text='Niveau de Difficulté :', font=('Ubuntu', 25, 'bold'), fill='gainsboro' , anchor='w')
+            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2-70, text='Facile', 
+                            font=('Ubuntu', 35 if menuState[1]==0 else 25), fill=('lightgreen' if menuState[1]==0 else 'white') , anchor='w')
+            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2, text='Normal', 
+                            font=('Ubuntu', 35 if menuState[1]==1 else 25), fill=('yellow' if menuState[1]==1 else 'white') , anchor='w')
+            can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2+70, text='Hardcore', 
+                            font=('Ubuntu', 35 if menuState[1]==2 else 25), fill=('red' if menuState[1]==2 else 'white') , anchor='w')
+
         if menuState[0]=='Binds':
             for i in range(len(Var.binds)):
                 can.create_text(tk.winfo_screenwidth()/8, tk.winfo_screenheight()/2+70*(i-menuState[1]), text=Var.binds[i][1], 

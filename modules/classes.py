@@ -119,7 +119,7 @@ class Ennemi:
     def comportement(self):
         if Combat.index[self.combat].actif:
 
-            if ((time()-self.tic)>self.arme[6]*2 and ((self.vitX==0 and self.vitY==0) or Var.level%3==0) and Var.debordeur<1 
+            if ((time()-self.tic)>self.arme[6]*Var.lvlCoeff and ((self.vitX==0 and self.vitY==0) or Var.level%3==0) and Var.debordeur<1 
             and ((time()-Joueur.stats[0])<Joueur.wStats[6]/2 or (time()-Joueur.stats[0])>Joueur.wStats[6]*2)):
                 self.tic=time(); Var.debordeur+=5
                 for i in range(int(self.arme[4])+(Var.pression if self.arme[11]==0 else 0)):
@@ -200,9 +200,10 @@ class Projectile:
             elif i not in Holocaust:
                 if Joueur.powers[0][1] and Joueur.stats[4]>10:
                     Var.lText.append([self.posX, self.posY, 'lightblue', str(-self.dmg), time(),0.2, 16])
-                    self.spawnX, self.spawnY=self.posX, self.posY; self.vit=self.vit*2
-                    self.angle+=pi; self.spawnT=time(); self.friendly=True; self.color,self.outline='lightblue','lightgreen'
-                    if Var.monolith[2]:self.dmg=0
+                    if Var.monolith[2]:retour[0]=True
+                    else:
+                        self.spawnX, self.spawnY=self.posX, self.posY; self.vit=self.vit*2
+                        self.angle+=pi; self.spawnT=time(); self.friendly=True; self.color,self.outline='lightblue','lightgreen'
                 else:
                     boule=True
                     if Joueur.stats[1]<=0:boule=False

@@ -54,7 +54,8 @@ Joueur.powers=[[False, False, ImageTk.PhotoImage(Image.open('sprites/perso/shiel
 ded1=ImageTk.PhotoImage(Image.open('sprites/ennemies/troupierDed.png').resize((100,100)))
 ded2=ImageTk.PhotoImage(Image.open('sprites/ennemies/troupierDed.png').resize((200,200)))
 
-hud=[ImageTk.PhotoImage(Image.open('sprites/UI/HUD/map.png').resize((200,200)))]
+hud=[ImageTk.PhotoImage(Image.open('sprites/UI/HUD/map.png').resize((200,200))),
+    ImageTk.PhotoImage(Image.open('sprites/UI/icones/ceaseFire.png').resize((30,30)))]
 varAnimChargement=[0,False, []]
 for i in range(16):
     varAnimChargement[2].append(
@@ -285,7 +286,7 @@ def menus():
         while bg[3]==0 and bg[4]==0:bg[3]=25*randint(-1,1); bg[4]=25*randint(-1,1)
         bg[6]=time()
 
-    var=(2 if menuState[0]=='Main' else 6)
+    var=(2 if menuState[0]=='Main' else (6 if menuState[0]=='Binds' else 2))
     if lInput[2] and not config and (time()-menuState[3])>0.2:menuState[3]=time(); menuState[1]-=1
     if lInput[3] and not config and (time()-menuState[3])>0.2:menuState[3]=time(); menuState[1]+=1
     if menuState[1]>var:menuState[1]=0
@@ -399,7 +400,7 @@ def generationNiveau():
                             for o in range(i*35+20, i*35+50):
                                 for p in range(j*35+15, j*35+20):
                                     if Var.grille[p][o]=='0':Var.grille[p][o]=chr(randint(97, 105))
-    n=0; Combat.index=[]
+    n=0; Combat.index=[]; m=Var.lvlCoeff/2
     for i in range(5):#Création des Combat.index
         for j in range(5):
             if salles[j][i][0]==2:
@@ -417,7 +418,7 @@ def generationNiveau():
                         posP=[randint(i*(35*40)+(35*40)/2-8*40,i*(35*40)+(35*40)/2+8*40), randint(j*(35*40)+(35*40)/2-8*40,j*(35*40)+(35*40)/2+8*40)]
                         if (Var.grille[int((posP[1]+16)/40)][int((posP[0]+16)/40)]!='0' and Var.grille[int((posP[1]+16)/40)][int((posP[0]-16)/40)]!='0'
                             and Var.grille[int((posP[1]-16)/40)][int((posP[0]+16)/40)]!='0' and Var.grille[int((posP[1]-16)/40)][int((posP[0]-16)/40)]!='0'):boule=False
-                    rand=randint(0,2); Ennemi.index.append(Ennemi(n, Var.bestiaire[rand][0], posP[0], posP[1], Var.bestiaire[rand][0], Var.bestiaire[rand][1], 0, 0, Var.bestiaire[rand][2],Var.arsenal[Var.bestiaire[rand][3]][:], 
+                    rand=randint(0,2); Ennemi.index.append(Ennemi(n, Var.bestiaire[rand][0], posP[0], posP[1], Var.bestiaire[rand][0], int(Var.bestiaire[rand][1]/m), 0, 0, Var.bestiaire[rand][2],Var.arsenal[Var.bestiaire[rand][3]][:], 
                     ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[Var.bestiaire[rand][3]][1]+'/'+Var.arsenal[Var.bestiaire[rand][3]][1]+str(int(Var.arsenal[Var.bestiaire[rand][3]][2]))+'.png').resize((100, 100))), 
                     time(),0,Var.arsenal[Var.bestiaire[rand][3]][8], Var.bestiaire[rand][4], rand))
                 n+=1
@@ -436,7 +437,7 @@ def generationNiveau():
                         posP=[randint(i*(35*40)+(35*40)/2-11*40,i*(35*40)+(35*40)/2+11*40), randint(j*(35*40)+(35*40)/2-11*40,j*(35*40)+(35*40)/2+11*40)]
                         if (Var.grille[int((posP[1]+16)/40)][int((posP[0]+16)/40)]!='0' and Var.grille[int((posP[1]+16)/40)][int((posP[0]-16)/40)]!='0'
                             and Var.grille[int((posP[1]-16)/40)][int((posP[0]+16)/40)]!='0' and Var.grille[int((posP[1]-16)/40)][int((posP[0]-16)/40)]!='0'):boule=False
-                    rand=randint(0,2); Ennemi.index.append(Ennemi(n, Var.bestiaire[rand][0], posP[0], posP[1], Var.bestiaire[rand][0], Var.bestiaire[rand][1], 0, 0, Var.bestiaire[rand][2],Var.arsenal[Var.bestiaire[rand][3]][:], 
+                    rand=randint(0,2); Ennemi.index.append(Ennemi(n, Var.bestiaire[rand][0], posP[0], posP[1], Var.bestiaire[rand][0], int(Var.bestiaire[rand][1]/m), 0, 0, Var.bestiaire[rand][2],Var.arsenal[Var.bestiaire[rand][3]][:], 
                     ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[Var.bestiaire[rand][3]][1]+'/'+Var.arsenal[Var.bestiaire[rand][3]][1]+str(int(Var.arsenal[Var.bestiaire[rand][3]][2]))+'.png').resize((100, 100))), 
                     time(),0,Var.arsenal[Var.bestiaire[rand][3]][8], Var.bestiaire[rand][4], rand))
                 n+=1
@@ -449,7 +450,7 @@ def generationNiveau():
                             posP=[randint(i*(35*40)+(35*40)/2-11*40,i*(35*40)+(35*40)/2+11*40), randint(j*(35*40)+(35*40)/2-11*40,j*(35*40)+(35*40)/2+11*40)]
                             if (Var.grille[int((posP[1]+16)/40)][int((posP[0]+16)/40)]!='0' and Var.grille[int((posP[1]+16)/40)][int((posP[0]-16)/40)]!='0'
                                 and Var.grille[int((posP[1]-16)/40)][int((posP[0]+16)/40)]!='0' and Var.grille[int((posP[1]-16)/40)][int((posP[0]-16)/40)]!='0'):boule=False
-                        rand=randint(0,2); Ennemi.index.append(Ennemi(n, Var.bestiaire[rand][0], posP[0], posP[1], Var.bestiaire[rand][0], Var.bestiaire[rand][1], 0, 0, Var.bestiaire[rand][2],Var.arsenal[Var.bestiaire[rand][3]][:], 
+                        rand=randint(0,2); Ennemi.index.append(Ennemi(n, Var.bestiaire[rand][0], posP[0], posP[1], Var.bestiaire[rand][0], int(Var.bestiaire[rand][1]/m), 0, 0, Var.bestiaire[rand][2],Var.arsenal[Var.bestiaire[rand][3]][:], 
                         ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[Var.bestiaire[rand][3]][1]+'/'+Var.arsenal[Var.bestiaire[rand][3]][1]+str(int(Var.arsenal[Var.bestiaire[rand][3]][2]))+'.png').resize((100, 100))), 
                         time(),0,Var.arsenal[Var.bestiaire[rand][3]][8], Var.bestiaire[rand][4], rand))
                     boule=True
@@ -461,7 +462,7 @@ def generationNiveau():
 
             elif salles[j][i][0]==3:#Boss
                 Combat.index.append(Combat(3, 2*(35*40)+(35*40)/2, 2*(35*40)+(35*40)/2, False, 1, False)); rand=randint(3,4)
-                Ennemi.index.append(Ennemi(0, Var.bestiaire[rand][0], 2*(35*40)+(35*40)/2, 2*(35*40)+(35*40)/2, Var.bestiaire[rand][0], Var.bestiaire[rand][1], 0, 0, Var.bestiaire[rand][2],Var.arsenal[Var.bestiaire[rand][3]][:], 
+                Ennemi.index.append(Ennemi(0, Var.bestiaire[rand][0], 2*(35*40)+(35*40)/2, 2*(35*40)+(35*40)/2, Var.bestiaire[rand][0], int(Var.bestiaire[rand][1]/m), 0, 0, Var.bestiaire[rand][2],Var.arsenal[Var.bestiaire[rand][3]][:], 
                     ImageTk.PhotoImage(Image.open('sprites/armes/'+Var.arsenal[Var.bestiaire[rand][3]][1]+'/'+Var.arsenal[Var.bestiaire[rand][3]][1]+str(int(Var.arsenal[Var.bestiaire[rand][3]][2]))+'.png').resize((100, 100))), 
                     time(),0,Var.arsenal[Var.bestiaire[rand][3]][8], Var.bestiaire[rand][4], rand))
 
@@ -519,18 +520,21 @@ def clavier(event):
 
         if var=='Escape':
             if menuState[2]==True and menuState[0]=='Binds':saveConfig()
-            elif menuState[2]!=True:menuState[2]=True; print(menuState)
+            elif menuState[2]==True and menuState[0]=='lvl':menuState[0]='Main'; menuState[1]=0; menuState[3]=time()
+            elif menuState[2]!=True:menuState[2]=True
 
         if var==Var.binds[6][2]: #Interaction
 
             if menuState[2]==True:
                 if menuState[0]=='Main':
-                    if menuState[1]==0:
-                        menuState[2]=False, tk.after(5, init)
-                    if menuState[1]==1:menuState[0]='Binds'; menuState[1]=0; menuState[3]=time()
-                    if menuState[1]==2:tk.destroy()
-                if menuState[0]=='Binds':
+                    if menuState[1]==0:menuState[0]='lvl'; menuState[1]=1; menuState[3]=time()
+                    elif menuState[1]==1:menuState[0]='Binds'; menuState[1]=0; menuState[3]=time()
+                    elif menuState[1]==2:tk.destroy()
+                elif menuState[0]=='Binds':
                     if not config and (time()-menuState[3])>0.33:config=True
+                elif menuState[0]=='lvl':
+                    Var.lvlCoeff=(3.5 if menuState[1]==0 else (2 if menuState[1]==1 else 1))
+                    menuState[0]='Main'; menuState[2]=False; menuState[1]=0; tk.after(5, init)
 
             else:
                 if not state and nL and Var.Xp[1]>Var.Xp[2] and time()-Var.modList[3]>0.5:
