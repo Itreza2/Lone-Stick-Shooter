@@ -59,6 +59,10 @@ private:
 	*/
 	void draw_props();
 
+	/*
+	*/
+	void draw_character(int char_idx, Uint32* pixels);
+
 public:
 
 	/*

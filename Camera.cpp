@@ -110,6 +110,44 @@ void Camera::draw_props()
 	}
 }
 
+void Camera::draw_character(int char_idx, Uint32* pixels)
+{
+	int idx, anim, frame, dir, pos_x, pos_y, sheet_size, sprite_width, sprite_height;
+	map->char_idx[char_idx]->Get_anim(idx, anim, frame, dir);
+	map->char_idx[char_idx]->Get_pos(pos_x, pos_y);
+	sheet_size = stoi(sprites->character_anim[idx][3]);
+	sprite_width = stoi(sprites->character_anim[idx][4]);
+	sprite_height = stoi(sprites->character_anim[idx][4]);
+	pos_x -= sprite_width / 2 + top_left_x;
+	pos_y -= sprite_height / 2 + top_left_y;
+
+	Uint32* pixels_src = (Uint32*)sprites->character_sheet[idx]->pixels;
+	int current_pixel = 0;
+
+	if ((pos_x + sprite_width / 2 > top_left_x || pos_x - sprite_width / 2 < top_left_x + width) &&
+		(pos_y + sprite_height / 2 > top_left_y || pos_y - sprite_height / 2 < top_left_y + height)) {
+		for (int i = 0; i < sprite_width; i++) {
+			for (int j = 0; j < sprite_height; j++) {
+
+				if (pos_x + i >= 0 && pos_x + i < width && pos_y + j >= 0 && pos_y + j < height) {
+
+					if (dir == 1) {
+						current_pixel = (j + sprite_height * anim) * sheet_size + (i + sprite_width * frame);
+					}
+					else {
+						current_pixel = (j + sprite_height * anim) * sheet_size + ((sprite_width - i) + sprite_width * frame);
+					}
+					if (pixels_src[current_pixel] != SDL_MapRGBA(surface->format, 0, 0, 0, 0) && h_map[(pos_y + j) * width + (pos_x + i)] < 62 - j) {
+						pixels[(pos_y + j) * width + (pos_x + i)] = pixels_src[current_pixel];
+						h_map[(pos_y + j) * width + (pos_x + i)] = 62 - j;
+					}
+				}
+
+			}
+		}
+	}
+}
+
 //Placeholder
 void Camera::draw_frame(SDL_Renderer* render)
 {
@@ -120,12 +158,16 @@ void Camera::draw_frame(SDL_Renderer* render)
 	top_left_y -= (int)height / 2;
 
 	SDL_LockSurface(surface);
+	Uint32* pixels = (Uint32*)surface->pixels;
 	SDL_LockSurface(sprites->floor_sheet);
 	SDL_LockSurface(sprites->prop_sheet);
 	SDL_LockSurface(sprites->void_sheet);
 
 	this->draw_floor();
 	this->draw_props();
+	for (int i = 0; i < map->char_nb; i++) {
+		this->draw_character(i, pixels);
+	}
 
 	SDL_UnlockSurface(surface);
 	SDL_UnlockSurface(sprites->floor_sheet);

@@ -1,5 +1,37 @@
 #include "Sprite_lib.h"
 
+int load_csv(const char* src_path, vector<vector<string>>& target)
+{
+	FILE* file;
+	char car = NULL;
+	string magic;
+	vector<string> res;
+	int row_nbr = 0;
+
+	fopen_s(&file, src_path, "r");
+	if (file != NULL) {
+		car = fgetc(file);
+
+		while (car != EOF) {
+			res = { "" };
+
+			while (car != '\n') {
+				if (car == ',') {
+					res.push_back("");
+				}
+				else {
+					magic = car;
+					res.back() = res.back() + magic;
+				} car = fgetc(file);
+			} car = fgetc(file);
+			target.push_back(res);
+			row_nbr++;
+		}
+		fclose(file);
+	}
+	return row_nbr;
+}
+
 Sprite_lib::Sprite_lib()
 {	
 	//Environment
@@ -20,9 +52,22 @@ Sprite_lib::Sprite_lib()
 		cout << "Echec chargement spritesheet" << endl;
 	} void_sheet = SDL_ConvertSurfaceFormat(void_sheet, SDL_PIXELFORMAT_RGB888, 0);
 
-	//Player (temporary)
-	player_sheet = IMG_Load("Sprites\\Characters\\player1.png");
-	if (player_sheet == NULL) {
-		cout << "Echec chargement spritesheet" << endl;
-	} player_sheet = SDL_ConvertSurfaceFormat(player_sheet, SDL_PIXELFORMAT_RGB888, 0);
+	character_anim_nbr = load_csv("files\\characters\\sprites.csv", character_anim);
+	load_sprites();
+}
+
+void Sprite_lib::load_sprites()
+{
+	SDL_Surface* loaded_sheet;
+	string source_path;
+
+	for (int i = 0; i < character_anim_nbr; i++) {
+		source_path = "Sprites\\characters\\" + character_anim[i][0] + ".png";
+
+		loaded_sheet = IMG_Load(source_path.c_str());
+		if (loaded_sheet == NULL) {
+			cout << "Echec chargement spritesheet" << endl;
+		} loaded_sheet = SDL_ConvertSurfaceFormat(loaded_sheet, SDL_PIXELFORMAT_RGB888, 0);
+		character_sheet.push_back(loaded_sheet);
+	}
 }

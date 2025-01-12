@@ -39,25 +39,33 @@ int main(int argc, char** argv) {
 
 	Events evt_handler = Events();
 
-	Player car = Player(960, 540, &evt_handler);
+	Player car = Player(&sprites, 960, 540, &evt_handler);
 
-	World map = World(&car.car);
+	World map = World(&car);
 
 	int err = 0;
-	Camera cam = Camera(&car.car, &map, &sprites, rect, 768, 432, err);
+	Camera cam = Camera(&car, &map, &sprites, rect, 768, 432, err);
 
 	int quit = 0;
+
+	Uint32 last_anim_tick = SDL_GetTicks(); //I don't really know where to put that...
 	Uint32 fps_lim = SDL_GetTicks();
 	Uint32 current_time;
 	while (! quit) {
 		quit = evt_handler.catch_events();
 		car.read_inputs();
-		car.car.update_pos();
+		car.update_pos();
 
 		current_time = SDL_GetTicks();
-		if ((fps_lim - current_time) > (1000 / 60)) {
+		if ((current_time - fps_lim) > (1000 / 60)) {
 			cam.draw_frame(render);
 			fps_lim = SDL_GetTicks();
+		}
+		if ((current_time - last_anim_tick) > (100)) {
+			for (int i = 0; i < map.char_nb; i++) {
+				map.char_idx[i]->update_anim();
+			}
+			last_anim_tick = SDL_GetTicks();
 		}
 	}
 
