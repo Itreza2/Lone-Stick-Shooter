@@ -230,7 +230,7 @@ void World::place_props(int top_left_x, int top_left_y, int width)
 	cout << "gen" << endl;
 
 	for (int i = 0; i < width; i++) {
-		csv = this->CSV_read_row("files\\Ruin\\prop.csv", rand() % 3);
+		csv = CSV_read_row("files\\Ruin\\prop.csv", rand() % 3);
 		pos_x = (rand() % (width * 32)) + (top_left_y * 32);
 		pos_y = (rand() % (width * 32)) + (top_left_x * 32);
 
@@ -272,30 +272,40 @@ int World::get_collision(int x, int y)
 	else return 0;
 }
 
-vector<string> World::CSV_read_row(const char* file_path, int row_num)
+void World::check_collision()
 {
-	FILE* file;
-	char car = NULL;
-	string magic;
-	vector<string> res = {""};
+	int pos_x, pos_y, cpos_x, cpos_y, width, height;
+	int prop_x, prop_y, prop_width, prop_height;
+	int collided;
 
-	fopen_s(&file, file_path, "r");
-	if (file != NULL) {
+	for (int i = 0; i < char_nb; i++) {
+		char_idx[i]->Get_pos(cpos_x, cpos_y);
+		char_idx[i]->Get_ground_hitbox(pos_x, pos_y, width, height);
+		pos_x += cpos_y + 168;                                             //I don't know why this 168px offset is a thing...
+		pos_y += cpos_x - 168;
+
+		collided = 0;
 		
-		car = fgetc(file);
-		for (int i = 0; i < row_num; i++) {
-			while (car != '\n') car = fgetc(file);
-			car = fgetc(file);
-		} 
-		while (car != '\n') {
-			if (car == ',') {
-				res.push_back("");
-			} else {
-				magic = car;
-				res.back() = res.back() + magic;
-			} car = fgetc(file);
+		//Collision with grid-based placing (ie. walls)
+		for (int x = pos_x / 32; x <= (pos_x + width) / 32; x++) {
+			for (int y = pos_y / 32; y <= (pos_y + height) / 32; y++) {
+				if (wall_map[(y) * 175 + (x)] > 4) collided = 1;
+			}
 		}
-		fclose(file);
+		//Collision with props
+		for (int j = 0; j < props_nb; j++) {
+			prop_x = props_idx[j]->pos_y;
+			prop_y = props_idx[j]->pos_x;
+			prop_width = props_idx[j]->hbox_width;
+			prop_height = props_idx[j]->hbox_height;
+
+			if ((pos_x < prop_x + prop_width && pos_x + width > prop_x) &&
+				(pos_y < prop_y + prop_height && pos_y + height > prop_y)) {
+				collided = 1;
+			}
+		}
+		if (collided) {
+			char_idx[i]->revert_pos();
+		}
 	}
-	return res;
 }

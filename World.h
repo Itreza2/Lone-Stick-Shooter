@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Character.h"
+#include "Sprite_lib.h"
 using namespace std;
 
 struct Prop {
@@ -90,15 +91,6 @@ private:
 
 	void place_props(int top_left_x, int top_left_y, int width);
 
-	//The following methods are general tools that could be used elsewhere
-	/*
-	@Brief read a row of a given csv file
-	@param file the path of the file to read
-	@param row the position of the row to read
-	@return a vector containing the row elements as strings
-	*/
-	vector<string> CSV_read_row(const char* file_path, int row_num);
-
 public:
 
 	/*
@@ -116,9 +108,16 @@ public:
 
 	/*
 	@Brief Method used to verify if a given tile is solid or empty
+	Unused method in the current organisation
 	@param x the x coordinate of the tile
 	@param y the y coordinate of the tile
 	@return 1 if the tile is solid, otherwise 0
 	*/
 	int get_collision(int x, int y);
+
+	/*
+	@Brief Check if the characters are colliding with walls or props,
+	revert their position if it is the case
+	*/
+	void check_collision();
 };

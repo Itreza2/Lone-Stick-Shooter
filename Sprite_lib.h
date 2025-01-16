@@ -41,3 +41,11 @@ public:
 	Sprite_lib();
 };
 
+//The following methods are general tools that could be used elsewhere
+/*
+@Brief read a row of a given csv file
+@param file the path of the file to read
+@param row the position of the row to read
+@return a vector containing the row elements as strings
+*/
+vector<string> CSV_read_row(const char* file_path, int row_num);

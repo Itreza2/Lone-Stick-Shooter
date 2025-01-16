@@ -71,3 +71,32 @@ void Sprite_lib::load_sprites()
 		character_sheet.push_back(loaded_sheet);
 	}
 }
+
+vector<string> CSV_read_row(const char* file_path, int row_num)
+{
+	FILE* file;
+	char car = NULL;
+	string magic;
+	vector<string> res = { "" };
+
+	fopen_s(&file, file_path, "r");
+	if (file != NULL) {
+
+		car = fgetc(file);
+		for (int i = 0; i < row_num; i++) {
+			while (car != '\n') car = fgetc(file);
+			car = fgetc(file);
+		}
+		while (car != '\n') {
+			if (car == ',') {
+				res.push_back("");
+			}
+			else {
+				magic = car;
+				res.back() = res.back() + magic;
+			} car = fgetc(file);
+		}
+		fclose(file);
+	}
+	return res;
+}

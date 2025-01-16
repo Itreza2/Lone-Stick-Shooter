@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
 
 	Events evt_handler = Events();
 
-	Player car = Player(&sprites, 960, 540, &evt_handler);
+	Player car = Player(&sprites, 0, 960, 540, &evt_handler);
 
 	World map = World(&car);
 
@@ -55,6 +55,7 @@ int main(int argc, char** argv) {
 		quit = evt_handler.catch_events();
 		car.read_inputs();
 		car.update_pos();
+		map.check_collision();
 
 		current_time = SDL_GetTicks();
 		if ((current_time - fps_lim) > (1000 / 60)) {
