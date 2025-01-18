@@ -13,10 +13,13 @@ Character::Character(Sprite_lib* lib, int type_ref)
 	prev_pos_x = 0;
 	prev_pos_y = 0;
 	dir = 1;
+	deg = 0;
 
 	move_tic = SDL_GetTicks();
 	speed_x = 0;
 	speed_y = 0;
+
+	weapon = new(Weapon);
 }
 
 Character::Character(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y)
@@ -32,10 +35,13 @@ Character::Character(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y
 	prev_pos_x = spawn_x;
 	prev_pos_y = spawn_y;
 	dir = 1;
+	deg = 0;
 
 	move_tic = SDL_GetTicks();
 	speed_x = 0;
 	speed_y = 0;
+
+	weapon = new(Weapon);
 }
 
 void Character::Get_pos(int& res_x, int& res_y)
@@ -62,6 +68,21 @@ void Character::update_pos()
 	if (speed_y > 0) dir = 1;
 	if (speed_y < 0) dir = -1;
 
+	if (speed_y != 0) deg = 0;
+	if (speed_x > 0) {
+		if (speed_y == 0) {
+			deg = 3.1415 / 2;
+		} else {
+			deg = 3.1415 / 4;
+		}
+	} if (speed_x < 0) {
+		if (speed_y == 0) {
+			deg = - 3.1415 / 2;
+		} else {
+			deg = - 3.1415 / 4;
+		}
+	}
+
 	move_tic = SDL_GetTicks();
 }
 
@@ -79,12 +100,13 @@ void Character::Get_ground_hitbox(int& res_rel_x, int& res_rel_y, int& res_width
 	res_height = stoi(hitbox_data[4]);
 }
 
-void Character::Get_anim(int& res_idx, int& res_anim, int& res_frame, int& res_dir)
+void Character::Get_anim(int& res_idx, int& res_anim, int& res_frame, int& res_dir, float& res_deg)
 {
 	res_idx = stoi(anim_data[1]);
 	res_anim = current_anim;
 	res_frame = current_frame;
 	res_dir = dir;
+	res_deg = deg;
 }
 
 int Character::update_anim()

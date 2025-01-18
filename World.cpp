@@ -68,7 +68,7 @@ void World::generate_layer(Character* player1, int& first_x, int& first_y)
 		for (int i = 0; i < 50; i++) room_map[i] = 0;
 
 		pos_x = rand() % 5; pos_y = rand() % 5;
-		player1->set_pos(pos_y * (35) * 32 + 736, pos_x * (35) * 32 + 384);
+		player1->set_pos(pos_y * (35) * 32 + 560, pos_x * (35) * 32 + 560);
 		room_map[(pos_x * 5 + pos_y) * 2] = 1;
 		room_map[(pos_x * 5 + pos_y) * 2 + 1] = 1;
 
@@ -281,8 +281,8 @@ void World::check_collision()
 	for (int i = 0; i < char_nb; i++) {
 		char_idx[i]->Get_pos(cpos_x, cpos_y);
 		char_idx[i]->Get_ground_hitbox(pos_x, pos_y, width, height);
-		pos_x += cpos_y + 168;                                             //I don't know why this 168px offset is a thing...
-		pos_y += cpos_x - 168;
+		pos_x += cpos_y;// +168;                                             //I don't know why this 168px offset is a thing...
+		pos_y += cpos_x;// -168;
 
 		collided = 0;
 		

@@ -52,6 +52,12 @@ Sprite_lib::Sprite_lib()
 		cout << "Echec chargement spritesheet" << endl;
 	} void_sheet = SDL_ConvertSurfaceFormat(void_sheet, SDL_PIXELFORMAT_RGB888, 0);
 
+	//To put in a vector later, maybe...
+	weapons_sheet = IMG_Load("Sprites\\weapons\\2.png");
+	if (weapons_sheet == NULL) {
+		cout << "Echec chargement spritesheet" << endl;
+	} weapons_sheet = SDL_ConvertSurfaceFormat(weapons_sheet, SDL_PIXELFORMAT_RGB888, 0);
+
 	character_anim_nbr = load_csv("files\\characters\\sprites.csv", character_anim);
 	load_sprites();
 }

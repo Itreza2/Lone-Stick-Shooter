@@ -26,6 +26,8 @@ public: //temporary
 
 	SDL_Surface* void_sheet;
 
+	SDL_Surface* weapons_sheet;
+
 	unsigned int character_anim_nbr;
 
 	vector<vector<string>> character_anim;

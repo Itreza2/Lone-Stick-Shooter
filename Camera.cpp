@@ -113,19 +113,24 @@ void Camera::draw_props()
 void Camera::draw_character(int char_idx, Uint32* pixels)
 {
 	int idx, anim, frame, dir, pos_x, pos_y, sheet_size, sprite_width, sprite_height;
-	map->char_idx[char_idx]->Get_anim(idx, anim, frame, dir);
-	map->char_idx[char_idx]->Get_pos(pos_x, pos_y);
+	int wsprite_x, wsprite_y, wield_offset;
+	float deg;
+	map->char_idx[char_idx]->Get_anim(idx, anim, frame, dir, deg);
+	map->char_idx[char_idx]->Get_pos(pos_y, pos_x);
 	sheet_size = stoi(sprites->character_anim[idx][3]);
 	sprite_width = stoi(sprites->character_anim[idx][4]);
 	sprite_height = stoi(sprites->character_anim[idx][4]);
-	pos_x -= sprite_width / 2 + top_left_x;
-	pos_y -= sprite_height / 2 + top_left_y;
+	pos_y -= sprite_width / 2 + top_left_x;
+	pos_x -= sprite_height / 2 + top_left_y;
 
 	Uint32* pixels_src = (Uint32*)sprites->character_sheet[idx]->pixels;
+	Uint32* pixels_wsrc = (Uint32*)sprites->weapons_sheet->pixels;
 	int current_pixel = 0;
 
-	if ((pos_x + sprite_width / 2 > top_left_x || pos_x - sprite_width / 2 < top_left_x + width) &&
-		(pos_y + sprite_height / 2 > top_left_y || pos_y - sprite_height / 2 < top_left_y + height)) {
+	if ((pos_x + sprite_width / 2 > 0 || pos_x - sprite_width / 2 < width) &&
+		(pos_y + sprite_height / 2 > 0 || pos_y - sprite_height / 2 < height)) {
+		
+		//Character's own sprite
 		for (int i = 0; i < sprite_width; i++) {
 			for (int j = 0; j < sprite_height; j++) {
 
@@ -142,7 +147,47 @@ void Camera::draw_character(int char_idx, Uint32* pixels)
 						h_map[(pos_y + j) * width + (pos_x + i)] = 62 - j;
 					}
 				}
+			}
+		}
+		//Character's weapon sprite
+		if (map->char_idx[char_idx]->weapon != NULL) {
+			int lvl_0 = pos_y;
+			pos_x += sprite_width / 2;
+			pos_y += sprite_height / 2 + sprite_height / 10;
+			//We re-use sprite_width and sprite_height for conveniance
+			map->char_idx[char_idx]->weapon->Get_sprite(wsprite_x, wsprite_y, sprite_width, sprite_height, wield_offset);
+			//pos_x and pos_y will be the origin of our rotation
 
+			int src_x, src_y, length;
+			if (sprite_width > sprite_height) length = sprite_width;
+			else length = sprite_height;
+
+			for (int i = pos_x - length; i < pos_x + length; i++) {
+				for (int j = pos_y - length; j < pos_y + length; j++) {
+
+					//Calculation of the corresponding pixel on the source image
+					if (dir == 1) {
+						src_x = (int)((i - pos_x) * cos(deg) + (j - pos_y) * sin(deg)) + sprite_width / 2 - wield_offset;
+						src_y = (int)(-(i - pos_x) * sin(deg) + (j - pos_y) * cos(deg)) + sprite_height / 2;
+					} else {
+						src_x = (int)((i - pos_x) * cos(deg) - (j - pos_y) * sin(deg)) + sprite_width / 2 + wield_offset;
+						src_y = (int)((i - pos_x) * sin(deg) + (j - pos_y) * cos(deg)) + sprite_height / 2;
+					}
+					//cout << (62 - ((62 - length) / 2)) - (j - pos_y + length) << endl;
+					if (src_x > 0 && src_x < sprite_width && src_y > 0 && src_y < sprite_height) {
+						if (dir == 1) {
+							if (pixels_wsrc[(wsprite_y + src_y) * 420 + (wsprite_x + src_x)] != 16752479 &&  //16752479 correspond to some kind of orange
+								h_map[j * width + i] < (62 - ((62 - length) / 2)) - (j - pos_y + length) + 31) {
+								pixels[j * width + i] = pixels_wsrc[(wsprite_y + src_y) * 420 + (wsprite_x + src_x)];
+							}
+						} else {
+							if (pixels_wsrc[(wsprite_y + src_y) * 420 + ((sprite_width - src_x) + wsprite_x)] != 16752479 &&
+								h_map[j * width + i] < (62 - ((62 - length) / 2)) - (j - pos_y + length) + 31) {
+								pixels[j * width + i] = pixels_wsrc[(wsprite_y + src_y) * 420 + ((sprite_width - src_x) + wsprite_x)];
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -154,8 +199,8 @@ void Camera::draw_frame(SDL_Renderer* render)
 	for (unsigned int i = 0; i < width * height; i++) h_map[i] = 0;
 
 	target->Get_pos(top_left_x, top_left_y);
-	top_left_x -= (int)width / 2;
-	top_left_y -= (int)height / 2;
+	top_left_x -= (int)height / 2;
+	top_left_y -= (int)width / 2;
 
 	SDL_LockSurface(surface);
 	Uint32* pixels = (Uint32*)surface->pixels;

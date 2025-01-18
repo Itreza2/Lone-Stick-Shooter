@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include <cmath>
 #include <iostream>
 
 #include "Character.h"
