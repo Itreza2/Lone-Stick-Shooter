@@ -59,6 +59,8 @@ Sprite_lib::Sprite_lib()
 	} weapons_sheet = SDL_ConvertSurfaceFormat(weapons_sheet, SDL_PIXELFORMAT_RGB888, 0);
 
 	character_anim_nbr = load_csv("files\\characters\\sprites.csv", character_anim);
+	bullet_anim_nbr = load_csv("files\\bullets\\anims.csv", bullet_anim);
+
 	load_sprites();
 }
 
@@ -75,6 +77,15 @@ void Sprite_lib::load_sprites()
 			cout << "Echec chargement spritesheet" << endl;
 		} loaded_sheet = SDL_ConvertSurfaceFormat(loaded_sheet, SDL_PIXELFORMAT_RGB888, 0);
 		character_sheet.push_back(loaded_sheet);
+	}
+	for (int i = 0; i < 8; i++) {
+		source_path = "Sprites\\bullets\\" + to_string(i) + ".png";
+
+		loaded_sheet = IMG_Load(source_path.c_str());
+		if (loaded_sheet == NULL) {
+			cout << "Echec chargement spritesheet" << endl;
+		} loaded_sheet = SDL_ConvertSurfaceFormat(loaded_sheet, SDL_PIXELFORMAT_RGB888, 0);
+		bullet_sheet.push_back(loaded_sheet);
 	}
 }
 

@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <vector>
+#include <string>
 #include <iostream>
 
 using namespace std;
@@ -33,6 +34,12 @@ public: //temporary
 	vector<vector<string>> character_anim;
 
 	vector<SDL_Surface*> character_sheet;
+
+	unsigned int bullet_anim_nbr;
+
+	vector<vector<string>> bullet_anim;
+
+	vector<SDL_Surface*> bullet_sheet;
 
 private:
 

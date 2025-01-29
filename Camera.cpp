@@ -39,6 +39,7 @@ int Camera::draw_floor()
 
 	//Draw the floor tiles
 	int tile;
+	int time_tic = (int)SDL_GetTicks();
 	for (unsigned int i = 0; i <  height; i++) {
 		for (unsigned int j = 0; j <  width; j++) {
 			if (((i + top_left_x) > 0) && ((i + top_left_x) < (175 * 32)) && ((j + top_left_y) > 0) && ((j + top_left_y) < (175 * 32))
@@ -46,7 +47,7 @@ int Camera::draw_floor()
 				tile = map->get_tile((i + top_left_x) / 32, (j + top_left_y) / 32);
 				pixels[i * width + j] = pixels_src[((int)(tile / 16) * 32 + ((i + top_left_x) % 32)) * 512 + ((int)(tile % 16) * 32 + ((j + top_left_y) % 32))];
 			}
-			else pixels[i * width + j] = pixels_void[((i + top_left_x / 2) % 512) * 512 + ((j + top_left_y / 2 + (int)SDL_GetTicks() / 50) % 512)];
+			else pixels[i * width + j] = pixels_void[((i + top_left_x / 2) % 512) * 512 + ((j + top_left_y / 2 + time_tic / 50) % 512)];
 		}
 	}
 	//Draw the solid tiles
@@ -193,6 +194,58 @@ void Camera::draw_character(int char_idx, Uint32* pixels)
 	}
 }
 
+void Camera::draw_bullet(int proj_idx, Uint32* pixels)
+{
+	int idx, frame, dir, pos_x, pos_y, sprite_width, sheet, anim_x, anim_y;
+	float deg;
+	map->proj_idx[proj_idx]->Get_anim(idx, sheet, frame, dir, deg);
+	map->proj_idx[proj_idx]->Get_pos(pos_x, pos_y);
+	sprite_width = stoi(sprites->bullet_anim[idx][4]);
+	anim_x = stoi(sprites->bullet_anim[idx][2]);
+	anim_y = stoi(sprites->bullet_anim[idx][3]);
+	pos_y -= sprite_width / 2 + top_left_x;
+	pos_x -= sprite_width / 2 + top_left_y;
+
+	Uint32* pixels_src = (Uint32*)sprites->bullet_sheet[sheet]->pixels;
+	int current_pixel = 0;
+	int src_x, src_y;
+
+	if ((pos_x + sprite_width / 2 > 0 || pos_x - sprite_width / 2 < width) &&
+		(pos_y + sprite_width / 2 > 0 || pos_y - sprite_width / 2 < height)) {
+
+		//Bullet's sprite
+		for (int i = -sprite_width; i < sprite_width; i++) {
+			for (int j = -sprite_width; j < sprite_width; j++) {
+
+				//Calculation of the corresponding pixel on the source image
+				if (dir == 1) {
+					src_x = (int)((i) * cos(deg) + (j) * sin(deg)) + sprite_width;
+					src_y = (int)(-(i) * sin(deg) + (j) * cos(deg)) + sprite_width;
+				}
+				else {
+					src_x = (int)((i) * cos(deg) - (j) * sin(deg)) + sprite_width;
+					src_y = (int)((i) * sin(deg) + (j) * cos(deg)) + sprite_width;
+				}
+
+				if (pos_x + i >= 0 && pos_x + i < width && pos_y + j >= 0 && pos_y + j < height) {
+					if (src_x > 0 && src_x < sprite_width && src_y > 0 && src_y < sprite_width) {
+						if (dir == 1) {
+							current_pixel = (src_y + anim_y) * 640 + (src_x + anim_x + sprite_width * frame);
+						}
+						else {
+							current_pixel = (src_y + anim_y) * 640 + ((sprite_width - src_x) + anim_x + sprite_width * frame);
+						}
+						if (pixels_src[current_pixel] != SDL_MapRGBA(surface->format, 0, 0, 0, 0) && h_map[(pos_y + j) * width + (pos_x + i)] < 62 - j) {
+							pixels[(pos_y + j) * width + (pos_x + i)] = pixels_src[current_pixel];
+							h_map[(pos_y + j) * width + (pos_x + i)] = 62 - j;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 //Placeholder
 void Camera::draw_frame(SDL_Renderer* render)
 {
@@ -213,6 +266,9 @@ void Camera::draw_frame(SDL_Renderer* render)
 	for (int i = 0; i < map->char_nb; i++) {
 		this->draw_character(i, pixels);
 	}
+	for (int i = 0; i < map->proj_nb; i++) {
+		this->draw_bullet(i, pixels);
+	}
 
 	SDL_UnlockSurface(surface);
 	SDL_UnlockSurface(sprites->floor_sheet);
@@ -220,8 +276,6 @@ void Camera::draw_frame(SDL_Renderer* render)
 	SDL_UnlockSurface(sprites->void_sheet);
 
 	SDL_Texture* text = SDL_CreateTextureFromSurface(render, surface);
-	SDL_RenderClear(render);
-	SDL_RenderCopy(render, text, &render_rect, NULL);
-	SDL_RenderPresent(render);
+	SDL_RenderCopy(render, text, NULL, &render_rect);
 	SDL_DestroyTexture(text);
 }

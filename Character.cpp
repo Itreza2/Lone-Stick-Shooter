@@ -19,7 +19,8 @@ Character::Character(Sprite_lib* lib, int type_ref)
 	speed_x = 0;
 	speed_y = 0;
 
-	weapon = new(Weapon);
+	weapon = new Weapon(0);
+	is_shooting = 0;
 }
 
 Character::Character(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y)
@@ -41,7 +42,8 @@ Character::Character(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y
 	speed_x = 0;
 	speed_y = 0;
 
-	weapon = new(Weapon);
+	weapon = new Weapon(rand() % 4);
+	is_shooting = 0;
 }
 
 void Character::Get_pos(int& res_x, int& res_y)
@@ -157,5 +159,9 @@ void Player::read_inputs()
 		if (keyboard->is_pressed[2] || keyboard->is_pressed[3]) newspeed_y -= 141;
 		else newspeed_y -= 200;
 	}
-	this->update_speed(newspeed_x, newspeed_y);
+	if (keyboard->is_pressed[4]) {
+		is_shooting = 1;
+	} else is_shooting = 0;
+
+	update_speed(newspeed_x, newspeed_y);
 }

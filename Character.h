@@ -33,7 +33,7 @@ protected:
 	*/
 	vector<string> anim_data;
 	int current_anim;
-	int current_frame;
+	int current_frame; 
 
 	/*
 	Contain the informations relative to the hitbox of the character
@@ -46,6 +46,7 @@ protected:
 
 public:
 	Weapon* weapon;
+	int is_shooting;
 
 public:
 	Character(Sprite_lib* lib, int type_ref);

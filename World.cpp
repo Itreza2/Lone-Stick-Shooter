@@ -11,6 +11,9 @@ World::World(Character* player1)
 	char_idx = { player1 };
 	char_nb = 1;
 
+	proj_idx = { };
+	proj_nb = 0;
+
 	room_map = (char*)malloc(sizeof(char) * 50);
 	if (room_map != NULL) {
 		for (int i = 0; i < 50; i++) room_map[i] = 0;
@@ -48,7 +51,7 @@ void World::generate_tiles()
 			tile_map[i] = ((rand() % 8) + 8) * 16 + ((rand() % 8) + 8);
 			break;
 		case 5://Walls (or blocks with grid-based collision anyway)
-			tile_map[i] = 0;
+			tile_map[i] = rand() % 3;
 			break;
 		}
 	}
@@ -279,6 +282,7 @@ void World::check_collision()
 	int collided;
 
 	for (int i = 0; i < char_nb; i++) {
+
 		char_idx[i]->Get_pos(cpos_x, cpos_y);
 		char_idx[i]->Get_ground_hitbox(pos_x, pos_y, width, height);
 		pos_x += cpos_y;// +168;                                             //I don't know why this 168px offset is a thing...

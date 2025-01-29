@@ -64,6 +64,8 @@ private:
 	*/
 	void draw_character(int char_idx, Uint32* pixels);
 
+	void draw_bullet(int proj_idx, Uint32* pixels);
+
 public:
 
 	/*

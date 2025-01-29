@@ -56,6 +56,12 @@ public: //break the principle of encapsulation but... I don't care
 	//The number of characters on the map
 	int char_nb;
 
+	//A vector containing a pointer torward every character on the map
+	vector<Bullet*> proj_idx;
+
+	//The number of characters on the map
+	int proj_nb;
+
 private:
 	/*
 	@Brief randomly generate @m tile_map from @m wall_map
