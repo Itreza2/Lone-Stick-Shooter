@@ -22,12 +22,16 @@ vector<Bullet*> Weapon::shoot(int pos_x, int pos_y, float angle, int dir, int& n
 {
 	vector<Bullet*> res = {};
 	float disp;
+	pos_y += 8;
 
 	if (SDL_GetTicks() - shot_tick > stoi(weapon_data[1])) {
 		n = stoi(weapon_data[2]);
+		int dist_x = cos(angle) * stoi(weapon_data[4]) * dir;
+		int dist_y = sin(angle) * stoi(weapon_data[4]);
+
 		for (int i = 0; i < stoi(weapon_data[2]); i++) {
 			disp = (float)(rand() % (stoi(weapon_data[3]) * 2) - stoi(weapon_data[3])) / 180 * (3.1415);
-			res.push_back(new Bullet(stoi(weapon_data[0]), pos_x, pos_y, angle + disp, dir));
+			res.push_back(new Bullet(stoi(weapon_data[0]), pos_x + dist_x, pos_y + dist_y, angle + disp, dir));
 		}
 		shot_tick = SDL_GetTicks();
 	}

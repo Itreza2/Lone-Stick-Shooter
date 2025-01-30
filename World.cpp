@@ -312,4 +312,27 @@ void World::check_collision()
 			char_idx[i]->revert_pos();
 		}
 	}
+	int nb_erased = 0;
+	for (int i = 0; i < proj_nb; i++) {
+		int pos_x, pos_y, width;
+
+		proj_idx[i]->Get_pos(pos_x, pos_y);
+		width = 4;
+		pos_x -= width;
+		pos_y -= width - 20;
+
+		collided = 0;
+
+		//Collision with grid-based placing (ie. walls)
+		for (int x = pos_x / 32; x <= (pos_x + width * 2) / 32; x++) {
+			for (int y = pos_y / 32; y <= (pos_y + width * 2) / 32; y++){
+				if (wall_map[(y) * 175 + (x)] > 4) collided = 1;
+			}
+		}
+		if (collided) {
+			proj_idx.erase(proj_idx.begin() + (i - nb_erased));
+			nb_erased++;
+			proj_nb--;
+		}
+	}
 }

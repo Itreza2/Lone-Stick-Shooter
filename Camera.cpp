@@ -203,8 +203,8 @@ void Camera::draw_bullet(int proj_idx, Uint32* pixels)
 	sprite_width = stoi(sprites->bullet_anim[idx][4]);
 	anim_x = stoi(sprites->bullet_anim[idx][2]);
 	anim_y = stoi(sprites->bullet_anim[idx][3]);
-	pos_y -= sprite_width / 2 + top_left_x;
-	pos_x -= sprite_width / 2 + top_left_y;
+	pos_y -= top_left_x;
+	pos_x -= top_left_y;
 
 	Uint32* pixels_src = (Uint32*)sprites->bullet_sheet[sheet]->pixels;
 	int current_pixel = 0;
@@ -219,12 +219,12 @@ void Camera::draw_bullet(int proj_idx, Uint32* pixels)
 
 				//Calculation of the corresponding pixel on the source image
 				if (dir == 1) {
-					src_x = (int)((i) * cos(deg) + (j) * sin(deg)) + sprite_width;
-					src_y = (int)(-(i) * sin(deg) + (j) * cos(deg)) + sprite_width;
+					src_x = (int)((i) * cos(deg) + (j) * sin(deg)) + sprite_width / 2;
+					src_y = (int)(-(i) * sin(deg) + (j) * cos(deg)) + sprite_width / 2;
 				}
 				else {
-					src_x = (int)((i) * cos(deg) - (j) * sin(deg)) + sprite_width;
-					src_y = (int)((i) * sin(deg) + (j) * cos(deg)) + sprite_width;
+					src_x = (int)((i) * cos(deg) - (j) * sin(deg)) + sprite_width / 2;
+					src_y = (int)((i) * sin(deg) + (j) * cos(deg)) + sprite_width / 2;
 				}
 
 				if (pos_x + i >= 0 && pos_x + i < width && pos_y + j >= 0 && pos_y + j < height) {
@@ -235,9 +235,9 @@ void Camera::draw_bullet(int proj_idx, Uint32* pixels)
 						else {
 							current_pixel = (src_y + anim_y) * 640 + ((sprite_width - src_x) + anim_x + sprite_width * frame);
 						}
-						if (pixels_src[current_pixel] != SDL_MapRGBA(surface->format, 0, 0, 0, 0) && h_map[(pos_y + j) * width + (pos_x + i)] < 62 - j) {
+						if (pixels_src[current_pixel] != SDL_MapRGBA(surface->format, 0, 0, 0, 0) && h_map[(pos_y + j) * width + (pos_x + i)] < 30) {
 							pixels[(pos_y + j) * width + (pos_x + i)] = pixels_src[current_pixel];
-							h_map[(pos_y + j) * width + (pos_x + i)] = 62 - j;
+							h_map[(pos_y + j) * width + (pos_x + i)] = 30;
 						}
 					}
 				}
