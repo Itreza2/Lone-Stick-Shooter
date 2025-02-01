@@ -83,11 +83,13 @@ int Bullet::update_pos()
 	prev_pos_y = pos_y;
 
 	float quantum = (float)(SDL_GetTicks() - move_tick) / 1000;
-	pos_x += speed_x * quantum;
-	pos_y += speed_y * quantum;
+	float lifetime = (float)(SDL_GetTicks() - spawn_tick) / 1000;
+	//cout << (1 - quantum * ((float)stoi(bullet_data[4]) / static_cast<float>(100))) << endl;
+	pos_x += speed_x * (1 - lifetime * ((float)stoi(bullet_data[4]) / static_cast<float>(100))) * quantum;
+	pos_y += speed_y * (1 - lifetime * ((float)stoi(bullet_data[4]) / static_cast<float>(100))) * quantum;
 	move_tick = SDL_GetTicks();
 
-	if (SDL_GetTicks() - spawn_tick > static_cast<long long>(stoi(bullet_data[3])) * 1000) {
+	if (lifetime > stof(bullet_data[3])) {
 		return 1;
 	}
 	else return 0;
@@ -116,4 +118,17 @@ void Bullet::Get_anim(int& res_idx, int& res_sheet, int& res_frame, int& res_dir
 	res_frame = current_frame;
 	res_dir = dir;
 	res_deg = deg;
+}
+
+vector<Bullet*> Bullet::last_will(int& n)
+{
+	vector<Bullet*> res = {};
+	float disp;
+
+	n = stoi(bullet_data[9]);
+	for (int i = 0; i < stoi(bullet_data[9]); i++) {
+		disp = (float)(rand() % (stoi(bullet_data[11]) * 2) - stoi(bullet_data[11])) / 180 * (3.1415);
+		res.push_back(new Bullet(stoi(bullet_data[10]), pos_x, pos_y, deg + disp, dir));
+	}
+	return res;
 }

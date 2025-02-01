@@ -71,9 +71,16 @@ int main(int argc, char** argv) {
 			}
 		}
 
+		int n;
 		int nb_erased = 0;
 		for (int i = 0; i < map.proj_nb; i++) {
 			if (map.proj_idx[i-nb_erased]->update_pos()) {
+				n = 0;
+				vector<Bullet*> res = map.proj_idx[i - nb_erased]->last_will(n);
+				for (int i = 0; i < n; i++) {
+					map.proj_idx.push_back(res[i]);
+					map.proj_nb++;
+				}
 				map.proj_idx.erase(map.proj_idx.begin() + (i - nb_erased));
 				map.proj_nb--;
 			}

@@ -19,7 +19,7 @@ Character::Character(Sprite_lib* lib, int type_ref)
 	speed_x = 0;
 	speed_y = 0;
 
-	weapon = new Weapon(0);
+	weapon = new Weapon(rand() % 5);
 	is_shooting = 0;
 }
 

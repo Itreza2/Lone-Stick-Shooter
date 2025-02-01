@@ -50,6 +50,8 @@ public:
 	int update_anim();
 
 	void Get_anim(int& res_idx, int& res_sheet, int& res_frame, int& res_dir, float& res_deg);
+
+	vector<Bullet*> last_will(int& n);
 };
 
 class Weapon

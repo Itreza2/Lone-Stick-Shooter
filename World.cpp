@@ -313,10 +313,11 @@ void World::check_collision()
 		}
 	}
 	int nb_erased = 0;
+	int n;
 	for (int i = 0; i < proj_nb; i++) {
 		int pos_x, pos_y, width;
 
-		proj_idx[i]->Get_pos(pos_x, pos_y);
+		proj_idx[i - nb_erased]->Get_pos(pos_x, pos_y);
 		width = 4;
 		pos_x -= width;
 		pos_y -= width - 20;
@@ -330,6 +331,13 @@ void World::check_collision()
 			}
 		}
 		if (collided) {
+			proj_idx[i - nb_erased]->revert_pos();
+			vector<Bullet*> res = proj_idx[i - nb_erased]->last_will(n);
+			for (int j = 0; j < n; j++) {
+				proj_idx.push_back(res[j]);
+				proj_nb++;
+			}
+
 			proj_idx.erase(proj_idx.begin() + (i - nb_erased));
 			nb_erased++;
 			proj_nb--;
