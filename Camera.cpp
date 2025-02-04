@@ -126,6 +126,7 @@ void Camera::draw_character(int char_idx, Uint32* pixels)
 
 	Uint32* pixels_src = (Uint32*)sprites->character_sheet[idx]->pixels;
 	Uint32* pixels_wsrc = (Uint32*)sprites->weapons_sheet->pixels;
+	Uint32* pixels_msrc = (Uint32*)sprites->muzzle_sheet->pixels;
 	int current_pixel = 0;
 
 	if ((pos_x + sprite_width / 2 > 0 || pos_x - sprite_width / 2 < width) &&
@@ -152,7 +153,6 @@ void Camera::draw_character(int char_idx, Uint32* pixels)
 		}
 		//Character's weapon sprite
 		if (map->char_idx[char_idx]->weapon != NULL) {
-			int lvl_0 = pos_y;
 			pos_x += sprite_width / 2;
 			pos_y += sprite_height / 2 + sprite_height / 10;
 			//We re-use sprite_width and sprite_height for conveniance
@@ -185,6 +185,54 @@ void Camera::draw_character(int char_idx, Uint32* pixels)
 							if (pixels_wsrc[(wsprite_y + src_y) * 420 + ((sprite_width - src_x) + wsprite_x)] != 16752479 &&
 								h_map[j * width + i] < (62 - ((62 - length) / 2)) - (j - pos_y + length) + 31) {
 								pixels[j * width + i] = pixels_wsrc[(wsprite_y + src_y) * 420 + ((sprite_width - src_x) + wsprite_x)];
+							}
+						}
+					}
+				}
+			}
+			//Draw the muzzle flash when the weapon has been fired
+			if (map->char_idx[char_idx]->weapon->muzzle_flag) {
+				map->char_idx[char_idx]->weapon->muzzle_flag--;
+
+				int src_x, src_y, length, radius;
+				int muzzle_type = map->char_idx[char_idx]->weapon->Get_muzzle(radius);
+				wsprite_x = stoi(sprites->muzzle_data[muzzle_type][1]);
+				wsprite_y = stoi(sprites->muzzle_data[muzzle_type][2]);
+				sprite_width = stoi(sprites->muzzle_data[muzzle_type][3]);
+				sprite_height = stoi(sprites->muzzle_data[muzzle_type][4]);
+
+				if (sprite_width > sprite_height) length = sprite_width;
+				else length = sprite_height;
+
+				pos_x += cos(deg) * (radius) * dir;
+				pos_y += sin(deg) * (radius);
+
+				for (int i = pos_x - length; i < pos_x + length; i++) {
+					for (int j = pos_y - length; j < pos_y + length; j++) {
+
+						//Calculation of the corresponding pixel on the source image
+						if (dir == 1) {
+							src_x = (int)((i - pos_x) * cos(deg) + (j - pos_y) * sin(deg)) + sprite_width / 2;
+							src_y = (int)(-(i - pos_x) * sin(deg) + (j - pos_y) * cos(deg)) + sprite_height / 2;
+						}
+						else {
+							src_x = (int)((i - pos_x) * cos(deg) - (j - pos_y) * sin(deg)) + sprite_width / 2;
+							src_y = (int)((i - pos_x) * sin(deg) + (j - pos_y) * cos(deg)) + sprite_height / 2;
+						}
+						if (src_x > 0 && src_x < sprite_width && src_y > 0 && src_y < sprite_height) {
+							if (dir == 1) {
+								if (pixels_msrc[(wsprite_y + src_y) * 376 + (wsprite_x + src_x)] != SDL_MapRGBA(surface->format, 0, 0, 0, 0) &&
+									h_map[j * width + i] < 32) {
+									pixels[j * width + i] = pixels_msrc[(wsprite_y + src_y) * 376 + (wsprite_x + src_x)];
+									h_map[j * width + i] = 32;
+								}
+							}
+							else {
+								if (pixels_msrc[(wsprite_y + src_y) * 376 + ((sprite_width - src_x) + wsprite_x)] != SDL_MapRGBA(surface->format, 0, 0, 0, 0) &&
+									h_map[j * width + i] < 32) {
+									pixels[j * width + i] = pixels_msrc[(wsprite_y + src_y) * 376 + ((sprite_width - src_x) + wsprite_x)];
+									h_map[j * width + i] = 32;
+								}
 							}
 						}
 					}

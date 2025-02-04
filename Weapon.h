@@ -70,9 +70,14 @@ private:
 	vector<string> weapon_data;
 
 public:
+	int muzzle_flag;
+
+public:
 	Weapon(int type_);
 
 	void Get_sprite(int& x, int& y, int& width, int& height, int& offset);
+
+	int Get_muzzle(int& size);
 
 	vector<Bullet*> shoot(int pos_x, int pos_y, float angle, int dir, int& n);
 };

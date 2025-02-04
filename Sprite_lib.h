@@ -35,6 +35,10 @@ public: //temporary
 
 	vector<SDL_Surface*> character_sheet;
 
+	vector<vector<string>> muzzle_data;
+
+	SDL_Surface* muzzle_sheet;
+
 	unsigned int bullet_anim_nbr;
 
 	vector<vector<string>> bullet_anim;

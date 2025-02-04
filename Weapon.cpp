@@ -4,6 +4,7 @@ Weapon::Weapon(int type_)
 {
 	type = type_;
 	shot_tick = 0;
+	muzzle_flag = 0;
 
 	sprite_data = CSV_read_row("files\\weapons\\sprites.csv", type_);
 	weapon_data = CSV_read_row("files\\weapons\\data.csv", type_);
@@ -16,6 +17,13 @@ void Weapon::Get_sprite(int& x, int& y, int& width, int& height, int& offset)
 	width = stoi(sprite_data[4]);
 	height = stoi(sprite_data[5]);
 	offset = stoi(sprite_data[6]);
+}
+
+int Weapon::Get_muzzle(int& size)
+{
+	size = stoi(weapon_data[4]);
+
+	return stoi(weapon_data[6]);
 }
 
 vector<Bullet*> Weapon::shoot(int pos_x, int pos_y, float angle, int dir, int& n)
@@ -34,6 +42,7 @@ vector<Bullet*> Weapon::shoot(int pos_x, int pos_y, float angle, int dir, int& n
 			res.push_back(new Bullet(stoi(weapon_data[0]), pos_x + dist_x, pos_y + dist_y, angle + disp, dir));
 		}
 		shot_tick = SDL_GetTicks();
+		if (!muzzle_flag) muzzle_flag = 3;
 	}
 	return res;
 }
