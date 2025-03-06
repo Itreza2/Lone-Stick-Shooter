@@ -136,6 +136,7 @@
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Events.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Room.cpp" />
     <ClCompile Include="Sprite_lib.cpp" />
     <ClCompile Include="Weapon.cpp" />
     <ClCompile Include="World.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="Character.h" />
     <ClInclude Include="Events.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Room.h" />
     <ClInclude Include="Sprite_lib.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="World.h" />

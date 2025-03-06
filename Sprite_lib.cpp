@@ -47,14 +47,26 @@ Sprite_lib::Sprite_lib()
 	if (prop_sheet == NULL) {
 		cout << "Echec chargement spritesheet" << endl;
 	} prop_sheet = SDL_ConvertSurfaceFormat(prop_sheet, SDL_PIXELFORMAT_RGB888, 0);
-	void_sheet = IMG_Load("Sprites\\Ruin\\void.png");
-	if (void_sheet == NULL) {
-		cout << "Echec chargement spritesheet" << endl;
-	} void_sheet = SDL_ConvertSurfaceFormat(void_sheet, SDL_PIXELFORMAT_RGB888, 0);
 	muzzle_sheet = IMG_Load("Sprites\\weapons\\muzzle.png");
 	if (muzzle_sheet == NULL) {
 		cout << "Echec chargement spritesheet" << endl;
 	} muzzle_sheet = SDL_ConvertSurfaceFormat(muzzle_sheet, SDL_PIXELFORMAT_RGB888, 0);
+
+	void_sheet_nbr = 40;
+	char magicD, magicU;
+	string file_path;
+	for (int i = 0; i < void_sheet_nbr; i++) {
+		magicD = i / (int)10 + '0';
+		magicU = i % 10 + '0';
+		file_path = "Sprites\\Ruin\\void\\00";
+		file_path = file_path + magicD;
+		file_path = file_path + magicU;
+		file_path = file_path + ".png";
+		void_sheet.push_back(IMG_Load(file_path.c_str()));
+		if (void_sheet[i] == NULL) {
+			cout << "Echec chargement spritesheet" << endl;
+		} void_sheet[i] = SDL_ConvertSurfaceFormat(void_sheet[i], SDL_PIXELFORMAT_RGB888, 0);
+	}
 
 	//To put in a vector later, maybe...
 	weapons_sheet = IMG_Load("Sprites\\weapons\\2.png");

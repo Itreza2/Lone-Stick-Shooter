@@ -35,19 +35,20 @@ int Camera::draw_floor()
 	Uint32* pixels = (Uint32*)surface->pixels;
 	Uint32* pixels_src = (Uint32*)sprites->floor_sheet->pixels;
 	Uint32* pixels_w = (Uint32*)sprites->wall_sheet->pixels;
-	Uint32* pixels_void = (Uint32*)sprites->void_sheet->pixels;
+	Uint32* pixels_void = (Uint32*)sprites->void_sheet[(int)(SDL_GetTicks() / 60) % 40]->pixels;
 
 	//Draw the floor tiles
 	int tile;
-	int time_tic = (int)SDL_GetTicks();
 	for (unsigned int i = 0; i <  height; i++) {
 		for (unsigned int j = 0; j <  width; j++) {
 			if (((i + top_left_x) > 0) && ((i + top_left_x) < (175 * 32)) && ((j + top_left_y) > 0) && ((j + top_left_y) < (175 * 32))
 				&& ! map->get_collision((i + top_left_x) / 32, (j + top_left_y) / 32) && map->get_tile((i + top_left_x) / 32, (j + top_left_y) / 32) > 0) {
 				tile = map->get_tile((i + top_left_x) / 32, (j + top_left_y) / 32);
+				
 				pixels[i * width + j] = pixels_src[((int)(tile / 16) * 32 + ((i + top_left_x) % 32)) * 512 + ((int)(tile % 16) * 32 + ((j + top_left_y) % 32))];
 			}
-			else pixels[i * width + j] = pixels_void[((i + top_left_x / 2) % 512) * 512 + ((j + top_left_y / 2 + time_tic / 50) % 512)];
+			//Void
+			else pixels[i * width + j] = pixels_void[((i + top_left_x) % 128) * 128 + ((j + top_left_y) % 128)];
 		}
 	}
 	//Draw the solid tiles
@@ -115,6 +116,7 @@ void Camera::draw_character(int char_idx, Uint32* pixels)
 {
 	int idx, anim, frame, dir, pos_x, pos_y, sheet_size, sprite_width, sprite_height;
 	int wsprite_x, wsprite_y, wield_offset;
+	int dmg_flag = map->char_idx[char_idx]->is_damaged();
 	float deg;
 	map->char_idx[char_idx]->Get_anim(idx, anim, frame, dir, deg);
 	map->char_idx[char_idx]->Get_pos(pos_y, pos_x);
@@ -145,7 +147,10 @@ void Camera::draw_character(int char_idx, Uint32* pixels)
 						current_pixel = (j + sprite_height * anim) * sheet_size + ((sprite_width - i) + sprite_width * frame);
 					}
 					if (pixels_src[current_pixel] != SDL_MapRGBA(surface->format, 0, 0, 0, 0) && h_map[(pos_y + j) * width + (pos_x + i)] < 62 - j) {
-						pixels[(pos_y + j) * width + (pos_x + i)] = pixels_src[current_pixel];
+						if (dmg_flag)
+							pixels[(pos_y + j) * width + (pos_x + i)] = SDL_MapRGBA(surface->format, 255, 255, 255, 255);
+						else
+							pixels[(pos_y + j) * width + (pos_x + i)] = pixels_src[current_pixel];
 						h_map[(pos_y + j) * width + (pos_x + i)] = 62 - j;
 					}
 				}
@@ -175,16 +180,23 @@ void Camera::draw_character(int char_idx, Uint32* pixels)
 						src_y = (int)((i - pos_x) * sin(deg) + (j - pos_y) * cos(deg)) + sprite_height / 2;
 					}
 					//cout << (62 - ((62 - length) / 2)) - (j - pos_y + length) << endl;
-					if (src_x > 0 && src_x < sprite_width && src_y > 0 && src_y < sprite_height) {
+					if (src_x > 0 && src_x < sprite_width && src_y > 0 && src_y < sprite_height &&
+						i > 0 && i < width && j >=0  && j < height) {
 						if (dir == 1) {
 							if (pixels_wsrc[(wsprite_y + src_y) * 420 + (wsprite_x + src_x)] != 16752479 &&  //16752479 correspond to some kind of orange
 								h_map[j * width + i] < (62 - ((62 - length) / 2)) - (j - pos_y + length) + 31) {
-								pixels[j * width + i] = pixels_wsrc[(wsprite_y + src_y) * 420 + (wsprite_x + src_x)];
+								if (!dmg_flag)
+									pixels[j * width + i] = pixels_wsrc[(wsprite_y + src_y) * 420 + (wsprite_x + src_x)];
+								else
+									pixels[j * width + i] = SDL_MapRGBA(surface->format, 255, 255, 255, 255);
 							}
 						} else {
 							if (pixels_wsrc[(wsprite_y + src_y) * 420 + ((sprite_width - src_x) + wsprite_x)] != 16752479 &&
 								h_map[j * width + i] < (62 - ((62 - length) / 2)) - (j - pos_y + length) + 31) {
-								pixels[j * width + i] = pixels_wsrc[(wsprite_y + src_y) * 420 + ((sprite_width - src_x) + wsprite_x)];
+								if (!dmg_flag)
+									pixels[j * width + i] = pixels_wsrc[(wsprite_y + src_y) * 420 + ((sprite_width - src_x) + wsprite_x)];
+								else
+									pixels[j * width + i] = SDL_MapRGBA(surface->format, 255, 255, 255, 255);
 							}
 						}
 					}
@@ -219,7 +231,8 @@ void Camera::draw_character(int char_idx, Uint32* pixels)
 							src_x = (int)((i - pos_x) * cos(deg) - (j - pos_y) * sin(deg)) + sprite_width / 2;
 							src_y = (int)((i - pos_x) * sin(deg) + (j - pos_y) * cos(deg)) + sprite_height / 2;
 						}
-						if (src_x > 0 && src_x < sprite_width && src_y > 0 && src_y < sprite_height) {
+						if (src_x > 0 && src_x < sprite_width && src_y > 0 && src_y < sprite_height &&
+							i > 0 && i < width && j >= 0 && j < height) {
 							if (dir == 1) {
 								if (pixels_msrc[(wsprite_y + src_y) * 376 + (wsprite_x + src_x)] != SDL_MapRGBA(surface->format, 0, 0, 0, 0) &&
 									h_map[j * width + i] < 32) {
@@ -300,14 +313,13 @@ void Camera::draw_frame(SDL_Renderer* render)
 	for (unsigned int i = 0; i < width * height; i++) h_map[i] = 0;
 
 	target->Get_pos(top_left_x, top_left_y);
-	top_left_x -= (int)height / 2;
-	top_left_y -= (int)width / 2;
+	top_left_x -= (int)height / 2 - offset_x;
+	top_left_y -= (int)width / 2 - offset_y;
 
 	SDL_LockSurface(surface);
 	Uint32* pixels = (Uint32*)surface->pixels;
 	SDL_LockSurface(sprites->floor_sheet);
 	SDL_LockSurface(sprites->prop_sheet);
-	SDL_LockSurface(sprites->void_sheet);
 
 	this->draw_floor();
 	this->draw_props();
@@ -321,7 +333,6 @@ void Camera::draw_frame(SDL_Renderer* render)
 	SDL_UnlockSurface(surface);
 	SDL_UnlockSurface(sprites->floor_sheet);
 	SDL_UnlockSurface(sprites->prop_sheet);
-	SDL_UnlockSurface(sprites->void_sheet);
 
 	SDL_Texture* text = SDL_CreateTextureFromSurface(render, surface);
 	SDL_RenderCopy(render, text, NULL, &render_rect);

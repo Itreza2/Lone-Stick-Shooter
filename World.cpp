@@ -5,11 +5,14 @@ World::World(Character* player1)
 {
 	int first_x, first_y;
 
+	rooms_idx = {};
+	rooms_nb = 0;
+
 	props_idx = {};
 	props_nb = 0;
 
 	char_idx = { player1 };
-	char_nb = 1;
+	char_nb = 2;
 
 	proj_idx = { };
 	proj_nb = 0;
@@ -28,6 +31,8 @@ World::World(Character* player1)
 		this->generate_hallways(first_x, first_y);
 		this->generate_walls();
 		this->generate_tiles();
+
+		for (int i = 0; i < rooms_nb; i++) hoDoor(i, 1);
 	}
 }
 
@@ -39,7 +44,7 @@ void World::generate_tiles()
 
 		case 1://Grass tile
 			tile_map[i] = (rand() % 8) * 16 + (rand() % 8);
-			if (tile_map[i] == 0) tile_map[i] = 1;//No idea why this is necessary ¯\_(ツ)_/¯
+			if (tile_map[i] == 0 || tile_map[i] == 1) tile_map[i] = 2;//No idea why this is necessary ¯\_(ツ)_/¯
 			break;
 		case 2://Grass and flower tile
 			tile_map[i] = (rand() % 8) * 16 + ((rand() % 8) + 8);
@@ -51,7 +56,7 @@ void World::generate_tiles()
 			tile_map[i] = ((rand() % 8) + 8) * 16 + ((rand() % 8) + 8);
 			break;
 		case 5://Walls (or blocks with grid-based collision anyway)
-			tile_map[i] = rand() % 3;
+			tile_map[i] = rand() % 3 + 1;
 			break;
 		}
 	}
@@ -142,12 +147,13 @@ void World::generate_rooms()
 						if (car == '\n') car = fgetc(file);
 						wall_map[((k / 11) + (j * 35 + 12)) * 175 + (k % 11) + (i * 35 + 12)] = (int)(car - '0');
 					} fclose(file);
-				}
+				} 
+				//Creation of the chest prop (not the interactible object !)
+				if (room_map[(i * 5 + j) * 2 + 1] == 3) create_prop(j * 35 * 32 + 550, i * 35 * 32 + 534, 3);
+
 			} if (room_map[(i * 5 + j) * 2] == 2) {
-				magic = (char)(rand() % 6) + '0'; //Currently 6 types of size 2 rooms
-				file_path = "files\\roomLayers\\2\\";
-				file_path = file_path + magic;
-				file_path = file_path + ".txt";
+				magic = (char)(rand() % 7) + '0'; //Currently 7 types of size 2 rooms
+				file_path = "files\\roomLayers\\2\\" + magic + ".txt";
 				fopen_s(&file, file_path.c_str(), "r");
 				if (file != NULL) {
 					for (int k = 0; k < 289; k++) {
@@ -155,12 +161,25 @@ void World::generate_rooms()
 						if (car == '\n') car = fgetc(file);
 						wall_map[((k / 17) + (j * 35 + 9)) * 175 + (k % 17) + (i * 35 + 9)] = (int)(car - '0');
 					} fclose(file);
-				} this->place_props(i * 35 + 9, j * 35 + 9, 17);
+				} 
+				file_path = "files\\roomLayers\\2\\" + magic + "p.txt";
+				fopen_s(&file, file_path.c_str(), "r");
+				if (file != NULL) {
+					for (int k = 0; k < 289; k++) {
+						car = fgetc(file);
+						if (car == '\n') car = fgetc(file);
+						if (car != 'v') {
+							create_prop(((k / 17) + (j * 35 + 9)) * 32 + 16, ((k % 17) + (i * 35 + 9)) * 32 + 16, (int)(car - '0'), 1);
+						}
+					} fclose(file);
+				} 
+				rooms_idx.push_back(new Room((j * 35 + 9) * 32, (i * 35 + 9) * 32, 17 * 32, 0, 200));
+				rooms_nb++;
+				place_props(i * 35 + 9, j * 35 + 9, 17);
+
 			} if (room_map[(i * 5 + j) * 2] == 3) {
 				magic = (char)(rand() % 4) + '0'; //Currently 4 types of size 2 rooms
-				file_path = "files\\roomLayers\\3\\";
-				file_path = file_path + magic;
-				file_path = file_path + ".txt";
+				file_path = "files\\roomLayers\\3\\" + magic + ".txt";
 				fopen_s(&file, file_path.c_str(), "r");
 				if (file != NULL) {
 					for (int k = 0; k < 529; k++) {
@@ -168,7 +187,21 @@ void World::generate_rooms()
 						if (car == '\n') car = fgetc(file);
 						wall_map[((k / 23) + (j * 35 + 6)) * 175 + (k % 23) + (i * 35 + 6)] = (int)(car - '0');
 					} fclose(file);
-				} this->place_props(i * 35 + 6, j * 35 + 6, 23);
+				} 
+				file_path = "files\\roomLayers\\3\\" + magic + "p.txt";
+				fopen_s(&file, file_path.c_str(), "r");
+				if (file != NULL) {
+					for (int k = 0; k < 529; k++) {
+						car = fgetc(file);
+						if (car == '\n') car = fgetc(file);
+						if (car != 'v') {
+							create_prop(((k / 23) + (j * 35 + 6)) * 32 + 16, ((k % 23) + (i * 35 + 6)) * 32 + 16, (int)(car - '0'), 1);
+						}
+					} fclose(file);
+				}
+				rooms_idx.push_back(new Room((j * 35 + 6) * 32, (i * 35 + 6) * 32, 23 * 32, 0, 300));
+				rooms_nb++;
+				place_props(i * 35 + 6, j * 35 + 6, 23);
 			}
 		}
 	}
@@ -226,14 +259,13 @@ void World::generate_walls()
 void World::place_props(int top_left_x, int top_left_y, int width)
 {
 	int pos_x, pos_y;
-	Prop* new_prop;
 	vector<string> csv;
 	int position_correct;
-
-	cout << "gen" << endl;
+	int type;
 
 	for (int i = 0; i < width; i++) {
-		csv = CSV_read_row("files\\Ruin\\prop.csv", rand() % 3);
+		type = rand() % 3;
+		csv = CSV_read_row("files\\Ruin\\prop.csv", type);
 		pos_x = (rand() % (width * 32)) + (top_left_y * 32);
 		pos_y = (rand() % (width * 32)) + (top_left_x * 32);
 
@@ -244,22 +276,65 @@ void World::place_props(int top_left_x, int top_left_y, int width)
 			}
 		}
 		if (position_correct) {
-			new_prop = (Prop*)malloc(sizeof(Prop));
-			if (new_prop != NULL) {
-				new_prop->pos_x = pos_x;
-				new_prop->pos_y = pos_y;
-				new_prop->hbox_width = stoi(csv[1]);
-				new_prop->hbox_height = stoi(csv[2]);
-				new_prop->sprite_relx = stoi(csv[3]);
-				new_prop->sprite_rely = stoi(csv[4]);
-				new_prop->sprite_width = stoi(csv[5]);
-				new_prop->sprite_height = stoi(csv[6]);
-				new_prop->sheet_x = stoi(csv[7]);
-				new_prop->sheet_y = stoi(csv[8]);
+			create_prop(pos_x, pos_y, type);
+		}
+	}
+}
 
-				props_idx.push_back(new_prop);
-				props_nb++;
-			}
+void World::create_prop(int top_left_x, int top_letf_y, int type, int centered)
+{
+	vector<string> csv = CSV_read_row("files\\Ruin\\prop.csv", type);
+	Prop* new_prop = (Prop*)malloc(sizeof(Prop));
+
+	if (new_prop != NULL) {
+		if (centered) {
+			top_left_x -= stoi(csv[1]) / 2;
+			top_letf_y -= stoi(csv[2]) / 2;
+		}
+		new_prop->pos_x = top_left_x;
+		new_prop->pos_y = top_letf_y;
+		new_prop->hbox_width = stoi(csv[1]);
+		new_prop->hbox_height = stoi(csv[2]);
+		new_prop->sprite_relx = stoi(csv[3]);
+		new_prop->sprite_rely = stoi(csv[4]);
+		new_prop->sprite_width = stoi(csv[5]);
+		new_prop->sprite_height = stoi(csv[6]);
+		new_prop->sheet_x = stoi(csv[7]);
+		new_prop->sheet_y = stoi(csv[8]);
+		new_prop->explosive = stoi(csv[9]);
+		new_prop->weapon_ref = stoi(csv[10]);
+
+		props_idx.push_back(new_prop);
+		props_nb++;
+	}
+}
+
+void World::hoDoor(int room_ref, int tile_type)
+{
+	int room_x, room_y, room_size;
+	rooms_idx[room_ref]->Get_hitbox(room_y, room_x, room_size);
+	room_x /= 32; room_y /= 32; room_size /= 32;
+
+	for (int i = room_size / 2 - 2; i < room_size / 2 + 3; i++) {
+		int sprite;
+		if (tile_type == 5) sprite = 0;
+		else sprite = 1;
+
+		if (wall_map[(room_y - 1) * 175 + room_x + i] != 5 || tile_map[(room_y - 1) * 175 + room_x + i] == 0) {
+			wall_map[(room_y - 1) * 175 + room_x + i] = tile_type;
+			tile_map[(room_y - 1) * 175 + room_x + i] = sprite;
+		}
+		if (wall_map[(room_y + room_size) * 175 + room_x + i] != 5 || tile_map[(room_y + room_size) * 175 + room_x + i] == 0) {
+			wall_map[(room_y + room_size) * 175 + room_x + i] = tile_type;
+			tile_map[(room_y + room_size) * 175 + room_x + i] = sprite;
+		}
+		if (wall_map[(room_y + i) * 175 + room_x - 1] != 5 || tile_map[(room_y + i) * 175 + room_x - 1] == 0) {
+			wall_map[(room_y + i) * 175 + room_x - 1] = tile_type;
+			tile_map[(room_y + i) * 175 + room_x - 1] = sprite;
+		}
+		if (wall_map[(room_y + i) * 175 + room_x + room_size] != 5 || tile_map[(room_y + i) * 175 + room_x + room_size] == 0) {
+			wall_map[(room_y + i) * 175 + room_x + room_size] = tile_type;
+			tile_map[(room_y + i) * 175 + room_x + room_size] = sprite;
 		}
 	}
 }
@@ -312,8 +387,10 @@ void World::check_collision()
 			char_idx[i]->revert_pos();
 		}
 	}
+
 	int nb_erased = 0;
 	int n;
+	int x2, y2, w2, h2, relx2, rely2;
 	for (int i = 0; i < proj_nb; i++) {
 		int pos_x, pos_y, width;
 
@@ -326,8 +403,43 @@ void World::check_collision()
 
 		//Collision with grid-based placing (ie. walls)
 		for (int x = pos_x / 32; x <= (pos_x + width * 2) / 32; x++) {
-			for (int y = pos_y / 32; y <= (pos_y + width * 2) / 32; y++){
+			for (int y = pos_y / 32; y <= (pos_y + width * 2) / 32; y++) {
 				if (wall_map[(y) * 175 + (x)] > 4) collided = 1;
+			}
+		} pos_y += 20;
+		//Collision with a character
+		for (int j = 0; j < char_nb; j++) {
+			if (char_idx[j]->Get_team() != proj_idx[i - nb_erased]->Get_team()) { //If char.team = proj.team
+				char_idx[j]->Get_pos(y2, x2);
+				char_idx[j]->Get_damage_hitbox(relx2, rely2, w2, h2);
+				x2 += relx2;
+				y2 -= rely2;
+				if (box_collision(pos_x, pos_y, width * 2, width * 2, x2, y2, w2, h2)) {
+					collided = 1;
+					char_idx[j]->raise_dmg_flag();
+				}
+			}
+		}
+		//Collision with explosive props (explosive only)
+		for (int j = 0; j < props_nb; j++) {
+			if (props_idx[j]->explosive) {
+				x2 = props_idx[j]->pos_y + props_idx[j]->sprite_relx;
+				y2 = props_idx[j]->pos_x - props_idx[j]->sprite_rely;
+				w2 = props_idx[j]->sprite_width;
+				h2 = props_idx[j]->sprite_height;
+				if (box_collision(pos_x, pos_y, width * 2, width * 2, x2, y2, w2, w2)) {
+					collided = 1;
+					if (props_idx[j]->weapon_ref >= 0) {
+						for (int disp = 0; disp < 4; disp++) {
+							proj_idx.push_back(new Bullet(props_idx[j]->weapon_ref, x2 + w2 / 2, y2 - h2 / 2, disp * (3.14 / 4) - (3.14 / 2), 1));
+							proj_idx.push_back(new Bullet(props_idx[j]->weapon_ref, x2 + w2 / 2, y2 - h2 / 2, (disp + 1) * (3.14 / 4) - (3.14 / 2), -1));
+							proj_nb += 2;
+						}
+					}
+					props_idx.erase(props_idx.begin() + j);
+					props_nb--;
+					j--;			//Ohlala c'est pas bien !! je le fais quand même haha
+				}
 			}
 		}
 		if (collided) {
@@ -343,4 +455,13 @@ void World::check_collision()
 			proj_nb--;
 		}
 	}
+}
+
+int World::box_collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
+{
+	if ((((x1 > x2) && (x1 < x2 + w2)) || ((x1 + w1 > x2) && (x1 + w1 < x2 + w2))) &&
+		(((y1 > y2) && (y1 < y2 + h2)) || ((y1 + h1 > y2) && (y1 + h1 < y2 + h2)))) {
+		return 1;
+	}
+	else return 0;
 }

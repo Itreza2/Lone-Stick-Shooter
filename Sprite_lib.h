@@ -25,7 +25,9 @@ public: //temporary
 
 	SDL_Surface* prop_sheet;
 
-	SDL_Surface* void_sheet;
+	vector<SDL_Surface*> void_sheet;
+
+	int void_sheet_nbr;
 
 	SDL_Surface* weapons_sheet;
 

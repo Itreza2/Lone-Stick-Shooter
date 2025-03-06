@@ -40,9 +40,13 @@ int main(int argc, char** argv) {
 
 	Events evt_handler = Events();
 
-	Player car = Player(&sprites, 0, 960, 540, &evt_handler);
+	Player car = Player(&sprites, 0, 960, 540, &evt_handler, 0, 1);
 
 	World map = World(&car);
+
+	int x, y;
+	car.Get_pos(x, y);
+	map.char_idx.push_back(new NPC(&sprites, 2, (float)x, (float)y, 0));
 
 	int err = 0;
 	Camera cam = Camera(&car, &map, &sprites, rect, 768, 432, err);

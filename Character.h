@@ -13,6 +13,8 @@
 class Character
 {
 protected:
+	int team;
+
 	float pos_x, pos_y;
 	float prev_pos_x, prev_pos_y;
 		
@@ -44,14 +46,15 @@ protected:
 	*/
 	vector<string> hitbox_data;
 
+	//Raised if the character has been damaged since the last printed frame
+	int dmg_flag;
+
 public:
 	Weapon* weapon;
 	int is_shooting;
 
 public:
-	Character(Sprite_lib* lib, int type_ref);
-
-	Character(Sprite_lib* lib, int type_ref, float pos_x, float pos_y);
+	Character(Sprite_lib* lib, int type_ref, float pos_x, float pos_y, int team_);
 
 	/*
 	@brief this method can be used to access the position of the Character
@@ -67,6 +70,14 @@ public:
 	void revert_pos();
 
 	void Get_ground_hitbox(int& res_rel_x, int& res_rel_y, int& res_width, int& res_height);
+
+	void Get_damage_hitbox(int& res_rel_x, int& res_rel_y, int& res_width, int& res_height);
+
+	int Get_team() const { return team; };
+
+	int is_damaged() { int res = dmg_flag; if (dmg_flag) dmg_flag --; return res; };
+
+	void raise_dmg_flag() { dmg_flag = 2; };
 
 	void update_speed(float speed_x_, float speed_y_);
 
@@ -84,8 +95,16 @@ class Player : public Character
 private:
 	Events* keyboard;
 
+	int key_0;
+
 public:
-	Player(Sprite_lib* lib, int type_ref, float pos_x, float pos_y, Events* keyboard_);
+	Player(Sprite_lib* lib, int type_ref, float pos_x, float pos_y, Events* keyboard_, int key_0_, int team_);
 
 	void read_inputs();
+};
+
+class NPC : public Character
+{
+public:
+	NPC(Sprite_lib* lib, int type_ref, float pos_x, float pos_y, int team_);
 };

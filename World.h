@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 
+#include "Room.h"
 #include "Character.h"
 #include "Sprite_lib.h"
 using namespace std;
@@ -29,6 +30,10 @@ struct Prop {
 	//Coordinates of the top-left corner of the sprite on the sprite sheet
 	int sheet_x;
 	int sheet_y;
+
+	//Explosive props !!!
+	int explosive;
+	int weapon_ref;
 };
 
 class World
@@ -44,6 +49,12 @@ private:
 	int* tile_map;
 
 public: //break the principle of encapsulation but... I don't care
+	//A vector containing a pointer torward every room on the map
+	vector<Room*> rooms_idx;
+
+	//The number of rooms on the map
+	int rooms_nb;
+
 	//A vector containing a pointer torward every prop on the map
 	vector<Prop*> props_idx;
 
@@ -96,6 +107,15 @@ private:
 	void generate_walls();
 
 	void place_props(int top_left_x, int top_left_y, int width);
+
+	void create_prop(int center_x, int center_y, int type, int centered = 0);
+
+	void hoDoor(int room_ref, int tile_type);
+
+	/**
+	@brief a simple tool te check box collisions
+	*/
+	int box_collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 
 public:
 

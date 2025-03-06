@@ -1,30 +1,10 @@
 #include "Character.h"
 
-Character::Character(Sprite_lib* lib, int type_ref)
+Character::Character(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y, int team_)
 {
-	anim_data = lib->character_anim[type_ref];
-	hitbox_data = CSV_read_row("files\\characters\\hitbox.csv", type_ref);
+	team = team_;
+	dmg_flag = 0;
 
-	current_anim = 0;
-	current_frame = 0;
-
-	pos_x = 0;
-	pos_y = 0;
-	prev_pos_x = 0;
-	prev_pos_y = 0;
-	dir = 1;
-	deg = 0;
-
-	move_tic = SDL_GetTicks();
-	speed_x = 0;
-	speed_y = 0;
-
-	weapon = new Weapon(rand() % 6);
-	is_shooting = 0;
-}
-
-Character::Character(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y)
-{
 	anim_data = lib->character_anim[type_ref];
 	hitbox_data = CSV_read_row("files\\characters\\hitbox.csv", type_ref);
 
@@ -42,7 +22,7 @@ Character::Character(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y
 	speed_x = 0;
 	speed_y = 0;
 
-	weapon = new Weapon(rand() % 4);
+	weapon = new Weapon(6);
 	is_shooting = 0;
 }
 
@@ -102,6 +82,14 @@ void Character::Get_ground_hitbox(int& res_rel_x, int& res_rel_y, int& res_width
 	res_height = stoi(hitbox_data[4]);
 }
 
+void Character::Get_damage_hitbox(int& res_rel_x, int& res_rel_y, int& res_width, int& res_height)
+{
+	res_rel_x = stoi(hitbox_data[5]);
+	res_rel_y = stoi(hitbox_data[6]);
+	res_width = stoi(hitbox_data[7]);
+	res_height = stoi(hitbox_data[8]);
+}
+
 void Character::Get_anim(int& res_idx, int& res_anim, int& res_frame, int& res_dir, float& res_deg)
 {
 	res_idx = stoi(anim_data[1]);
@@ -136,8 +124,9 @@ void Character::update_speed(float speed_x_, float speed_y_)
 
 //Player
 
-Player::Player(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y, Events* keyboard_) : Character(lib, type_ref)
+Player::Player(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y, Events* keyboard_, int key_0_, int team_) : Character(lib, type_ref, spawn_x, spawn_y, team_)
 {
+	key_0 = key_0_;
 	keyboard = keyboard_;
 }
 
@@ -146,22 +135,27 @@ void Player::read_inputs()
 	float newspeed_x = 0;
 	float newspeed_y = 0;
 
-	if (keyboard->is_pressed[3]) {
-		if (keyboard->is_pressed[0] || keyboard->is_pressed[1]) newspeed_x += 141;
+	if (keyboard->is_pressed[3 + key_0]) {
+		if (keyboard->is_pressed[0 + key_0] || keyboard->is_pressed[1 + key_0]) newspeed_x += 141;
 		else newspeed_x += 200;
-	} if (keyboard->is_pressed[2]) {
-		if (keyboard->is_pressed[0] || keyboard->is_pressed[1]) newspeed_x -= 141;
+	} if (keyboard->is_pressed[2 + key_0]) {
+		if (keyboard->is_pressed[0 + key_0] || keyboard->is_pressed[1 + key_0]) newspeed_x -= 141;
 		else newspeed_x -= 200;
-	} if (keyboard->is_pressed[0]) {
-		if (keyboard->is_pressed[2] || keyboard->is_pressed[3]) newspeed_y += 141;
+	} if (keyboard->is_pressed[0 + key_0]) {
+		if (keyboard->is_pressed[2 + key_0] || keyboard->is_pressed[3 + key_0]) newspeed_y += 141;
 		else newspeed_y += 200;
-	} if (keyboard->is_pressed[1]) {
-		if (keyboard->is_pressed[2] || keyboard->is_pressed[3]) newspeed_y -= 141;
+	} if (keyboard->is_pressed[1 + key_0]) {
+		if (keyboard->is_pressed[2 + key_0] || keyboard->is_pressed[3 + key_0]) newspeed_y -= 141;
 		else newspeed_y -= 200;
 	}
-	if (keyboard->is_pressed[4]) {
+	if (keyboard->is_pressed[4 + key_0]) {
 		is_shooting = 1;
 	} else is_shooting = 0;
 
 	update_speed(newspeed_x, newspeed_y);
+}
+
+NPC::NPC(Sprite_lib* lib, int type_ref, float pos_x, float pos_y, int team_) : Character(lib, type_ref, pos_x, pos_y, team_)
+{
+
 }

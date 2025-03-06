@@ -43,6 +43,8 @@ public:
 
 	void Get_hitbox(int& res_rel_x, int& res_rel_y, int& res_width);
 
+	int Get_team() { if (stoi(bullet_data[1]) == 2) return 1; else return 0; };
+
 	/*
 	@brief pick the next sprite to show on camera
 	@return 1 if the current animation loop has ended, otherwise 0
