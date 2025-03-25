@@ -1,7 +1,7 @@
 ﻿#include "World.h"
 
 //TODO : actual world generation
-World::World(Character* player1)
+World::World(Character* player1, Sprite_lib* sprite_lib_)
 {
 	int first_x, first_y;
 
@@ -12,10 +12,12 @@ World::World(Character* player1)
 	props_nb = 0;
 
 	char_idx = { player1 };
-	char_nb = 2;
+	char_nb = 1;
 
 	proj_idx = { };
 	proj_nb = 0;
+
+	sprite_lib = sprite_lib_;
 
 	room_map = (char*)malloc(sizeof(char) * 50);
 	if (room_map != NULL) {
@@ -32,7 +34,10 @@ World::World(Character* player1)
 		this->generate_walls();
 		this->generate_tiles();
 
-		for (int i = 0; i < rooms_nb; i++) hoDoor(i, 1);
+		for (int i = 0; i < rooms_nb; i++) {
+			hoDoor(i, 1);
+			place_wave(i);
+		}
 	}
 }
 
@@ -173,7 +178,7 @@ void World::generate_rooms()
 						}
 					} fclose(file);
 				} 
-				rooms_idx.push_back(new Room((j * 35 + 9) * 32, (i * 35 + 9) * 32, 17 * 32, 0, 200));
+				rooms_idx.push_back(new Room((j * 35 + 9) * 32, (i * 35 + 9) * 32, 17 * 32, 0, 6));
 				rooms_nb++;
 				place_props(i * 35 + 9, j * 35 + 9, 17);
 
@@ -199,7 +204,7 @@ void World::generate_rooms()
 						}
 					} fclose(file);
 				}
-				rooms_idx.push_back(new Room((j * 35 + 6) * 32, (i * 35 + 6) * 32, 23 * 32, 0, 300));
+				rooms_idx.push_back(new Room((j * 35 + 6) * 32, (i * 35 + 6) * 32, 23 * 32, 0, 10));
 				rooms_nb++;
 				place_props(i * 35 + 6, j * 35 + 6, 23);
 			}
@@ -281,6 +286,39 @@ void World::place_props(int top_left_x, int top_left_y, int width)
 	}
 }
 
+void World::place_wave(int room_ref)
+{
+	int tokens_left = rooms_idx[room_ref]->tokens;
+	int top_left_x = rooms_idx[room_ref]->top_left_x;
+	int top_left_y = rooms_idx[room_ref]->top_left_y;
+	int size = rooms_idx[room_ref]->size;
+	int ennemy_type, position_correct;
+	float pos_x, pos_y;
+
+	while (tokens_left > 0) {
+		ennemy_type = 2; //To choose randomly when more variety will be added
+		pos_x = (float)(top_left_x + (rand() % size));
+		pos_y = (float)(top_left_y + (rand() % size));
+
+		NPC* new_ennemy = new NPC(sprite_lib, ennemy_type, pos_x, pos_y, 0, rooms_idx[room_ref]);
+
+		position_correct = 1;
+		for (int x = pos_x / 32; x <= (pos_x + 32) / 32; x++) {
+			for (int y = pos_y / 32; y <= (pos_y + 32) / 32; y++) {
+				if (wall_map[x * 175 + y] == 0 || wall_map[x * 175 + y] == 5) position_correct = 0;
+			}
+		}
+		if (position_correct) {
+			tokens_left--;
+			rooms_idx[room_ref]->defender_nbr++;
+			char_idx.push_back(new_ennemy);
+			char_nb++;
+		} else {
+			delete new_ennemy;
+		}
+	}
+}
+
 void World::create_prop(int top_left_x, int top_letf_y, int type, int centered)
 {
 	vector<string> csv = CSV_read_row("files\\Ruin\\prop.csv", type);
@@ -355,13 +393,14 @@ void World::check_collision()
 	int pos_x, pos_y, cpos_x, cpos_y, width, height;
 	int prop_x, prop_y, prop_width, prop_height;
 	int collided;
+	int room_x, room_y, room_size;
 
 	for (int i = 0; i < char_nb; i++) {
 
 		char_idx[i]->Get_pos(cpos_x, cpos_y);
 		char_idx[i]->Get_ground_hitbox(pos_x, pos_y, width, height);
-		pos_x += cpos_y;// +168;                                             //I don't know why this 168px offset is a thing...
-		pos_y += cpos_x;// -168;
+		pos_x += cpos_y;
+		pos_y += cpos_x;
 
 		collided = 0;
 		
@@ -386,8 +425,28 @@ void World::check_collision()
 		if (collided) {
 			char_idx[i]->revert_pos();
 		}
+		//Room entering
+		if (char_idx[i]->Get_team()) {
+			for (int j = 0; j < rooms_nb; j++) {
+				if (!rooms_idx[j]->active && rooms_idx[j]->defender_nbr) {
+					rooms_idx[j]->Get_hitbox(room_x, room_y, room_size);
+					if ((pos_y + 25 < room_x + room_size && pos_y - 25  + width > room_x) &&
+						(pos_x + 25 < room_y + room_size && pos_x - 25 + height > room_y)) {
+
+						rooms_idx[j]->active = 1;
+						hoDoor(j, 5);
+					}
+				} else {
+					if (!rooms_idx[j]->defender_nbr) {
+						rooms_idx[j]->active = 0;
+						hoDoor(j, 1);
+					}
+				}
+			}
+		}
 	}
 
+	//The following code should be put in its own method for more clarity
 	int nb_erased = 0;
 	int n;
 	int x2, y2, w2, h2, relx2, rely2;
@@ -409,14 +468,14 @@ void World::check_collision()
 		} pos_y += 20;
 		//Collision with a character
 		for (int j = 0; j < char_nb; j++) {
-			if (char_idx[j]->Get_team() != proj_idx[i - nb_erased]->Get_team()) { //If char.team = proj.team
+			if (char_idx[j]->Get_team() != proj_idx[i - nb_erased]->Get_team() && char_idx[j]->is_active()) { //If char.team = proj.team
 				char_idx[j]->Get_pos(y2, x2);
 				char_idx[j]->Get_damage_hitbox(relx2, rely2, w2, h2);
 				x2 += relx2;
 				y2 -= rely2;
 				if (box_collision(pos_x, pos_y, width * 2, width * 2, x2, y2, w2, h2)) {
 					collided = 1;
-					char_idx[j]->raise_dmg_flag();
+					char_idx[j]->raise_dmg_flag(proj_idx[i - nb_erased]->get_dmg());
 				}
 			}
 		}
@@ -457,6 +516,35 @@ void World::check_collision()
 	}
 }
 
+void World::update_anims()
+{
+	int nb_erased = 0;
+	for (int i = 0; i < char_nb; i++) {
+		if (char_idx[i - nb_erased]->update_anim()) {
+			if (char_idx[i - nb_erased]->is_dead()) {
+				NPC* cast = (NPC*)(char_idx[i - nb_erased]);
+				cast->get_Room()->defender_nbr--;
+				char_idx.erase(char_idx.begin() + (i - nb_erased));
+				nb_erased++;
+				char_nb--;
+			}
+		}
+	}
+	for (int i = 0; i < proj_nb; i++) {
+		proj_idx[i]->update_anim();
+	}
+}
+
+void World::update_targets()
+{
+	for (int i = 0; i < char_nb; i++) {
+		Character* closest_foe = find_closest_foe(char_idx[i]);
+		if (closest_foe) {
+			char_idx[i]->set_target(closest_foe);
+		}
+	}
+}
+
 int World::box_collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
 {
 	if ((((x1 > x2) && (x1 < x2 + w2)) || ((x1 + w1 > x2) && (x1 + w1 < x2 + w2))) &&
@@ -464,4 +552,46 @@ int World::box_collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2,
 		return 1;
 	}
 	else return 0;
+};
+
+int World::raycast(double x1, double y1, double x2, double y2)
+{
+	int return_value = 0;
+
+	float deg = atan(abs(y1 - y2) / abs(x1 - x2));
+	double step_x = 15 * cos(deg);
+	double step_y = 15 * sin(deg);
+
+	double tested_x = x1 + step_x;
+	double tested_y = y1 + step_y;
+
+	while (!return_value && (pow(x1 - tested_x, 2) < pow(x1 - x2, 2))) {
+		if (wall_map[(int)(tested_y) / 32 * 175 + (int)(tested_x) / 32] > 4) return_value = 1;
+		tested_x += step_x;
+		tested_y += step_y;
+	}
+	return return_value;
+}
+
+Character* World::find_closest_foe(Character* origin)
+{
+	int origin_x, origin_y, target_x, target_y;
+	int origin_team = origin->Get_team();
+	origin->Get_pos(origin_x, origin_y);
+
+	Character* best_pick = nullptr;
+	int best_dist = 999999;
+
+	for (int i = 0; i < char_nb; i++) {
+		if ((char_idx[i]->Get_team() != origin_team) && char_idx[i]->is_active()) {
+			char_idx[i]->Get_pos(target_x, target_y);
+			//Bah ouai j'utilise pas cmath, et tu vas faire quoi hein ?
+			int dist_pow2 = (origin_x - target_x) * (origin_x - target_x) + (origin_y - target_y) * (origin_y - target_y);
+			if (dist_pow2 < best_dist && !raycast((double)origin_y, (double)origin_x, (double)target_y, (double)target_x)) {
+				best_dist = dist_pow2;
+				best_pick = char_idx[i];
+			}
+		}
+	}
+	return best_pick;
 }

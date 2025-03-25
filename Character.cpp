@@ -5,8 +5,10 @@ Character::Character(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y
 	team = team_;
 	dmg_flag = 0;
 
-	anim_data = lib->character_anim[type_ref];
-	hitbox_data = CSV_read_row("files\\characters\\hitbox.csv", type_ref);
+	character_data = CSV_read_row("files\\characters\\data.csv", type_ref);
+	anim_data = lib->character_anim[stoi(character_data[0])];
+	hitbox_data = CSV_read_row("files\\characters\\hitbox.csv", stoi(character_data[1]));
+	health = stoi(character_data[3]);
 
 	current_anim = 0;
 	current_frame = 0;
@@ -22,7 +24,7 @@ Character::Character(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y
 	speed_x = 0;
 	speed_y = 0;
 
-	weapon = new Weapon(6);
+	weapon = new Weapon(stoi(character_data[2]));
 	is_shooting = 0;
 }
 
@@ -66,6 +68,20 @@ void Character::update_pos()
 	}
 
 	move_tic = SDL_GetTicks();
+}
+
+void Character::raise_dmg_flag(float dmg)
+{
+	if (health > 0) {
+		health -= dmg;
+
+		if (health > 0) {
+			dmg_flag = 2;
+		} else {
+			current_anim = 2;
+			current_frame = 0;
+		}
+	}
 }
 
 void Character::revert_pos()
@@ -122,6 +138,19 @@ void Character::update_speed(float speed_x_, float speed_y_)
 	speed_y = speed_y_;
 }
 
+void Character::set_target(Character* target) //Note : x and y are inverted
+{
+	if (pos_x < target->pos_x) {
+		deg = atan(abs(pos_x - target->pos_x) / (abs(pos_y - target->pos_y)));
+	}
+	else deg = atan(-abs(pos_x - target->pos_x) / (abs(pos_y - target->pos_y)));
+
+	if (pos_y < target->pos_y) {
+		dir = 1;
+	}
+	else dir = -1;
+}
+
 //Player
 
 Player::Player(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y, Events* keyboard_, int key_0_, int team_) : Character(lib, type_ref, spawn_x, spawn_y, team_)
@@ -155,7 +184,7 @@ void Player::read_inputs()
 	update_speed(newspeed_x, newspeed_y);
 }
 
-NPC::NPC(Sprite_lib* lib, int type_ref, float pos_x, float pos_y, int team_) : Character(lib, type_ref, pos_x, pos_y, team_)
+NPC::NPC(Sprite_lib* lib, int type_ref, float pos_x, float pos_y, int team_, Room* room_ref_) : Character(lib, type_ref, pos_x, pos_y, team_)
 {
-
+	room_ref = room_ref_;
 }

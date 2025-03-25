@@ -42,11 +42,10 @@ int main(int argc, char** argv) {
 
 	Player car = Player(&sprites, 0, 960, 540, &evt_handler, 0, 1);
 
-	World map = World(&car);
+	World map = World(&car, &sprites);
 
 	int x, y;
 	car.Get_pos(x, y);
-	map.char_idx.push_back(new NPC(&sprites, 2, (float)x, (float)y, 0));
 
 	int err = 0;
 	Camera cam = Camera(&car, &map, &sprites, rect, 768, 432, err);
@@ -60,6 +59,8 @@ int main(int argc, char** argv) {
 		quit = evt_handler.catch_events();
 		car.read_inputs();
 		car.update_pos();
+
+		map.update_targets();
 
 		if (car.is_shooting) {
 			int x, y, a, b, c, dir, n;
@@ -99,12 +100,7 @@ int main(int argc, char** argv) {
 			fps_lim = SDL_GetTicks();
 		}
 		if ((current_time - last_anim_tick) > (100)) {
-			for (int i = 0; i < map.char_nb; i++) {
-				map.char_idx[i]->update_anim();
-			}
-			for (int i = 0; i < map.proj_nb; i++) {
-				map.proj_idx[i]->update_anim();
-			}
+			map.update_anims();
 			last_anim_tick = SDL_GetTicks();
 		}
 	}

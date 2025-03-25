@@ -8,6 +8,7 @@
 
 #include "Events.h"
 #include "Weapon.h"
+#include "Room.h"
 #include "Sprite_lib.h"
 
 class Character
@@ -28,10 +29,17 @@ protected:
 	float speed_y;
 
 	/*
+	Contain all the usefull informations about the characteristics of the character's type
+	In order : [0] animation data ref, [1] hitbox data ref, [2] default weapon, [3] max health,
+	[4] base speed, (+[5] type name)
+	*/
+	vector<string> character_data;
+
+	/*
 	Contain the necessary informations for animating the sprite
-	In order : name of the sprite sheet, type nbr, number of animations,
-	width of the sprite sheet, width of a sprite, height of a sprite,
-	number of frame in each animition
+	In order : [0] name of the sprite sheet, [1] type nbr, [2] number of animations,
+	[3] width of the sprite sheet, [4] width of a sprite, [5] height of a sprite,
+	[6] number of frame in each animition
 	*/
 	vector<string> anim_data;
 	int current_anim;
@@ -39,15 +47,17 @@ protected:
 
 	/*
 	Contain the informations relative to the hitbox of the character
-	In order : type nbr, x and y position of the ground hitbox relative to the
-	character's position, width and height of the ground hitbox,
-	x and y position of the damage hitbox relative to the
-	character's position, width and height of the damage hitbox,
+	In order : [0]type nbr,[1] x and [2] y position of the ground hitbox relative to the
+	character's position,[3] width and [4] height of the ground hitbox,
+	[5] x and [6] y position of the damage hitbox relative to the
+	character's position,[7] width and [8] height of the damage hitbox,
 	*/
 	vector<string> hitbox_data;
 
 	//Raised if the character has been damaged since the last printed frame
 	int dmg_flag;
+
+	float health;
 
 public:
 	Weapon* weapon;
@@ -77,9 +87,21 @@ public:
 
 	int is_damaged() { int res = dmg_flag; if (dmg_flag) dmg_flag --; return res; };
 
-	void raise_dmg_flag() { dmg_flag = 2; };
+	int is_dead() const { if (health <= 0) return 1; else return 0; };
+
+	void raise_dmg_flag(float dmg);
 
 	void update_speed(float speed_x_, float speed_y_);
+
+	/**
+	* @brief set @m dir and @m deg to point torward a new target
+	*/
+	void set_target(Character* target);
+
+	/**
+	* @brief return 1 if the character is active elsewise 0
+	*/
+	virtual int is_active() { return 0; };
 
 	/*
 	@brief pick the next sprite to show on camera
@@ -101,10 +123,19 @@ public:
 	Player(Sprite_lib* lib, int type_ref, float pos_x, float pos_y, Events* keyboard_, int key_0_, int team_);
 
 	void read_inputs();
+
+	virtual int is_active() { return 1; };  //A player is always active (except when dead maybe)
 };
 
 class NPC : public Character
 {
+private:
+	Room* room_ref;
+
 public:
-	NPC(Sprite_lib* lib, int type_ref, float pos_x, float pos_y, int team_);
+	NPC(Sprite_lib* lib, int type_ref, float pos_x, float pos_y, int team_, Room* room_ref_);
+
+	Room* get_Room() const { return room_ref; };
+
+	virtual int is_active() { return room_ref->active; };
 };

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cmath>
 
 #include "Room.h"
 #include "Character.h"
@@ -47,6 +48,9 @@ private:
 
 	//A 175*175 array containing the references to the sprites of each floor and wall tile
 	int* tile_map;
+
+	//Sprite lib object used to initialise Characters
+	Sprite_lib* sprite_lib;
 
 public: //break the principle of encapsulation but... I don't care
 	//A vector containing a pointer torward every room on the map
@@ -108,6 +112,8 @@ private:
 
 	void place_props(int top_left_x, int top_left_y, int width);
 
+	void place_wave(int room_ref);
+
 	void create_prop(int center_x, int center_y, int type, int centered = 0);
 
 	void hoDoor(int room_ref, int tile_type);
@@ -117,12 +123,17 @@ private:
 	*/
 	int box_collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 
+	/**
+	* @brief check the presence of a solid wall between two points via a raycast
+	*/
+	int raycast(double x1, double y1, double x2, double y2);
+
 public:
 
 	/*
 	@Brief default constructor of the class World
 	*/
-	World(Character* player1);
+	World(Character* player1, Sprite_lib* sprite_lib_);
 
 	/*
 	@Brief Method used to acces the sprite reference of a given tile
@@ -146,4 +157,14 @@ public:
 	revert their position if it is the case
 	*/
 	void check_collision();
+
+	/**
+	* @brief find the closest character from the opposing team and in the line of sigth
+	* of a given character
+	*/
+	Character* find_closest_foe(Character* origin);
+
+	void update_anims();
+
+	void update_targets();
 };

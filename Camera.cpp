@@ -66,16 +66,28 @@ int Camera::draw_floor()
 
 void Camera::draw_wall(int x, int y, Uint32* pixels, Uint32* pixels_w)
 {
+	int wall_heigth;
+	int total_heigth;
+
 	if (x >= 0 && x < 175 && y >= 0 && y < 175) {
 		int tile = map->get_tile(x, y);
-		for (int i = 0; i < 52; i++) {
+
+		if (tile == 0) {
+			wall_heigth = 38;
+			total_heigth = 70;
+		} else {
+			wall_heigth = 20;
+			total_heigth = 52;
+		}
+		for (int i = 0; i < total_heigth; i++) {
 			for (int j = 0; j < 32; j++) {
-				if ((i + (x * 32) - top_left_x - 20 > 0) && (i + (x * 32) - top_left_x - 20 < height)
-					&& (j + (y * 32) - top_left_y > 0) && (j + (y * 32) - top_left_y < width)) {
+				if ((i + (x * 32) - top_left_x - wall_heigth > 0) && (i + (x * 32) - top_left_x - wall_heigth < height)
+					&& (j + (y * 32) - top_left_y > 0) && (j + (y * 32) - top_left_y < width) 
+					&& pixels_w[i * 224 + (tile * 32 + j)] != SDL_MapRGBA(surface->format, 0, 0, 0, 0)) {
 
-					pixels[(i + (x * 32) - top_left_x - 20) * width + (j + (y * 32) - top_left_y)] = pixels_w[i * 224 + (tile * 32 + j)];
+					pixels[(i + (x * 32) - top_left_x - wall_heigth) * width + (j + (y * 32) - top_left_y)] = pixels_w[i * 224 + (tile * 32 + j)];
 
-					h_map[(i + (x * 32) - top_left_x - 20) * width + (j + (y * 32) - top_left_y)] = 54 - i;
+					h_map[(i + (x * 32) - top_left_x - wall_heigth) * width + (j + (y * 32) - top_left_y)] = total_heigth - i;
 				}
 			}
 		}
@@ -146,7 +158,8 @@ void Camera::draw_character(int char_idx, Uint32* pixels)
 					else {
 						current_pixel = (j + sprite_height * anim) * sheet_size + ((sprite_width - i) + sprite_width * frame);
 					}
-					if (pixels_src[current_pixel] != SDL_MapRGBA(surface->format, 0, 0, 0, 0) && h_map[(pos_y + j) * width + (pos_x + i)] < 62 - j) {
+					if (pixels_src[current_pixel] != SDL_MapRGBA(sprites->character_sheet[idx]->format, 0, 0, 0, 0) && h_map[(pos_y + j) * width + (pos_x + i)] < 62 - j) {
+
 						if (dmg_flag)
 							pixels[(pos_y + j) * width + (pos_x + i)] = SDL_MapRGBA(surface->format, 255, 255, 255, 255);
 						else

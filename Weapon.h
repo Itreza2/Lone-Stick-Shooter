@@ -53,6 +53,8 @@ public:
 
 	void Get_anim(int& res_idx, int& res_sheet, int& res_frame, int& res_dir, float& res_deg);
 
+	float get_dmg() { return stoi(bullet_data[6]); };
+
 	vector<Bullet*> last_will(int& n);
 };
 
