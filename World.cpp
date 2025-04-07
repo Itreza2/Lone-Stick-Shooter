@@ -14,8 +14,10 @@ World::World(Character* player1, Sprite_lib* sprite_lib_)
 	char_idx = { player1 };
 	char_nb = 1;
 
-	proj_idx = { };
+	proj_idx = {};
 	proj_nb = 0;
+
+	text_idx = {};
 
 	sprite_lib = sprite_lib_;
 
@@ -293,6 +295,8 @@ void World::place_wave(int room_ref)
 	int top_left_y = rooms_idx[room_ref]->top_left_y;
 	int size = rooms_idx[room_ref]->size;
 	int ennemy_type, position_correct;
+	int prop_x, prop_y, prop_width, prop_height;
+	int rel_x, rel_y, width, height;
 	float pos_x, pos_y;
 
 	while (tokens_left > 0) {
@@ -301,11 +305,23 @@ void World::place_wave(int room_ref)
 		pos_y = (float)(top_left_y + (rand() % size));
 
 		NPC* new_ennemy = new NPC(sprite_lib, ennemy_type, pos_x, pos_y, 0, rooms_idx[room_ref]);
+		new_ennemy->Get_ground_hitbox(rel_x, rel_y, width, height);
 
 		position_correct = 1;
 		for (int x = pos_x / 32; x <= (pos_x + 32) / 32; x++) {
 			for (int y = pos_y / 32; y <= (pos_y + 32) / 32; y++) {
 				if (wall_map[x * 175 + y] == 0 || wall_map[x * 175 + y] == 5) position_correct = 0;
+			}
+		}
+		for (int j = 0; j < props_nb; j++) {
+			prop_x = props_idx[j]->pos_y;
+			prop_y = props_idx[j]->pos_x;
+			prop_width = props_idx[j]->hbox_width;
+			prop_height = props_idx[j]->hbox_height;
+
+			if ((rel_x < prop_x + prop_width && rel_x + width > prop_x) &&
+				(rel_y < prop_y + prop_height && rel_y + height > prop_y)) {
+				position_correct = 0;
 			}
 		}
 		if (position_correct) {
@@ -452,8 +468,10 @@ void World::check_collision()
 	int x2, y2, w2, h2, relx2, rely2;
 	for (int i = 0; i < proj_nb; i++) {
 		int pos_x, pos_y, width;
+		int actual_x, actual_y;
 
 		proj_idx[i - nb_erased]->Get_pos(pos_x, pos_y);
+		proj_idx[i - nb_erased]->Get_pos(actual_x, actual_y);
 		width = 4;
 		pos_x -= width;
 		pos_y -= width - 20;
@@ -475,11 +493,14 @@ void World::check_collision()
 				y2 -= rely2;
 				if (box_collision(pos_x, pos_y, width * 2, width * 2, x2, y2, w2, h2)) {
 					collided = 1;
+					char buffer[50];
+					_itoa_s(proj_idx[i - nb_erased]->get_dmg(), buffer, 50, 10);
 					char_idx[j]->raise_dmg_flag(proj_idx[i - nb_erased]->get_dmg());
+					text_idx.push_back(new Text(sprite_lib->fonts[0], COLOR_WHITE, buffer, actual_x, actual_y + 20, 250));
 				}
 			}
 		}
-		//Collision with explosive props (explosive only)
+		//Collision with explosive props (explosive only !)
 		for (int j = 0; j < props_nb; j++) {
 			if (props_idx[j]->explosive) {
 				x2 = props_idx[j]->pos_y + props_idx[j]->sprite_relx;
@@ -545,6 +566,18 @@ void World::update_targets()
 	}
 }
 
+void World::delete_text()
+{
+	int nb_erased = 0;
+
+	for (int i = 0; i + nb_erased < text_idx.size(); i++) {
+		if (text_idx[i - nb_erased]->should_be_erased()) {
+			text_idx.erase(text_idx.begin() + (i - nb_erased));
+			nb_erased++;
+		}
+	}
+}
+
 int World::box_collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
 {
 	if ((((x1 > x2) && (x1 < x2 + w2)) || ((x1 + w1 > x2) && (x1 + w1 < x2 + w2))) &&
@@ -561,14 +594,16 @@ int World::raycast(double x1, double y1, double x2, double y2)
 	float deg = atan(abs(y1 - y2) / abs(x1 - x2));
 	double step_x = 15 * cos(deg);
 	double step_y = 15 * sin(deg);
+	if (x1 > x2) step_x *= -1;
+	if (y1 > y2) step_y *= -1;
 
 	double tested_x = x1 + step_x;
 	double tested_y = y1 + step_y;
 
 	while (!return_value && (pow(x1 - tested_x, 2) < pow(x1 - x2, 2))) {
 		if (wall_map[(int)(tested_y) / 32 * 175 + (int)(tested_x) / 32] > 4) return_value = 1;
-		tested_x += step_x;
-		tested_y += step_y;
+		tested_x += 2 * step_x;
+		tested_y += 2 * step_y;
 	}
 	return return_value;
 }

@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "Room.h"
+#include "text.h"
 #include "Character.h"
 #include "Sprite_lib.h"
 using namespace std;
@@ -76,6 +77,8 @@ public: //break the principle of encapsulation but... I don't care
 
 	//The number of characters on the map
 	int proj_nb;
+
+	vector<Text*> text_idx;
 
 private:
 	/*
@@ -167,4 +170,6 @@ public:
 	void update_anims();
 
 	void update_targets();
+
+	void delete_text();
 };

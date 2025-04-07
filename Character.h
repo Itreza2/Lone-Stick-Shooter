@@ -96,7 +96,7 @@ public:
 	/**
 	* @brief set @m dir and @m deg to point torward a new target
 	*/
-	void set_target(Character* target);
+	virtual void set_target(Character* target);
 
 	/**
 	* @brief return 1 if the character is active elsewise 0
@@ -119,12 +119,19 @@ private:
 
 	int key_0;
 
+	//Used to determine camera's offset
+	int target_distance;
+
 public:
 	Player(Sprite_lib* lib, int type_ref, float pos_x, float pos_y, Events* keyboard_, int key_0_, int team_);
 
 	void read_inputs();
 
+	int get_target_distance() { return target_distance; };
+
 	virtual int is_active() { return 1; };  //A player is always active (except when dead maybe)
+
+	virtual void set_target(Character* target);
 };
 
 class NPC : public Character

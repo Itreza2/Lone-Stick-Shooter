@@ -84,6 +84,7 @@ Sprite_lib::Sprite_lib()
 void Sprite_lib::load_sprites()
 {
 	SDL_Surface* loaded_sheet;
+	TTF_Font* loaded_font;
 	string source_path;
 
 	for (int i = 0; i < character_anim_nbr; i++) {
@@ -103,6 +104,15 @@ void Sprite_lib::load_sprites()
 			cout << "Echec chargement spritesheet" << endl;
 		} loaded_sheet = SDL_ConvertSurfaceFormat(loaded_sheet, SDL_PIXELFORMAT_RGB888, 0);
 		bullet_sheet.push_back(loaded_sheet);
+	}
+	for (int i = 0; i < 1; i++) {
+		source_path = "Sprites\\fonts\\" + to_string(i) + ".ttf";
+
+		loaded_font = TTF_OpenFont(source_path.c_str(), 12);
+		if (loaded_font == NULL) {
+			cout << "Assassin de la police" << endl;
+		}
+		fonts.push_back(loaded_font);
 	}
 }
 

@@ -61,6 +61,7 @@ int main(int argc, char** argv) {
 		car.update_pos();
 
 		map.update_targets();
+		map.delete_text();
 
 		if (car.is_shooting) {
 			int x, y, a, b, c, dir, n;

@@ -157,12 +157,15 @@ Player::Player(Sprite_lib* lib, int type_ref, float spawn_x, float spawn_y, Even
 {
 	key_0 = key_0_;
 	keyboard = keyboard_;
+	target_distance = 0;
 }
 
 void Player::read_inputs()
 {
 	float newspeed_x = 0;
 	float newspeed_y = 0;
+
+	target_distance = 0;
 
 	if (keyboard->is_pressed[3 + key_0]) {
 		if (keyboard->is_pressed[0 + key_0] || keyboard->is_pressed[1 + key_0]) newspeed_x += 141;
@@ -182,6 +185,24 @@ void Player::read_inputs()
 	} else is_shooting = 0;
 
 	update_speed(newspeed_x, newspeed_y);
+}
+
+void Player::set_target(Character* target) //Note : x and y are inverted
+{
+	int target_x, target_y;
+	target->Get_pos(target_x, target_y);
+
+	target_distance = sqrt(pow(pos_x - target_x, 2) + pow(pos_y - target_y, 2));
+
+	if (pos_x < target_x) {
+		deg = atan(abs(pos_x - target_x) / (abs(pos_y - target_y)));
+	}
+	else deg = atan(-abs(pos_x - target_x) / (abs(pos_y - target_y)));
+
+	if (pos_y < target_y) {
+		dir = 1;
+	}
+	else dir = -1;
 }
 
 NPC::NPC(Sprite_lib* lib, int type_ref, float pos_x, float pos_y, int team_, Room* room_ref_) : Character(lib, type_ref, pos_x, pos_y, team_)

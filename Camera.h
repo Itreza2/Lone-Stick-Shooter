@@ -1,11 +1,15 @@
 #pragma once
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <cmath>
 #include <iostream>
 
 #include "Character.h"
 #include "World.h"
 #include "Sprite_lib.h"
+
+#define MAX_X_OFFSET 80
+#define MAX_Y_OFFSET 40
 
 class Camera
 {
@@ -14,9 +18,15 @@ private:
 	//The character tracked by the camera
 	Character* target;
 
+	Uint32 last_render_tick;
+
 	//The offset of the camera from the position of @m target on the x and y axis
 	int offset_x;
 	int offset_y;
+
+	//The change of offset is not immediate to make the render more fluid
+	int target_offset_x;
+	int target_offset_y;
 
 	//x and y coordinates of the top left corner of the camera
 	int top_left_x;
@@ -65,6 +75,10 @@ private:
 	void draw_character(int char_idx, Uint32* pixels);
 
 	void draw_bullet(int proj_idx, Uint32* pixels);
+
+	void draw_text(int text_idx);
+
+	void set_offset(); //lel
 
 public:
 

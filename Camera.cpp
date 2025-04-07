@@ -13,6 +13,8 @@ Camera::Camera(Character* target_, World* map_, Sprite_lib* sprites_, SDL_Rect r
 	height = height_;
 	offset_x = 0;
 	offset_y = 0;
+	target_offset_x = 0;
+	target_offset_y = 0;
 
 	target_->Get_pos(top_left_x, top_left_y);
 	top_left_x -= (int) width_ / 2;
@@ -27,6 +29,8 @@ Camera::Camera(Character* target_, World* map_, Sprite_lib* sprites_, SDL_Rect r
 
 	surface = SDL_CreateRGBSurfaceWithFormat(0, width_, height_, 32, SDL_PIXELFORMAT_RGB888);
 	if (surface == NULL) err = 1;
+
+	last_render_tick = SDL_GetTicks();
 }
 
 //WIP (not fool-proof yet)
@@ -320,12 +324,47 @@ void Camera::draw_bullet(int proj_idx, Uint32* pixels)
 	}
 }
 
+void Camera::draw_text(int text_idx)
+{
+	SDL_BlitSurface(map->text_idx[text_idx]->surface, NULL, surface, map->text_idx[text_idx]->get_rect(top_left_x, top_left_y));
+}
+
+void Camera::set_offset()
+{
+	int useless_var;
+	float target_aim_deg;
+	target->Get_anim(useless_var, useless_var, useless_var, useless_var, target_aim_deg);
+
+	if (useless_var > 0) target_aim_deg += 3.14;
+
+	target_offset_x = -((Player*)target)->get_target_distance() * 0.3 * sin(target_aim_deg * useless_var);
+	target_offset_y = -((Player*)target)->get_target_distance() * 0.3 * cos(target_aim_deg);
+
+	if (target_offset_x > 0) target_offset_x = min(target_offset_x, MAX_X_OFFSET);
+	else target_offset_x = max(target_offset_x, -MAX_X_OFFSET);
+	if (target_offset_y > 0) target_offset_y = min(target_offset_y, MAX_Y_OFFSET);
+	else target_offset_y = max(target_offset_y, -MAX_Y_OFFSET);
+
+	if (abs(offset_x - target_offset_x) < 4) offset_x = target_offset_x;
+	else {
+		if (offset_x > target_offset_x) offset_x -= (last_render_tick / 8000);
+		if (offset_x < target_offset_x) offset_x += (last_render_tick / 8000);
+	}
+	if (abs(offset_y - target_offset_y) < 4) offset_y = target_offset_y;
+	else {
+		if (offset_y > target_offset_y) offset_y -= (last_render_tick / 8000);
+		if (offset_y < target_offset_y) offset_y += (last_render_tick / 8000);
+	}
+}
+
 //Placeholder
 void Camera::draw_frame(SDL_Renderer* render)
 {
 	for (unsigned int i = 0; i < width * height; i++) h_map[i] = 0;
 
 	target->Get_pos(top_left_x, top_left_y);
+
+	set_offset();
 	top_left_x -= (int)height / 2 - offset_x;
 	top_left_y -= (int)width / 2 - offset_y;
 
@@ -334,18 +373,23 @@ void Camera::draw_frame(SDL_Renderer* render)
 	SDL_LockSurface(sprites->floor_sheet);
 	SDL_LockSurface(sprites->prop_sheet);
 
-	this->draw_floor();
-	this->draw_props();
+	draw_floor();
+	draw_props();
 	for (int i = 0; i < map->char_nb; i++) {
-		this->draw_character(i, pixels);
+		draw_character(i, pixels);
 	}
 	for (int i = 0; i < map->proj_nb; i++) {
-		this->draw_bullet(i, pixels);
+		draw_bullet(i, pixels);
 	}
+	last_render_tick = SDL_GetTicks();
 
 	SDL_UnlockSurface(surface);
 	SDL_UnlockSurface(sprites->floor_sheet);
 	SDL_UnlockSurface(sprites->prop_sheet);
+	
+	for (int i = 0; i < map->text_idx.size(); i++) {
+		draw_text(i);
+	}
 
 	SDL_Texture* text = SDL_CreateTextureFromSurface(render, surface);
 	SDL_RenderCopy(render, text, NULL, &render_rect);

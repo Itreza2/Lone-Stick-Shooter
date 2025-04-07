@@ -1,11 +1,16 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <vector>
 #include <string>
 #include <iostream>
 
 using namespace std;
+
+//Colors definition
+const SDL_Color COLOR_WHITE = { 255, 200, 200, 255 };
+const SDL_Color COLOR_RED = { 255, 70, 50, 255 };
 
 /*
 @Brief load the content of a csv file in a vector
@@ -46,6 +51,8 @@ public: //temporary
 	vector<vector<string>> bullet_anim;
 
 	vector<SDL_Surface*> bullet_sheet;
+
+	vector<TTF_Font*> fonts;
 
 private:
 
