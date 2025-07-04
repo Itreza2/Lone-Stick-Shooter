@@ -21,7 +21,6 @@ void Keyboard::applyMapping()
 			isPressed.push_back(false);
 		}
 	}
-
 }
 
 Keyboard* Keyboard::getKeyboard()
