@@ -5,7 +5,7 @@ void SuperSurface::printIso(SDL_Rect* source, int x, int y, SDL_Surface* dest, u
 {	
 	SDL_Rect* src = source;
 	if (source == nullptr) {
-		src = &SDL_Rect();
+		src = new SDL_Rect();
 		*src = {0, 0, w, h};
 	}
 	Uint32* srcPixels = (Uint32*)pixels;
@@ -38,7 +38,7 @@ void SuperSurface::printRot(SDL_Rect* source, int x, int y, int angle, SDL_Surfa
 {
 	SDL_Rect* src = source;
 	if (source == nullptr) {
-		src = &SDL_Rect();
+		src = new SDL_Rect();
 		*src = { 0, 0, w, h };
 	}
 	Uint32* srcPixels = (Uint32*)pixels;

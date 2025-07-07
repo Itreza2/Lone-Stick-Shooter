@@ -18,11 +18,13 @@ private:
 
 	//[Object's position]//
 
-	int x, y;	   //Coordinates of the center
+	int x, y;			//Coordinates of the center
 
-	int vX, vY;	   //Velocity (useless here, made for inheritance)
+	int prevX, prevY;   //Backup coordinates in case of invalid placement
 
-	int w, h, e;   //width, height and elevation (distance from the ground)
+	int vX, vY;			//Velocity (useless here, made for inheritance)
+
+	int w, h, e;		//width, height and elevation (distance from the ground)
 
 	Uint32 lastUpdate;
 
@@ -75,8 +77,21 @@ public:
 	SDL_Rect getHitbox() { return { x - w / 2, y - h / 2, w, h }; }
 
 	/**
+	* @brief put back the object at his previous location (in case of an invalid placement for ex.)
+	* @param obj the object that was collided (null_ptr if it isn't an object of course)
+	* @return true if the object must be destroyed
+	*/
+	virtual bool revert(BasicObject* obj) { x = prevX; y = prevY; return false; }
+
+	/**
 	* @brief perform a box-shape collision check with an other object
 	* @obj the object to check collision with
 	*/
-	bool collision(const BasicObject& obj);
+	bool collision(const BasicObject& obj) const;
+
+	/**
+	* @brief perform a box-shape collision check with a rectangle area
+	* @obj the area where to check collision as an SDL_Rect
+	*/
+	bool collision(const SDL_Rect& rect) const;
 };

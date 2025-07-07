@@ -15,26 +15,27 @@ BasicObject::BasicObject(int x, int y, ryml::Tree model)
 {
 	this->x = x;
 	this->y = y;
+	prevX = x;
+	prevY = y;
 	currentAnim = 0;
 	currentFrame = 0;
 	animLengths = {};
-
-	vX << model["velocity"][0];
-	vY << model["velocity"][1];
-	w << model["hitbox"][0];
-	h << model["hitbox"][1];
-	e << model["elevation"];
-	sheet << model["sheet"];
-	sX << model["spriteCoordinates"][0];
-	sY << model["spriteCoordinates"][1];
-	sW << model["spriteShape"][0];
-	sH << model["spriteShape"][1];
+	model["velocity"][0] >> vX;
+	model["velocity"][1] >> vY;
+	model["hitbox"][0] >> w;
+	model["hitbox"][1] >> h;
+	model["elevation"] >> e;
+	model["sheet"] >> sheet;
+	model["spriteCoordinates"][0] >> sX;
+	model["spriteCoordinates"][1] >> sY;
+	model["spriteShape"][0] >> sW;
+	model["spriteShape"][1] >> sH;
 
 	int nbrAnim;
 	unsigned int lenght;
-	nbrAnim << model["animNbr"];
+	model["animNbr"] >> nbrAnim;
 	for (int i = 0; i < nbrAnim; i++) {
-		lenght << model["animLenghts"][i];
+		model["animLenghts"][i] >> lenght;
 		animLengths.push_back(lenght);
 	}
 }
@@ -54,18 +55,29 @@ void BasicObject::animate()
 		currentFrame = 0;
 }
 
-bool BasicObject::collision(const BasicObject& obj)
+bool BasicObject::collision(const BasicObject& obj) const
+{
+	if ((w == 1 && h == 1) || (obj.w == 1 && obj.h == 1))
+		return true;  //Object without hitbox
+	else {
+		return collision({ obj.x, obj.y, obj.w, obj.h });
+	}
+}
+
+bool BasicObject::collision(const SDL_Rect& rect) const
 {
 	int x1, x2, y1, y2, w1, h1;
-	if (x < obj.x) {
-		x1 = x; x2 = obj.x; w1 = w;
-	} else {
-		x1 = obj.x; x2 = x; w1 = obj.w;
+	if (x < rect.x) {
+		x1 = x; x2 = rect.x; w1 = w;
 	}
-	if (y < obj.y) {
-		y1 = y; y2 = obj.y; h1 = h;
-	} else {
-		y1 = obj.y; y2 = y; h1 = obj.h;
+	else {
+		x1 = rect.x; x2 = x; w1 = rect.w;
+	}
+	if (y < rect.y) {
+		y1 = y; y2 = rect.y; h1 = h;
+	}
+	else {
+		y1 = rect.y; y2 = y; h1 = rect.h;
 	}
 	if (x2 - x1 < w1 && y2 - y1 < h1)
 		return true;

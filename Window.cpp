@@ -8,4 +8,6 @@ Window::Window()
 
 	window = SDL_CreateWindow("Lone Stick Shooter", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1800, SDL_WINDOW_FULLSCREEN);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+	AssetsManager::getManager()->loadGroup("src/assets/loaders/biome1.load", renderer);
 }
