@@ -15,5 +15,7 @@ private:
 public:
 
 	Level();
+
+	Chunk* getChunk(int x, int y) { return chunks.at(y * 10 + x).get(); }
 };
 

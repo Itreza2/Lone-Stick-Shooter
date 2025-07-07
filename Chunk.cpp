@@ -14,6 +14,9 @@ Chunk::Chunk(int x, int y)
 
 	props = {};
 
+	tilesType = std::array<int, 256>();
+	tilesType.fill(1);
+
 	tiles = std::array<int, 256>();
-	tiles.fill(2);
+	tiles.fill(rand() % 256);
 }

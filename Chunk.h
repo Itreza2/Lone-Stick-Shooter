@@ -14,6 +14,8 @@ private:
 
 	std::vector<BasicObject*> props;
 
+	std::array<int, 256> tilesType;
+
 	std::array<int, 256> tiles;
 
 	Chunk* leftNeighboor;
@@ -29,9 +31,15 @@ public:
 
 	void setActive(bool state) { active = state; }
 
+	int getPosX() { return x; }
+
+	int getPosY() { return y; }
+
 	int getTile(int x_, int y_) { return tiles[y_ * 16 + x_]; }
 
-	void putTile(int x_, int y_, int value) { tiles[y_ * 16 + x_] = value; } //Not optimal (slow)
+	int getTileType(int x_, int y_) { return tilesType[y_ * 16 + x_]; }
+
+	void putTile(int x_, int y_, int type, int value) { tilesType[y_ * 16 + x_] = type; tiles[y_ * 16 + x_] = value; } //Not optimal (slow)
 
 	void setNeighboors(Chunk* left, Chunk* upper, Chunk* right, Chunk* lower) {
 		leftNeighboor = left; upperNeighboor = upper; rightNeighboor = right; lowerNeighboor = lower;
