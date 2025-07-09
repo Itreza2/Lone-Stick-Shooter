@@ -3,6 +3,7 @@
 void Camera::captureFloor()
 {
 	SDL_Texture* texture = AssetsManager::getManager()->getTexture("floor1");
+	SuperSurface* surface = AssetsManager::getManager()->getSheet("walls1");
 	Chunk* chunk;
 	SDL_Rect src, dst;
 
@@ -16,11 +17,23 @@ void Camera::captureFloor()
 			for (int column = 0; column < 16; column++) {
 				for (int row = 0; row < 16; row++) {
 					
-					if (chunk->getTileType(column, row) == 1) {
+					if (chunk->getTileType(column, row) == 1) { //Floor tiles
 						src = { (chunk->getTile(column, row) % 16) * 32, (chunk->getTile(column, row) / 16) * 32, 32, 32 };
 						dst = { chunk->getPosX() - x + 32 * column, chunk->getPosY() - y + 32 * row, 32, 32 };
 
 						SDL_RenderCopy(renderer, texture, &src, &dst);
+					}
+					else if (chunk->getTileType(column, row) == 2) { //Wall tiles (including doors)
+						if (chunk->getTile(column, row)) {
+							src = { 32 * chunk->getTile(column, row), 0, 32, 52 };
+
+							surface->printIso(&src, chunk->getPosX() + 32 * column - x, chunk->getPosY() + 32 * row - 20 - y, iso, hmap);
+						}
+						else { //Doors
+							src = { 0, 0, 32, 70 };
+
+							surface->printIso(&src, chunk->getPosX() + 32 * column - x, chunk->getPosY() + 32 * row - 38 - y, iso, hmap);
+						}
 					}
 				}
 			}
@@ -45,7 +58,8 @@ void Camera::captureObjects()
 				surface = AssetsManager::getManager()->getSheet(object->getSheet());
 				src = object->getFrame();
 
-				surface->printIso(&src, object->getHitbox().x - x, object->getHitbox().y - y, iso, hmap);
+				surface->printIso(&src, object->getHitbox().x + object->getOffsetX() - x,
+					object->getHitbox().y + object->getOffsetY() - y, iso, hmap);
 			}
 		}
 	}
@@ -87,4 +101,6 @@ void Camera::render()
 
 	SDL_RenderCopy(renderer, floor, NULL, &rect);
 	SDL_RenderCopy(renderer, temp, NULL, &rect);
+
+	SDL_DestroyTexture(temp);
 }

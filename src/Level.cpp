@@ -38,5 +38,25 @@ Level::Level()
 	chunks = std::array<std::unique_ptr<Chunk>, 100>();
 	initChunks();
 
+	//Test spawns
 	spawnProp(new BasicObject(2700, 2700, BasicObject::loadModel("tree1")));
+	spawnProp(new BasicObject(2900, 2900, BasicObject::loadModel("portal1")));
+
+	for (int i = 0; i < chunks.size(); i++) {
+		for (int x = 0; x < 16; x++) {
+			for (int y = 0; y < 16; y++) {
+				if (x == 0 || y == 0)
+					chunks[i]->putTile(x, y, 2, (rand() % 13));
+				else
+					chunks[i]->putTile(x, y, 1, (rand() % 255));
+			}
+		}
+	}
+}
+
+void Level::update()
+{
+	for (int i = 0; i < chunks.size(); i++) {
+		chunks[i]->update();
+	}
 }

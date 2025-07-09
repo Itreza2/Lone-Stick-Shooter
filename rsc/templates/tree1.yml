@@ -6,6 +6,7 @@ elevation: 1,
 sheet: props1,
 spriteCoordinates: [24, 14],
 spriteShape: [112, 138],
+spriteOffset: [-50, -129],
 animNb: 1,
 animLenghts: [1]
 }

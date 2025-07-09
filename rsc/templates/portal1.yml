@@ -1,0 +1,12 @@
+{
+velocity: [0, 0],
+hitbox: [1, 1],
+elevation: 1,
+
+sheet: portal1,
+spriteCoordinates: [0, 0],
+spriteShape: [59, 122],
+spriteOffset: [-19, -61],
+animNb: 1,
+animLenghts: [4]
+}

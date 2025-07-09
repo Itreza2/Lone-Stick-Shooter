@@ -1,3 +1,4 @@
 TEXTURE,floor1,rsc/assets/sprites/tiles/floor1.png
 SHEET,props1,rsc/assets/sprites/props/props1.png
 SHEET,walls1,rsc/assets/sprites/tiles/walls1.png
+SHEET,portal1,rsc/assets/sprites/props/portal1.png

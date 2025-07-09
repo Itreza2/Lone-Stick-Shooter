@@ -48,7 +48,12 @@ public:
 		leftNeighboor = left; upperNeighboor = upper; rightNeighboor = right; lowerNeighboor = lower;
 	}
 
-	void spawnProp(BasicObject* prop) { props.push_back(prop); std::cout << "spawned : " << x << " ; " << y << std::endl; }
+	void spawnProp(BasicObject* prop) { props.push_back(prop); }
+
+	/**
+	* @brief update, delete and spawn all the objects on the chunk
+	*/
+	void update();
 
 	//WIP...
 };

@@ -15,10 +15,10 @@ Chunk::Chunk(int x, int y)
 	props = {};
 
 	tilesType = std::array<int, 256>();
-	tilesType.fill(1);
+	tilesType.fill(0);
 
 	tiles = std::array<int, 256>();
-	tiles.fill(rand() % 256);
+	tiles.fill(0);
 }
 
 std::vector<BasicObject*> Chunk::getAllObjects()
@@ -27,4 +27,13 @@ std::vector<BasicObject*> Chunk::getAllObjects()
 	res.insert(res.end(), props.begin(), props.end());
 
 	return res;
+}
+
+void Chunk::update()
+{
+	for (int i = 0; i < props.size(); i++) {
+		if (props[i]->update()) {
+			props.erase(props.begin() + i);
+		}
+	}
 }

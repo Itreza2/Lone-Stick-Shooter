@@ -19,6 +19,8 @@ int main(int argc, char** argv)
 	while (!exit) {
 		exit = Keyboard::getKeyboard()->catchEvents();
 
+		level->update();
+
 		currentTick = SDL_GetTicks();
 		if (currentTick - lastRefresh > 16) {
 			window.refresh();

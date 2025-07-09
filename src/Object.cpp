@@ -30,6 +30,8 @@ BasicObject::BasicObject(int x, int y, ryml::Tree model)
 	model["spriteCoordinates"][1] >> sY;
 	model["spriteShape"][0] >> sW;
 	model["spriteShape"][1] >> sH;
+	model["spriteOffset"][0] >> sOffsetX;
+	model["spriteOffset"][1] >> sOffsetY;
 
 	int nbrAnim;
 	unsigned int lenght;
@@ -43,8 +45,10 @@ BasicObject::BasicObject(int x, int y, ryml::Tree model)
 bool BasicObject::update()
 {
 	//Circle through the same animation indefinitely and doesn't move
-	if (SDL_GetTicks() - lastFrame > 200)
+	if (SDL_GetTicks() - lastFrame > 200) {
 		animate();
+		lastFrame = SDL_GetTicks();
+	}
 	return false;
 }
 
@@ -58,7 +62,7 @@ void BasicObject::animate()
 bool BasicObject::collision(const BasicObject& obj) const
 {
 	if ((w == 1 && h == 1) || (obj.w == 1 && obj.h == 1))
-		return true;  //Object without hitbox
+		return false;  //Object without hitbox
 	else {
 		return collision({ obj.x, obj.y, obj.w, obj.h });
 	}

@@ -32,7 +32,9 @@ private:
 
 	std::string sheet;			   //Sprite Sheet
 
-	int sX, sY;					   //coordinates od the first frame on the sheet
+	int sX, sY;					   //coordinates of the first frame on the sheet
+
+	int sOffsetX, sOffsetY;		   //Position on the top-left corner of the sprite rel. to the top-left corner of the hitbox
 
 	int sW, sH;					   //Width and Height of the sprite
 
@@ -75,6 +77,10 @@ public:
 	SDL_Rect getFrame() { return {sX + currentFrame * sW, sY + currentAnim * sH, sW, sH}; }
 
 	SDL_Rect getHitbox() { return { x - w / 2, y - h / 2, w, h }; }
+
+	int getOffsetX() { return sOffsetX; }
+
+	int getOffsetY() { return sOffsetY; }
 
 	/**
 	* @brief put back the object at his previous location (in case of an invalid placement for ex.)
