@@ -11,7 +11,7 @@ Window::Window()
 
 	AssetsManager::getManager()->loadGroup("rsc\\assets\\loaders\\biome1.load", renderer);
 
-	currentLevel = new Level();
+	currentLevel = nullptr;
 
 	camera1 = nullptr;
 	camera2 = nullptr;
@@ -31,6 +31,8 @@ void Window::refresh()
 
 void Window::setLevel(Level* level, int nbPlayers)
 {
+	currentLevel = level;
+
 	if (camera1 != nullptr) delete camera1;
 	if (camera2 != nullptr) delete camera2;
 

@@ -7,6 +7,6 @@ elevation: 1,
 sheet: SheetName,
 spriteCoordinates: [0, 0],
 spriteShape: [60, 60],
-animNb: 1
+animNb: 1,
 animLenghts: [1]
 }

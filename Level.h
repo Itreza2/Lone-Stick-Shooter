@@ -12,6 +12,8 @@ private:
 
 	void initChunks();
 
+	void spawnProp(BasicObject* prop);
+
 public:
 
 	Level();

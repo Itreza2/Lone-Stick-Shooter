@@ -33,7 +33,7 @@ BasicObject::BasicObject(int x, int y, ryml::Tree model)
 
 	int nbrAnim;
 	unsigned int lenght;
-	model["animNbr"] >> nbrAnim;
+	model["animNb"] >> nbrAnim;
 	for (int i = 0; i < nbrAnim; i++) {
 		model["animLenghts"][i] >> lenght;
 		animLengths.push_back(lenght);

@@ -16,9 +16,11 @@ private:
 
 	//[Rendering stuff]//
 
-	SDL_Renderer* renderer;
+	SDL_Renderer* renderer; //Window's default renderering context
 
-	SDL_Rect rect;
+	SDL_Rect rect;			//Geometry of the camera output on the window
+
+	unsigned int* hmap;
 
 	SDL_Texture* bg;		//Layer 0
 
@@ -28,9 +30,15 @@ private:
 
 	SDL_Texture* hud;		//Layer 3
 
+	SDL_Surface* surfBlank; //Blank
+
+	SDL_Texture* texBlank;  //Blank
+
 	//[Methods]//
 
 	void captureFloor();
+
+	void captureObjects();
 
 public:
 

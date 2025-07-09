@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <array>
+#include <iostream>
 
 #include "Object.h"
 
@@ -39,11 +40,15 @@ public:
 
 	int getTileType(int x_, int y_) { return tilesType[y_ * 16 + x_]; }
 
+	std::vector<BasicObject*> getAllObjects();
+
 	void putTile(int x_, int y_, int type, int value) { tilesType[y_ * 16 + x_] = type; tiles[y_ * 16 + x_] = value; } //Not optimal (slow)
 
 	void setNeighboors(Chunk* left, Chunk* upper, Chunk* right, Chunk* lower) {
 		leftNeighboor = left; upperNeighboor = upper; rightNeighboor = right; lowerNeighboor = lower;
 	}
+
+	void spawnProp(BasicObject* prop) { props.push_back(prop); std::cout << "spawned : " << x << " ; " << y << std::endl; }
 
 	//WIP...
 };

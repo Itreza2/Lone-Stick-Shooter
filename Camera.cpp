@@ -7,6 +7,7 @@ void Camera::captureFloor()
 	SDL_Rect src, dst;
 
 	SDL_SetRenderTarget(renderer, floor);
+	SDL_RenderCopy(renderer, texBlank, NULL, NULL); //Erase the previous frame with a quick Bit-BLT
 
 	for (int i = x / (32 * 16); i <= (x + rect.w) / (32 * 16) + 1; i++) {
 		for (int j = y / (32 * 16); j <= (y + rect.h) / (32 * 16) + 1; j++) {
@@ -28,6 +29,28 @@ void Camera::captureFloor()
 	SDL_SetRenderTarget(renderer, NULL);
 }
 
+void Camera::captureObjects()
+{
+	SuperSurface* surface;
+	Chunk* chunk;
+	SDL_Rect src;
+	std::vector<BasicObject*> objects;
+
+	for (int i = x / (32 * 16); i <= (x + rect.w) / (32 * 16) + 1; i++) {
+		for (int j = y / (32 * 16); j <= (y + rect.h) / (32 * 16) + 1; j++) {
+			chunk = world->getChunk(i, j);
+
+			objects = chunk->getAllObjects();
+			for (BasicObject* object : objects) {
+				surface = AssetsManager::getManager()->getSheet(object->getSheet());
+				src = object->getFrame();
+
+				surface->printIso(&src, object->getHitbox().x - x, object->getHitbox().y - y, iso, hmap);
+			}
+		}
+	}
+}
+
 Camera::Camera(SDL_Renderer* renderer, SDL_Rect rect, Level* level)
 {
 	this->renderer = renderer;
@@ -38,15 +61,30 @@ Camera::Camera(SDL_Renderer* renderer, SDL_Rect rect, Level* level)
 	x = 2600;
 	y = 2600;
 
+	hmap = (unsigned int*)malloc((rect.w * rect.h) * sizeof(unsigned int));
+	if (hmap) {
+		for (int i = 0; i < rect.w * rect.h; i++) hmap[i] = 0;
+	} //Else... oh god it's not an arduino chip wth care ?
+
 	bg = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h);
 	floor = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h);
 	iso = SDL_CreateRGBSurfaceWithFormat(0, rect.w, rect.h, 32, SDL_PIXELFORMAT_RGBA8888);
 	hud = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h);
+
+	surfBlank = SDL_CreateRGBSurfaceWithFormat(0, rect.w, rect.h, 32, SDL_PIXELFORMAT_RGBA8888);
+	texBlank = SDL_CreateTextureFromSurface(renderer, surfBlank);  //Default surface's alpha is 0 when texture's is 255 for some reason...
 }
 
 void Camera::render()
 {
+	for (int i = 0; i < rect.w * rect.h; i++) hmap[i] = 0;
+	SDL_BlitSurface(surfBlank, NULL, iso, NULL);
+
 	captureFloor();
+	captureObjects();
+
+	SDL_Texture* temp = SDL_CreateTextureFromSurface(renderer, iso);
 
 	SDL_RenderCopy(renderer, floor, NULL, &rect);
+	SDL_RenderCopy(renderer, temp, NULL, &rect);
 }

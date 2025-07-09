@@ -28,8 +28,15 @@ void Level::initChunks()
 	}
 }
 
+void Level::spawnProp(BasicObject* prop)
+{
+	chunks[(prop->getHitbox().x / (16 * 32)) * 10 + (prop->getHitbox().y / (16 * 32))]->spawnProp(prop);
+}
+
 Level::Level()
 {
 	chunks = std::array<std::unique_ptr<Chunk>, 100>();
 	initChunks();
+
+	spawnProp(new BasicObject(2700, 2700, BasicObject::loadModel("tree1")));
 }

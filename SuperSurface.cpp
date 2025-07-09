@@ -10,6 +10,8 @@ void SuperSurface::printIso(SDL_Rect* source, int x, int y, SDL_Surface* dest, u
 	}
 	Uint32* srcPixels = (Uint32*)pixels;
 	Uint32* destPixels = (Uint32*)dest->pixels;
+	Uint8 r, g, b, a;
+	a = 0;
 	unsigned int pixHeight = height;
 
 	for (int i = src->x; i < src->x + src->w; i++) {
@@ -22,9 +24,13 @@ void SuperSurface::printIso(SDL_Rect* source, int x, int y, SDL_Surface* dest, u
 					hmap[(y + j) * dest->w + (x + i)] = pixHeight;
 
 					if (flip)
-						destPixels[(y + j) * dest->w + (x + i)] = srcPixels[j * w + (2 * src->x + src->w - 1 - i)];
+						SDL_GetRGBA(srcPixels[j * w + (2 * src->x + src->w - 1 - i)], format, &r, &g, &b, &a);
+						if (a != 0)
+							destPixels[(y + j) * dest->w + (x + i)] = srcPixels[j * w + (2 * src->x + src->w - 1 - i)];
 					else
-						destPixels[(y + j) * dest->w + (x + i)] = srcPixels[j * w + i];
+						SDL_GetRGBA(srcPixels[j * w + i], format, &r, &g, &b, &a);
+						if (a != 0)
+							destPixels[(y + j) * dest->w + (x + i)] = srcPixels[j * w + i];
 				}
 			}
 		}
