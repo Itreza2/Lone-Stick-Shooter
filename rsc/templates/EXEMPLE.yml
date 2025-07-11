@@ -1,5 +1,8 @@
 #This file is an exemple of yaml object model
 {
+hitPoints: 0,  #0 hp means undestructible
+
+velocityMax: [0, 0],
 velocity: [0, 0],
 hitbox: [60, 60],
 elevation: 1,

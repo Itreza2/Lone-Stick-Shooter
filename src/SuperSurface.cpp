@@ -20,7 +20,7 @@ void SuperSurface::printIso(SDL_Rect* source, int x, int y, SDL_Surface* dest, u
 		for (int j = src->y; j < src->y + src->h; j++) {
 			dstJ = j - src->y;
 			if (vertical)
-				pixHeight = src->h - j + height - 1;
+				pixHeight = src->h - dstJ + height - 1;
 
 			if ((x + dstI) >= 0 && (x + dstI) < dest->w && (y + dstJ) >= 0 && (y + dstJ) < dest->h) {
 				if (pixHeight > hmap[(y + dstJ) * dest->w + (x + dstI)] && 1) {

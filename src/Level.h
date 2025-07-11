@@ -3,6 +3,7 @@
 #include <array>
 
 #include "Chunk.h"
+#include "Player.h"
 
 class Level
 {
@@ -12,9 +13,11 @@ private:
 
 	void initChunks();
 
+public:
+
 	void spawnProp(BasicObject* prop);
 
-public:
+	void spawnCharacter(Character* character);
 
 	Level();
 

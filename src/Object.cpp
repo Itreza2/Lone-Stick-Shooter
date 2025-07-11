@@ -13,13 +13,18 @@ ryml::Tree BasicObject::loadModel(std::string model)
 
 BasicObject::BasicObject(int x, int y, ryml::Tree model)
 {
-	this->x = x;
-	this->y = y;
+	this->x = (float)x;
+	this->y = (float)y;
 	prevX = x;
 	prevY = y;
+	flip = false;
 	currentAnim = 0;
 	currentFrame = 0;
 	animLengths = {};
+	model["hitPoints"] >> maxHp;
+	hp = maxHp;
+	model["velocityMax"][0] >> maxVx;
+	model["velocityMax"][1] >> maxVy;
 	model["velocity"][0] >> vX;
 	model["velocity"][1] >> vY;
 	model["hitbox"][0] >> w;
@@ -49,6 +54,8 @@ bool BasicObject::update()
 		animate();
 		lastFrame = SDL_GetTicks();
 	}
+	if (hp == 0 && maxHp > 0)
+		return true;
 	return false;
 }
 
@@ -64,7 +71,7 @@ bool BasicObject::collision(const BasicObject& obj) const
 	if ((w == 1 && h == 1) || (obj.w == 1 && obj.h == 1))
 		return false;  //Object without hitbox
 	else {
-		return collision({ obj.x, obj.y, obj.w, obj.h });
+		return collision({ (int)obj.x, (int)obj.y, (int)obj.w, (int)obj.h });
 	}
 }
 
@@ -72,16 +79,16 @@ bool BasicObject::collision(const SDL_Rect& rect) const
 {
 	int x1, x2, y1, y2, w1, h1;
 	if (x < rect.x) {
-		x1 = x; x2 = rect.x; w1 = w;
+		x1 = (int)x; x2 = rect.x; w1 = w;
 	}
 	else {
-		x1 = rect.x; x2 = x; w1 = rect.w;
+		x1 = rect.x; x2 = (int)x; w1 = rect.w;
 	}
 	if (y < rect.y) {
-		y1 = y; y2 = rect.y; h1 = h;
+		y1 = (int)y; y2 = rect.y; h1 = h;
 	}
 	else {
-		y1 = rect.y; y2 = y; h1 = rect.h;
+		y1 = rect.y; y2 = (int)y; h1 = rect.h;
 	}
 	if (x2 - x1 < w1 && y2 - y1 < h1)
 		return true;

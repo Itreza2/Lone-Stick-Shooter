@@ -3,6 +3,7 @@
 
 #include "AssetsManager.h"
 #include "Level.h"
+#include "Player.h"
 
 class Camera
 {
@@ -11,6 +12,8 @@ private:
 	//[Position]//
 
 	int x, y;
+
+	Player* target;
 
 	Level* world;
 
@@ -42,7 +45,7 @@ private:
 
 public:
 
-	Camera(SDL_Renderer* renderer, SDL_Rect rect,  Level* level);
+	Camera(SDL_Renderer* renderer, SDL_Rect rect,  Level* level, Player* target);
 
 	void render();
 };

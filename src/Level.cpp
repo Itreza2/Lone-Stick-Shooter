@@ -33,6 +33,11 @@ void Level::spawnProp(BasicObject* prop)
 	chunks[(prop->getHitbox().x / (16 * 32)) * 10 + (prop->getHitbox().y / (16 * 32))]->spawnProp(prop);
 }
 
+void Level::spawnCharacter(Character* character)
+{
+	chunks[(character->getHitbox().x / (16 * 32)) * 10 + (character->getHitbox().y / (16 * 32))]->spawnProp(character);
+}
+
 Level::Level()
 {
 	chunks = std::array<std::unique_ptr<Chunk>, 100>();
@@ -41,6 +46,7 @@ Level::Level()
 	//Test spawns
 	spawnProp(new BasicObject(2700, 2700, BasicObject::loadModel("tree1")));
 	spawnProp(new BasicObject(2900, 2900, BasicObject::loadModel("portal1")));
+	spawnCharacter(new Player(PLAYER_1_, 2800, 2800, BasicObject::loadModel("player1")));
 
 	for (int i = 0; i < chunks.size(); i++) {
 		for (int x = 0; x < 16; x++) {

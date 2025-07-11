@@ -27,6 +27,6 @@ public:
 	
 	void refresh();
 
-	void setLevel(Level* level, int nbPlayers = 1);
+	void setLevel(Level* level, Player* player1, Player* player2);
 };
 

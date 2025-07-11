@@ -3,6 +3,7 @@
 #include <array>
 #include <iostream>
 
+#include "Character.h"
 #include "Object.h"
 
 class Chunk
@@ -14,6 +15,8 @@ private:
 	bool active;
 
 	std::vector<BasicObject*> props;
+
+	std::vector<Character*> characters;
 
 	std::array<int, 256> tilesType;
 
@@ -49,6 +52,8 @@ public:
 	}
 
 	void spawnProp(BasicObject* prop) { props.push_back(prop); }
+
+	void spawnCharacter(Character* character) { characters.push_back(character); }
 
 	/**
 	* @brief update, delete and spawn all the objects on the chunk

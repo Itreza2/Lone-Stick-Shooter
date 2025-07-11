@@ -10,9 +10,9 @@ void Camera::captureFloor()
 	SDL_SetRenderTarget(renderer, floor);
 	SDL_RenderCopy(renderer, texBlank, NULL, NULL); //Erase the previous frame with a quick Bit-BLT
 
-	for (int i = x / (32 * 16); i <= (x + rect.w) / (32 * 16) + 1; i++) {
-		for (int j = y / (32 * 16); j <= (y + rect.h) / (32 * 16) + 1; j++) {
-			chunk = world->getChunk(i, j);
+	for (int i = x / (32 * 16); i <= (x + rect.w) / (32 * 16); i++) {
+		for (int j = y / (32 * 16); j <= (y + rect.h) / (32 * 16); j++) {
+			chunk = world->getChunk(j, i);
 
 			for (int column = 0; column < 16; column++) {
 				for (int row = 0; row < 16; row++) {
@@ -49,9 +49,9 @@ void Camera::captureObjects()
 	SDL_Rect src;
 	std::vector<BasicObject*> objects;
 
-	for (int i = x / (32 * 16); i <= (x + rect.w) / (32 * 16) + 1; i++) {
-		for (int j = y / (32 * 16); j <= (y + rect.h) / (32 * 16) + 1; j++) {
-			chunk = world->getChunk(i, j);
+	for (int i = x / (32 * 16) - 1; i <= (x + rect.w) / (32 * 16) + 1; i++) {
+		for (int j = y / (32 * 16) - 1; j <= (y + rect.h) / (32 * 16) + 1; j++) {
+			chunk = world->getChunk(j, i);
 
 			objects = chunk->getAllObjects();
 			for (BasicObject* object : objects) {
@@ -59,21 +59,21 @@ void Camera::captureObjects()
 				src = object->getFrame();
 
 				surface->printIso(&src, object->getHitbox().x + object->getOffsetX() - x,
-					object->getHitbox().y + object->getOffsetY() - y, iso, hmap);
+					object->getHitbox().y + object->getOffsetY() - y, iso, hmap, object->fliped(), object->getElevation());
 			}
 		}
 	}
 }
 
-Camera::Camera(SDL_Renderer* renderer, SDL_Rect rect, Level* level)
+Camera::Camera(SDL_Renderer* renderer, SDL_Rect rect, Level* level, Player* target)
 {
 	this->renderer = renderer;
 	this->rect = rect;
-
+	this->target = target;
 	world = level;
 
-	x = 2600;
-	y = 2600;
+	x = target->getHitbox().x - rect.w / 2;
+	y = target->getHitbox().y - rect.h / 2;
 
 	hmap = (unsigned int*)malloc((rect.w * rect.h) * sizeof(unsigned int));
 	if (hmap) {
@@ -91,8 +91,13 @@ Camera::Camera(SDL_Renderer* renderer, SDL_Rect rect, Level* level)
 
 void Camera::render()
 {
+	x = target->getHitbox().x + target->getHitbox().w / 2 - rect.w / 2;
+	y = target->getHitbox().y + target->getHitbox().h / 2 - rect.h / 2;
+
 	for (int i = 0; i < rect.w * rect.h; i++) hmap[i] = 0;
-	SDL_BlitSurface(surfBlank, NULL, iso, NULL);
+	//SDL_BlitSurface(surfBlank, NULL, iso, NULL);
+	SDL_FreeSurface(iso);
+	iso = SDL_CreateRGBSurfaceWithFormat(0, rect.w, rect.h, 32, SDL_PIXELFORMAT_RGBA8888);
 
 	captureFloor();
 	captureObjects();

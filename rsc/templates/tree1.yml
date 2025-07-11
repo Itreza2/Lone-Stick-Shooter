@@ -1,4 +1,7 @@
 {
+hitPoints: 0,
+
+velocityMax: [0, 0],
 velocity: [0, 0],
 hitbox: [12, 10],
 elevation: 1,

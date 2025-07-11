@@ -8,10 +8,12 @@ int main(int argc, char** argv)
 {
 	srand(time(NULL));
 
+
 	Window window = Window();
 	Level* level = new Level();
-	window.setLevel(level, 1);
-
+	Player* player1 = new Player(PLAYER_1_, 2800, 2800, BasicObject::loadModel("player1"));
+	window.setLevel(level, player1, nullptr);
+	level->spawnCharacter(player1);
 	Uint32 lastRefresh = 0;
 	Uint32 currentTick;
 

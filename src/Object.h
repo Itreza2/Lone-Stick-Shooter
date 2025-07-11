@@ -14,17 +14,27 @@
 */
 class BasicObject
 {
-private:
+protected:
+
+	//[Object's status]//
+
+	int maxHp;
+
+	int hp;
 
 	//[Object's position]//
 
-	int x, y;			//Coordinates of the center
+	float x, y;			//Coordinates of the center
 
 	int prevX, prevY;   //Backup coordinates in case of invalid placement
+
+	int maxVx, maxVy;   //Maximum velocity
 
 	int vX, vY;			//Velocity (useless here, made for inheritance)
 
 	int w, h, e;		//width, height and elevation (distance from the ground)
+
+	bool flip;
 
 	Uint32 lastUpdate;
 
@@ -76,7 +86,11 @@ public:
 
 	SDL_Rect getFrame() { return {sX + currentFrame * sW, sY + currentAnim * sH, sW, sH}; }
 
-	SDL_Rect getHitbox() { return { x - w / 2, y - h / 2, w, h }; }
+	SDL_Rect getHitbox() { return { (int)x - w / 2, (int)y - h / 2, w, h }; }
+
+	int getElevation() { return e; }
+
+	bool fliped() { return flip; }
 
 	int getOffsetX() { return sOffsetX; }
 

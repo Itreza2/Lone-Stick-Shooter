@@ -9,6 +9,7 @@ Window::Window()
 	window = SDL_CreateWindow("Lone Stick Shooter", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 960, 540, NULL);
 	renderer = SDL_CreateRenderer(window, -1, (SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE));
 
+	AssetsManager::getManager()->loadGroup("rsc\\assets\\loaders\\essentials.load", renderer);
 	AssetsManager::getManager()->loadGroup("rsc\\assets\\loaders\\biome1.load", renderer);
 
 	currentLevel = nullptr;
@@ -29,19 +30,19 @@ void Window::refresh()
 	SDL_RenderPresent(renderer);
 }
 
-void Window::setLevel(Level* level, int nbPlayers)
+void Window::setLevel(Level* level, Player* player1, Player* player2)
 {
 	currentLevel = level;
 
 	if (camera1 != nullptr) delete camera1;
 	if (camera2 != nullptr) delete camera2;
 
-	if (nbPlayers == 1) {
-		camera1 = new Camera(renderer, { 0, 0, 960, 540 }, currentLevel);
+	if (player2 == nullptr) {
+		camera1 = new Camera(renderer, { 0, 0, 960, 540 }, currentLevel, player1);
 		camera2 = nullptr;
 	}
 	else {
-		camera1 = new Camera(renderer, { 0, 0, 430, 540 }, currentLevel);
-		camera2 = new Camera(renderer, { 430, 0, 430, 540 }, currentLevel);
+		camera1 = new Camera(renderer, { 0, 0, 430, 540 }, currentLevel, player1);
+		camera2 = new Camera(renderer, { 430, 0, 430, 540 }, currentLevel, player2);
 	}
 }

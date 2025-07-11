@@ -1,0 +1,15 @@
+{
+hitPoints: 100,
+
+velocityMax: [200, 200],
+velocity: [0, 0],
+hitbox: [44, 50],
+elevation: -10,
+
+sheet: player1,
+spriteCoordinates: [0, 0],
+spriteShape: [72, 72],
+spriteOffset: [-36, -36],
+animNb: 3,
+animLenghts: [4, 6, 3]
+}
