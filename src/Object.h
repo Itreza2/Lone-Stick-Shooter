@@ -101,17 +101,17 @@ public:
 	* @param obj the object that was collided (null_ptr if it isn't an object of course)
 	* @return true if the object must be destroyed
 	*/
-	virtual bool revert(BasicObject* obj) { x = prevX; y = prevY; return false; }
+	void revert() { x = prevX; y = prevY; }
 
 	/**
 	* @brief perform a box-shape collision check with an other object
 	* @obj the object to check collision with
 	*/
-	bool collision(const BasicObject& obj) const;
+	virtual bool collision(BasicObject& obj);
 
 	/**
 	* @brief perform a box-shape collision check with a rectangle area
 	* @obj the area where to check collision as an SDL_Rect
 	*/
-	bool collision(const SDL_Rect& rect) const;
+	virtual bool collision(const SDL_Rect& rect);
 };

@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 
 	Window window = Window();
 	Level* level = new Level();
-	Player* player1 = new Player(PLAYER_1_, 2800, 2800, BasicObject::loadModel("player1"));
+	Player* player1 = new Player(PLAYER_1_, 2870, 2820, BasicObject::loadModel("player1"));
 	window.setLevel(level, player1, nullptr);
 	level->spawnCharacter(player1);
 	Uint32 lastRefresh = 0;

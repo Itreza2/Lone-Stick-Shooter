@@ -6,6 +6,9 @@ velocity: [0, 0],
 hitbox: [44, 50],
 elevation: -10,
 
+groundBoxRelative: [-12, 20],
+groundBoxSize: [24, 6],
+
 sheet: player1,
 spriteCoordinates: [0, 0],
 spriteShape: [72, 72],

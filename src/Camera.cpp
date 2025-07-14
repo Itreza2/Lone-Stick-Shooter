@@ -58,11 +58,13 @@ void Camera::captureObjects()
 				surface = AssetsManager::getManager()->getSheet(object->getSheet());
 				src = object->getFrame();
 
-				surface->printIso(&src, object->getHitbox().x + object->getOffsetX() - x,
-					object->getHitbox().y + object->getOffsetY() - y, iso, hmap, object->fliped(), object->getElevation());
+				surface->printIso(&src, object->getHitbox().x + (object->getHitbox().w / 2) + object->getOffsetX() - x,
+					object->getHitbox().y + (object->getHitbox().h / 2) + object->getOffsetY() - y, iso, hmap, object->fliped(), object->getElevation());
 			}
 		}
 	}
+	Uint32* pixels = (Uint32*)iso->pixels;
+	pixels[rect.h / 2 * rect.w + rect.w / 2] = SDL_MapRGBA(iso->format, 255, 0, 0, 255);
 }
 
 Camera::Camera(SDL_Renderer* renderer, SDL_Rect rect, Level* level, Player* target)

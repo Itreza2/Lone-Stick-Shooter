@@ -1,11 +1,15 @@
-#This file is an exemple of yaml object model
+# This file is an exemple of yaml object model
 {
-hitPoints: 0,  #0 hp means undestructible
+hitPoints: 0,  # 0 hp means undestructible
 
 velocityMax: [0, 0],
 velocity: [0, 0],
 hitbox: [60, 60],
 elevation: 1,
+
+# This next block is only for characters
+groundBoxRelative: [0, 20],
+groundBoxSize: [60, 10],
 
 sheet: SheetName,
 spriteCoordinates: [0, 0],

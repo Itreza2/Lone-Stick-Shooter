@@ -27,6 +27,10 @@ private:
 	Chunk* upperNeighboor;
 	Chunk* lowerNeighboor;
 
+	//[ Methods ]//
+
+	bool gridCollision(SDL_Rect hBox);
+
 public:
 
 	Chunk(int x, int y);

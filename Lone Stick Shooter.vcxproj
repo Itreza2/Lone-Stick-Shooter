@@ -33,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AssetsManager.h" />
+    <ClInclude Include="src\Bullet.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Character.h" />
     <ClInclude Include="src\Chunk.h" />

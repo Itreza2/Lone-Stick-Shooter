@@ -66,7 +66,7 @@ void BasicObject::animate()
 		currentFrame = 0;
 }
 
-bool BasicObject::collision(const BasicObject& obj) const
+bool BasicObject::collision(BasicObject& obj)
 {
 	if ((w == 1 && h == 1) || (obj.w == 1 && obj.h == 1))
 		return false;  //Object without hitbox
@@ -75,7 +75,7 @@ bool BasicObject::collision(const BasicObject& obj) const
 	}
 }
 
-bool BasicObject::collision(const SDL_Rect& rect) const
+bool BasicObject::collision(const SDL_Rect& rect)
 {
 	int x1, x2, y1, y2, w1, h1;
 	if (x < rect.x) {
