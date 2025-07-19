@@ -28,6 +28,11 @@ void Level::initChunks()
 	}
 }
 
+void Level::spawnText(Text* text)
+{
+	chunks[(text->getBox().x / (16 * 32)) * 10 + (text->getBox().y / (16 * 32))]->spawnText(text);
+}
+
 void Level::spawnProp(BasicObject* prop)
 {
 	chunks[(prop->getHitbox().x / (16 * 32)) * 10 + (prop->getHitbox().y / (16 * 32))]->spawnProp(prop);
@@ -44,14 +49,18 @@ Level::Level()
 	initChunks();
 
 	//Test spawns (to be removed)
-	spawnProp(new BasicObject(2700, 2700, BasicObject::loadModel("tree1")));
+	spawnProp(new BasicObject(2900, 2710, BasicObject::loadModel("tree2")));
 	spawnProp(new BasicObject(2700, 2800, BasicObject::loadModel("tree1")));
 	spawnProp(new BasicObject(2900, 2900, BasicObject::loadModel("portal1")));
+	spawnProp(new BasicObject(3000, 3000, BasicObject::loadModel("column")));
+
+	spawnText(new Text(2850, 2850, "The quick brown fox jumped over the lazy dog",
+		AssetsManager::getManager()->getFont("futuraL"), {0, 0xff, 0xff, 0}, { 0xff, 0xff, 0, 0 }));
 
 	for (int i = 0; i < chunks.size(); i++) {
 		for (int x = 0; x < 16; x++) {
 			for (int y = 0; y < 16; y++) {
-				if (0)
+				if (!x || !y)
 					chunks[i]->putTile(x, y, 2, (rand() % 13));
 				else
 					chunks[i]->putTile(x, y, 1, (rand() % 255));

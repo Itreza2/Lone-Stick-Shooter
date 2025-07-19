@@ -16,6 +16,8 @@ struct SuperSurface : public SDL_Surface
 
 	SuperSurface(SDL_Surface&& surface) : SDL_Surface(surface) {}
 
+	//~SuperSurface() { SDL_FreeSurface(this); }
+
 	/**
 	* @brief print itself on an other Surface, taking into account a height map (a pixel is only printed if
 	* its height is superior to the one of the pixel it overwrite)

@@ -5,6 +5,7 @@
 
 #include "Character.h"
 #include "Object.h"
+#include "Text.h"
 
 class Chunk
 {
@@ -13,6 +14,8 @@ private:
 	int x, y;
 
 	bool active;
+
+	std::vector<Text*> texts;
 
 	std::vector<BasicObject*> props;
 
@@ -47,6 +50,8 @@ public:
 
 	int getTileType(int x_, int y_) { return tilesType[y_ * 16 + x_]; }
 
+	std::vector<Text*> getTexts() { return texts; }
+
 	std::vector<BasicObject*> getAllObjects();
 
 	void putTile(int x_, int y_, int type, int value) { tilesType[y_ * 16 + x_] = type; tiles[y_ * 16 + x_] = value; } //Not optimal (slow)
@@ -54,6 +59,8 @@ public:
 	void setNeighboors(Chunk* left, Chunk* upper, Chunk* right, Chunk* lower) {
 		leftNeighboor = left; upperNeighboor = upper; rightNeighboor = right; lowerNeighboor = lower;
 	}
+
+	void spawnText(Text* text) { texts.push_back(text); }
 
 	void spawnProp(BasicObject* prop) { props.push_back(prop); }
 

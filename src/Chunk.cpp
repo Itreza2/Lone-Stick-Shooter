@@ -85,6 +85,7 @@ Chunk::Chunk(int x, int y)
 	rightNeighboor = nullptr;
 	lowerNeighboor = nullptr;
 
+	texts = {};
 	props = {};
 	characters = {};
 
@@ -106,6 +107,11 @@ std::vector<BasicObject*> Chunk::getAllObjects()
 
 void Chunk::update()
 {
+	for (int i = 0; i < texts.size(); i++) { // Texts
+		if (texts[i]->shouldBeErased()) {
+			texts.erase(texts.begin() + i);
+		}
+	}
 	for (int i = 0; i < props.size(); i++) { // Props (unmovable)
 		if (props[i]->update()) {
 			props.erase(props.begin() + i);

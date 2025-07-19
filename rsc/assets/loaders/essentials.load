@@ -1,1 +1,4 @@
+FONT,futuraS,rsc/assets/fonts/16020_FUTURAM.ttf,12
+FONT,futuraM,rsc/assets/fonts/16020_FUTURAM.ttf,20
+FONT,futuraL,rsc/assets/fonts/16020_FUTURAM.ttf,28
 SHEET,player1,rsc/assets/sprites/characters/player1.png

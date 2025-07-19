@@ -4,6 +4,7 @@
 #include "AssetsManager.h"
 #include "Level.h"
 #include "Player.h"
+#include "Text.h"
 
 class Camera
 {
@@ -31,6 +32,8 @@ private:
 
 	SDL_Surface* iso;		//Layer 2
 
+	SDL_Surface* shadow;	//Layer 2.2
+
 	SDL_Texture* hud;		//Layer 3
 
 	SDL_Surface* surfBlank; //Blank
@@ -42,6 +45,10 @@ private:
 	void captureFloor();
 
 	void captureObjects();
+
+	void captureTexts();
+
+	void renderShadows();
 
 public:
 

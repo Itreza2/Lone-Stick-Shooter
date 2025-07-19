@@ -2,8 +2,10 @@
 #include <memory>
 #include <array>
 
+#include "AssetsManager.h"
 #include "Chunk.h"
 #include "Player.h"
+#include "Text.h"
 
 class Level
 {
@@ -14,6 +16,8 @@ private:
 	void initChunks();
 
 public:
+
+	void spawnText(Text* text);
 
 	void spawnProp(BasicObject* prop);
 

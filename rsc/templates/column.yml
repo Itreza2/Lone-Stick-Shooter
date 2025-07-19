@@ -1,0 +1,15 @@
+{
+hitPoints: 0,
+
+velocityMax: [0, 0],
+velocity: [0, 0],
+hitbox: [32, 26],
+elevation: 1,
+
+sheet: props1,
+spriteCoordinates: [16, 243],
+spriteShape: [32, 76],
+spriteOffset: [-16, -60],
+animNb: 1,
+animLenghts: [1]
+}

@@ -22,20 +22,22 @@ void SuperSurface::printIso(SDL_Rect* source, int x, int y, SDL_Surface* dest, u
 			if (vertical)
 				pixHeight = src->h - dstJ + height - 1;
 
-			if ((x + dstI) >= 0 && (x + dstI) < dest->w && (y + dstJ) >= 0 && (y + dstJ) < dest->h) {
-				if (pixHeight > hmap[(y + dstJ) * dest->w + (x + dstI)] && 1) {
+			if ((x + dstI) >= 0 && (x + dstI) < dest->w && (y + dstJ) >= 0 && (y + dstJ) < (dest->h * 1.25)) {
+				if (pixHeight > hmap[(y + dstJ) * dest->w + (x + dstI)]) {
 
 					if (flip) {
 						SDL_GetRGBA(srcPixels[j * w + (2 * src->x + src->w - 1 - i)], format, &r, &g, &b, &a);
 						if (a != 0) {
 							hmap[(y + dstJ) * dest->w + (x + dstI)] = pixHeight;
-							destPixels[(y + dstJ) * dest->w + (x + dstI)] = srcPixels[j * w + (2 * src->x + src->w - 1 - i)];
+							if ((y + dstJ) < dest->h)
+								destPixels[(y + dstJ) * dest->w + (x + dstI)] = srcPixels[j * w + (2 * src->x + src->w - 1 - i)];
 						}
 					} else {
 						SDL_GetRGBA(srcPixels[j * w + i], format, &r, &g, &b, &a);
 						if (a != 0) {
 							hmap[(y + dstJ) * dest->w + (x + dstI)] = pixHeight;
-							destPixels[(y + dstJ) * dest->w + (x + dstI)] = srcPixels[j * w + i];
+							if ((y + dstJ) < dest->h)
+								destPixels[(y + dstJ) * dest->w + (x + dstI)] = srcPixels[j * w + i];
 						}
 					}
 				}
