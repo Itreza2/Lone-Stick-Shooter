@@ -10,13 +10,23 @@ TODO :
 * @brief an extention of the SDL Surface that provide methods for rotation and "isometric" rendering
 * /!\ These methods do not perform optimised bit-BLT as the ones of the SDL librairy, and may be a bit slow /!\
 */
-struct SuperSurface : public SDL_Surface
+struct SuperSurface
 {
-	SuperSurface(const SDL_Surface& surface) : SDL_Surface(surface) {}
+private:
 
-	SuperSurface(SDL_Surface&& surface) : SDL_Surface(surface) {}
+	SDL_Surface* s;
 
-	//~SuperSurface() { SDL_FreeSurface(this); }
+public:
+
+	SuperSurface(SDL_Surface& surface) { s = &surface;  }
+
+	SuperSurface(SDL_Surface&& surface) { s = &surface; }
+
+	~SuperSurface() { SDL_FreeSurface(s); }
+
+	int getWidth() { return s->w; }
+
+	int getHeight() { return s->h; }
 
 	/**
 	* @brief print itself on an other Surface, taking into account a height map (a pixel is only printed if
@@ -47,4 +57,12 @@ struct SuperSurface : public SDL_Surface
 	*/
 	void printRot(SDL_Rect* source, int x, int y, int angle, SDL_Surface* dest, unsigned int* hmap, 
 		bool flip = false, unsigned int height = 1);
+
+	void blit(SDL_Rect* source, int x, int y, SDL_Surface* dest) {
+		SDL_Rect dst = { x, y, s->w, s->h };
+		if (source)
+			dst = { x, y, source->w, source->h };
+
+		SDL_BlitSurface(s, source, dest, &dst);
+	}
 };

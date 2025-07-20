@@ -9,6 +9,7 @@ Window::Window()
 	window = SDL_CreateWindow("Lone Stick Shooter", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 960, 540, NULL);
 	renderer = SDL_CreateRenderer(window, -1, (SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE));
 
+	AssetsManager::getManager()->loadGroup("rsc\\assets\\loaders\\backgrounds.load", renderer);
 	AssetsManager::getManager()->loadGroup("rsc\\assets\\loaders\\essentials.load", renderer);
 	AssetsManager::getManager()->loadGroup("rsc\\assets\\loaders\\biome1.load", renderer);
 

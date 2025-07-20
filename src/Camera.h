@@ -26,11 +26,13 @@ private:
 
 	unsigned int* hmap;
 
-	SDL_Texture* bg;		//Layer 0
+	SDL_Surface* bg;		//Layer 0.1
+
+	SDL_Texture* water;		//Layer 0.2
 
 	SDL_Texture* floor;		//Layer 1
 
-	SDL_Surface* iso;		//Layer 2
+	SDL_Surface* iso;		//Layer 2.1
 
 	SDL_Surface* shadow;	//Layer 2.2
 
@@ -41,6 +43,8 @@ private:
 	SDL_Texture* texBlank;  //Blank
 
 	//[Methods]//
+
+	void updateBackground();
 
 	void captureFloor();
 
@@ -56,4 +60,3 @@ public:
 
 	void render();
 };
-

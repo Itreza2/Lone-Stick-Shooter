@@ -52,18 +52,20 @@ Level::Level()
 	spawnProp(new BasicObject(2900, 2710, BasicObject::loadModel("tree2")));
 	spawnProp(new BasicObject(2700, 2800, BasicObject::loadModel("tree1")));
 	spawnProp(new BasicObject(2900, 2900, BasicObject::loadModel("portal1")));
-	spawnProp(new BasicObject(3000, 3000, BasicObject::loadModel("column")));
+	spawnProp(new BasicObject(3000, 3050, BasicObject::loadModel("tree1")));
 
-	spawnText(new Text(2850, 2850, "The quick brown fox jumped over the lazy dog",
-		AssetsManager::getManager()->getFont("futuraL"), {0, 0xff, 0xff, 0}, { 0xff, 0xff, 0, 0 }));
+	spawnText(new Text(2850, 2850, 0, "Be you, be proud of you, because you can be do what we want you to do",
+		AssetsManager::getManager()->getFont("futuraL"), 0xff0000, 0xffffff, 4));
 
 	for (int i = 0; i < chunks.size(); i++) {
 		for (int x = 0; x < 16; x++) {
 			for (int y = 0; y < 16; y++) {
-				if (!x || !y)
-					chunks[i]->putTile(x, y, 2, (rand() % 13));
-				else
-					chunks[i]->putTile(x, y, 1, (rand() % 255));
+				if (i == 55) {
+					if (!x || !y)
+						chunks[i]->putTile(x, y, 2, (rand() % 13));
+					else
+						chunks[i]->putTile(x, y, 1, (rand() % 255));
+				}
 			}
 		}
 	}

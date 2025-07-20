@@ -6,9 +6,9 @@ void SuperSurface::printIso(SDL_Rect* source, int x, int y, SDL_Surface* dest, u
 	SDL_Rect* src = source;
 	if (source == nullptr) {
 		src = new SDL_Rect();
-		*src = {0, 0, w, h};
+		*src = {0, 0, s->w, s->h};
 	}
-	Uint32* srcPixels = (Uint32*)pixels;
+	Uint32* srcPixels = (Uint32*)s->pixels;
 	Uint32* destPixels = (Uint32*)dest->pixels;
 	Uint8 r, g, b, a;
 	a = 0;
@@ -26,18 +26,18 @@ void SuperSurface::printIso(SDL_Rect* source, int x, int y, SDL_Surface* dest, u
 				if (pixHeight > hmap[(y + dstJ) * dest->w + (x + dstI)]) {
 
 					if (flip) {
-						SDL_GetRGBA(srcPixels[j * w + (2 * src->x + src->w - 1 - i)], format, &r, &g, &b, &a);
+						SDL_GetRGBA(srcPixels[j * s->w + (2 * src->x + src->w - 1 - i)], s->format, &r, &g, &b, &a);
 						if (a != 0) {
 							hmap[(y + dstJ) * dest->w + (x + dstI)] = pixHeight;
 							if ((y + dstJ) < dest->h)
-								destPixels[(y + dstJ) * dest->w + (x + dstI)] = srcPixels[j * w + (2 * src->x + src->w - 1 - i)];
+								destPixels[(y + dstJ) * dest->w + (x + dstI)] = srcPixels[j * s->w + (2 * src->x + src->w - 1 - i)];
 						}
 					} else {
-						SDL_GetRGBA(srcPixels[j * w + i], format, &r, &g, &b, &a);
+						SDL_GetRGBA(srcPixels[j * s->w + i], s->format, &r, &g, &b, &a);
 						if (a != 0) {
 							hmap[(y + dstJ) * dest->w + (x + dstI)] = pixHeight;
 							if ((y + dstJ) < dest->h)
-								destPixels[(y + dstJ) * dest->w + (x + dstI)] = srcPixels[j * w + i];
+								destPixels[(y + dstJ) * dest->w + (x + dstI)] = srcPixels[j * s->w + i];
 						}
 					}
 				}
@@ -54,9 +54,9 @@ void SuperSurface::printRot(SDL_Rect* source, int x, int y, int angle, SDL_Surfa
 	SDL_Rect* src = source;
 	if (source == nullptr) {
 		src = new SDL_Rect();
-		*src = { 0, 0, w, h };
+		*src = { 0, 0, s->w, s->h };
 	}
-	Uint32* srcPixels = (Uint32*)pixels;
+	Uint32* srcPixels = (Uint32*)s->pixels;
 	Uint32* destPixels = (Uint32*)dest->pixels;
 	unsigned int pixHeight = height;
 	unsigned int l;
@@ -79,12 +79,12 @@ void SuperSurface::printRot(SDL_Rect* source, int x, int y, int angle, SDL_Surfa
 
 					if (srcX >= 0 && srcX < src->w and srcY >= 0 && srcY < src->h && 1) {
 						hmap[(y - l / 2 + j) * dest->w + (x - l / 2 + i)] = height;
-						destPixels[(y - l / 2 + j) * dest->w + (x - l / 2 + i)] = srcPixels[(src->y + srcY) * w + src->x + srcX];
+						destPixels[(y - l / 2 + j) * dest->w + (x - l / 2 + i)] = srcPixels[(src->y + srcY) * s->w + src->x + srcX];
 					}
 				}
 			}
 		}
 	}
 	if (source == nullptr)
-		free(src);
+		delete src;
 }

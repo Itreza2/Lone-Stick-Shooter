@@ -21,7 +21,7 @@ private:
 
 	TTF_Font* font;
 
-	SDL_Color color1, color2;
+	Uint32 color1, color2;
 
 	time_t glowFrequency;
 
@@ -29,17 +29,21 @@ private:
 
 	//[ Methods ]//
 
+	SDL_Color convertColor(Uint32 color);
+
+	SDL_Color currentColor(); // Very badly done, should be remade but better
+
 public:
 
-	Text(int x, int y, std::string content, TTF_Font* font, SDL_Color color1, SDL_Color color2, time_t freq = 2000, time_t ttl = 0);
+	Text(int x, int y, time_t ttl, std::string content, TTF_Font* font, Uint32 color1, Uint32 color2, time_t freq = 2000);
 
-	Text(int x, int y, std::string content, TTF_Font* font, SDL_Color color, time_t ttl = 0) :
-		Text(x, y, content, font, color, color, 0, ttl) {}
+	Text(int x, int y, time_t ttl, std::string content, TTF_Font* font, Uint32 color) :
+		Text(x, y, ttl, content, font, color, color, 0) {}
 
-	Text(int x, int y, std::string content, TTF_Font* font, time_t ttl = 0) :
-		Text(x, y, content, font, (SDL_Color)0, (SDL_Color)0, 0, ttl) {}
+	Text(int x, int y, time_t ttl, std::string content, TTF_Font* font) :
+		Text(x, y, ttl, content, font, 0, 0, 0) {}
 
-	SDL_Rect getBox() { return {x - surface->w / 2, y - surface->h / 2, surface->w, surface->h}; }
+	SDL_Rect getBox() { return {x - surface->getWidth() / 2, y - surface->getHeight() / 2, surface->getWidth(), surface->getHeight()}; }
 
 	bool shouldBeErased();
 
