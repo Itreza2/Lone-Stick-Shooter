@@ -26,43 +26,45 @@ void Camera::captureFloor()
 
 	for (int i = x / (32 * 16); i <= (x + rect.w) / (32 * 16); i++) {
 		for (int j = y / (32 * 16); j <= (y + rect.h + 50) / (32 * 16); j++) {
-			chunk = world->getChunk(j, i);
+			if (i >= 0 && i < 10 && j >= 0 && j < 10) {
+				chunk = world->getChunk(i, j);
 
-			for (int column = 0; column < 16; column++) {
-				for (int row = 0; row < 16; row++) {
-					
-					if (chunk->getTileType(column, row) == 1) { //Floor tiles
-						SDL_SetRenderTarget(renderer, floor);
+				for (int column = 0; column < 16; column++) {
+					for (int row = 0; row < 16; row++) {
 
-						src = { (chunk->getTile(column, row) % 16) * 32, (chunk->getTile(column, row) / 16) * 32, 32, 32 };
-						dst = { chunk->getPosX() - x + 32 * column, chunk->getPosY() - y + 32 * row, 32, 32 };
+						if (chunk->getTileType(column, row) == 1) { //Floor tiles
+							SDL_SetRenderTarget(renderer, floor);
 
-						SDL_RenderCopy(renderer, texture, &src, &dst);
-					}
-					else if (chunk->getTileType(column, row) == 2) { //Wall tiles (Body and top)
-						SDL_SetRenderTarget(renderer, floor);
+							src = { (chunk->getTile(column, row) % 16) * 32, (chunk->getTile(column, row) / 16) * 32, 32, 32 };
+							dst = { chunk->getPosX() - x + 32 * column, chunk->getPosY() - y + 32 * row, 32, 32 };
 
-						if (chunk->getTile(column, row)) {
-							src = { 32 * chunk->getTile(column, row), 32, 32, 20 };
-							surface->printIso(&src, chunk->getPosX() + 32 * column - x, chunk->getPosY() + 32 * row + 12  - y, iso, hmap);
-							
-							src = { 32 * chunk->getTile(column, row), 0, 32, 32 };
-							surface->printIso(&src, chunk->getPosX() + 32 * column - x, chunk->getPosY() + 32 * row - 20 - y, iso, hmap,
-								false, 20, false);
+							SDL_RenderCopy(renderer, texture, &src, &dst);
 						}
-						else { //Doors
-							src = { 0, 0, 32, 70 };
+						else if (chunk->getTileType(column, row) == 2) { //Wall tiles (Body and top)
+							SDL_SetRenderTarget(renderer, floor);
 
-							surface->printIso(&src, chunk->getPosX() + 32 * column - x, chunk->getPosY() + 32 * row - 38 - y, iso, hmap);
+							if (chunk->getTile(column, row)) {
+								src = { 32 * chunk->getTile(column, row), 32, 32, 20 };
+								surface->printIso(&src, chunk->getPosX() + 32 * column - x, chunk->getPosY() + 32 * row + 12 - y, iso, hmap);
+
+								src = { 32 * chunk->getTile(column, row), 0, 32, 32 };
+								surface->printIso(&src, chunk->getPosX() + 32 * column - x, chunk->getPosY() + 32 * row - 20 - y, iso, hmap,
+									false, 20, false);
+							}
+							else { //Doors
+								src = { 0, 0, 32, 70 };
+
+								surface->printIso(&src, chunk->getPosX() + 32 * column - x, chunk->getPosY() + 32 * row - 38 - y, iso, hmap);
+							}
 						}
-					}
-					else { //Void : backgroud water tile
-						SDL_SetRenderTarget(renderer, water);
+						else { //Void : backgroud water tile
+							SDL_SetRenderTarget(renderer, water);
 
-						src = { currentWaterTile * 128 + (column % 4 * 32), (row % 4 * 32), 32, 32 };
-						dst = { chunk->getPosX() - x + 32 * column, chunk->getPosY() - y + 32 * row, 32, 32 };
+							src = { currentWaterTile * 128 + (column % 4 * 32), (row % 4 * 32), 32, 32 };
+							dst = { chunk->getPosX() - x + 32 * column, chunk->getPosY() - y + 32 * row, 32, 32 };
 
-						SDL_RenderCopy(renderer, textureWater, &src, &dst);
+							SDL_RenderCopy(renderer, textureWater, &src, &dst);
+						}
 					}
 				}
 			}
@@ -80,15 +82,17 @@ void Camera::captureObjects()
 
 	for (int i = x / (32 * 16) - 1; i <= (x + rect.w) / (32 * 16) + 1; i++) {
 		for (int j = y / (32 * 16) - 1; j <= (y + rect.h) / (32 * 16) + 1; j++) {
-			chunk = world->getChunk(j, i);
+			if (i >= 0 && i < 10 && j >= 0 && j < 10) {
+				chunk = world->getChunk(i, j);
 
-			objects = chunk->getAllObjects();
-			for (BasicObject* object : objects) {
-				surface = AssetsManager::getManager()->getSheet(object->getSheet());
-				src = object->getFrame();
+				objects = chunk->getAllObjects();
+				for (BasicObject* object : objects) {
+					surface = AssetsManager::getManager()->getSheet(object->getSheet());
+					src = object->getFrame();
 
-				surface->printIso(&src, object->getHitbox().x + (object->getHitbox().w / 2) + object->getOffsetX() - x,
-					object->getHitbox().y + (object->getHitbox().h / 2) + object->getOffsetY() - y, iso, hmap, object->fliped(), object->getElevation());
+					surface->printIso(&src, object->getHitbox().x + (object->getHitbox().w / 2) + object->getOffsetX() - x,
+						object->getHitbox().y + (object->getHitbox().h / 2) + object->getOffsetY() - y, iso, hmap, object->fliped(), object->getElevation());
+				}
 			}
 		}
 	}
@@ -102,14 +106,16 @@ void Camera::captureTexts()
 
 	for (int i = x / (32 * 16) - 1; i <= (x + rect.w) / (32 * 16) + 1; i++) {
 		for (int j = y / (32 * 16) - 1; j <= (y + rect.h) / (32 * 16) + 1; j++) {
-			chunk = world->getChunk(j, i);
+			if (i >= 0 && i < 10 && j >= 0 && j < 10) {
+				chunk = world->getChunk(i, j);
 
-			texts = chunk->getTexts();
-			for (Text* text : texts) {
-				surface = text->getSurface();
+				texts = chunk->getTexts();
+				for (Text* text : texts) {
+					surface = text->getSurface();
 
-				surface->printIso(nullptr, text->getBox().x - x,
-					text->getBox().y - y, iso, hmap, false, 10000);
+					surface->printIso(nullptr, text->getBox().x - x,
+						text->getBox().y - y, iso, hmap, false, 10000);
+				}
 			}
 		}
 	}
@@ -140,7 +146,7 @@ void Camera::renderShadows()
 			dstY = i / rect.w + 2 * hmap[i];
 			dstX = i % rect.w;
 			if (dstX >= 0 && dstX < rect.w && dstY >= 0 && dstY < rect.h) {
-				pixelsBg[dstY * rect.w + dstX] = pixelsIso[(dstY - 2 * hmap[i]) * rect.w + dstX];
+				pixelsBg[dstY * rect.w + dstX + (SDL_GetTicks() / 100 + dstY / 4) % 3 - 1] = pixelsIso[(dstY - 2 * hmap[i]) * rect.w + dstX];
 			}
 		}
 	}

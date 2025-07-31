@@ -123,7 +123,7 @@ void Chunk::update()
 		}
 		else {
 			if (gridCollision(characters[i]->getGroundHitBox()))
-				characters[i]->revert();
+				//characters[i]->revert();
 			for (BasicObject* prop : props) {
 				if (characters[i]->collision(prop->getHitbox()))
 					characters[i]->revert();

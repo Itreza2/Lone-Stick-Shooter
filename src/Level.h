@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <array>
+#include <fstream>
+#include <string>
 
 #include "AssetsManager.h"
 #include "Chunk.h"
@@ -13,7 +15,25 @@ private:
 
 	std::array<std::unique_ptr<Chunk>, 100> chunks;
 
+	std::array<int, 50> rooms;
+
+	int firstX, firstY;
+
+	//[ Methods ]//
+
 	void initChunks();
+
+	void generateLayer();
+
+	void generateFloor();
+
+	void hallwaysFloor(int roomIdx);
+
+	void roomsFloor(int roomIdx);
+
+	void generateWalls();
+
+	void populate();
 
 public:
 
@@ -25,7 +45,7 @@ public:
 
 	Level();
 
-	Chunk* getChunk(int x, int y) { return chunks.at(y * 10 + x).get(); }
+	Chunk* getChunk(int x, int y) { return chunks.at(x * 10 + y).get(); }
 
 	/**
 	* @brief update all the chunks of the level
